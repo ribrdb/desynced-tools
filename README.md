@@ -11,17 +11,20 @@ Try online at https://desynced-behavior-editor.web.app/ or for command line tool
 
 ## ds-disas
 Usage: `ds-disas filename.txt`
+
 Converts a Desynced blueprint or behavior string to assembly language.
 The output filename will be the input with ".asm" added.
 To produce the input file, copy a behavior or blueprint in the game and then paste that into a plain text file.
 
 ## ds-as
 Usage: `ds-as filename.asm`
+
 Convert from assembly language back into a Desynced clipboard string.
 The output filename will be the input with ".txt" added.
 
 ## js2ds
 Usage: `js2ds filename.js` or `js2ds filename.ts`
+
 Convert from JavaScript or TypeScript to desynced-tools assembly language.
 The output filename will be the input with ".asm" added.
 
