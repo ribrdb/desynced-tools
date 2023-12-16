@@ -3,6 +3,8 @@ Tools for working with behaviors and blueprints from Desynced.
 
 # Getting started
 
+Try online at https://desynced-behavior-editor.web.app/ or for command line tools:
+
 `npm install -g desynced-tools`
 
 # Tools

@@ -1,6 +1,6 @@
 {
     "name": "desynced-tools",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "license": "MIT",
     "dependencies": {
         "typescript": "^5.3.2"
