@@ -1,0 +1,357 @@
+{
+  "value_type": {
+    "js": "type",
+    "type": "property",
+    "conditions": {
+      "next": "No Match"
+    }
+  },
+  "unit_type": {
+    "js": "unitType",
+    "type": "property",
+    "conditions": {
+      "next": "No Unit"
+    }
+  },
+  "check_altitude": {
+    "js": "altitude",
+    "type": "property",
+    "conditions": {
+      "next": false
+    }
+  },
+  "check_blightness": {
+    "js": "inBlight",
+    "type": "property",
+    "conditions": {
+      "Blight": true,
+      "next": false
+    }
+  },
+  "get_resource_item": {
+    "js": "resourceType",
+    "type": "property",
+    "conditions": {
+      "next": true,
+      "Not Resource": false
+    }
+  },
+  "gettrust": {
+    "js": "trust",
+    "type": "property",
+    "conditions": {
+      "next": false,
+      "Ally": "ally",
+      "Neutral": "neutral",
+      "Enemy": "enemy"
+    }
+  },
+  "select_nearest": {
+    "aliases":[{
+      "js": "nearerThan",
+      "type": "method",
+      "thisArg": 2,
+      "conditions": {
+        "A": true,
+        "B": false
+      },
+      "outArgs": []
+    }],
+    "type": "operator"
+  },
+  "is_same_grid": {
+    "js": "sameGrid",
+    "type": "method",
+    "conditions": {
+      "next": true,
+      "Different": false
+    }
+  },
+  "check_health": {
+    "js": "fullHealth",
+    "type": "method",
+    "conditions": {
+      "Full": true,
+      "next": false
+    }
+  },
+  "check_battery": {
+    "js": "fullBattery",
+    "type": "method",
+    "conditions": {
+      "Full": true,
+      "next": false
+    }
+  },
+  "check_grid_effeciency": {
+    "js": "fullGridEfficiency",
+    "type": "method",
+    "conditions": {
+      "Full": true,
+      "next": false
+    }
+  },
+  "match": {
+    "js": "match",
+    "type": "method",
+    "conditions": {
+      "Failed": false,
+      "next": true
+    }
+  },
+  "solve": {
+    "js": "solve",
+    "type": "method",
+    "conditions": {
+      "Failed": true,
+      "next": false
+    }
+  },
+  "have_item": {
+    "js": "hasItem",
+    "thisArg": 1,
+    "autoself": true,
+    "conditions": {
+      "Have Item": true,
+      "next": false
+    }
+  },
+  "for_entities_in_range": {
+    "js": "entitiesInRange",
+    "loop": true,
+    "conditions": {
+      "next": true,
+      "Done": false
+    }
+  },
+  "for_research": {
+    "js": "availableResearch",
+    "loop": true,
+    "conditions": {
+      "next": true,
+      "Done": false
+    }
+  },
+  "checkfreespace": {
+    "js": "haveFreeSpace",
+    "conditions": {
+      "Can't Fit": false,
+      "next": true
+    }
+  },
+  "for_signal": {
+    "js": "deprecatedSignals",
+    "loop": true,
+    "conditions": {
+      "next": true,
+      "Done": false
+    }
+  },
+  "for_signal_match": {
+    "js": "matchingSignals",
+    "loop": true,
+    "conditions": {
+      "next": true,
+      "Done": false
+    }
+  },
+  "equip_component": {
+    "js": "equip",
+    "conditions": {
+      "No Component": false,
+      "next": true
+    }
+  },
+  "unequip_component": {
+    "js": "unequip",
+    "conditions": {
+      "No Component": false,
+      "next": true
+    }
+  },
+  "get_inventory_item": {
+    "js": "firstInventoryItem",
+    "conditions": {
+      "next": true,
+      "No Items": false
+    }
+  },
+  "get_inventory_item_index": {
+    "js": "getInventoryItem",
+    "conditions": {
+      "next": true,
+      "No Item": false
+    }
+  },
+  "for_inventory_item": {
+    "js": "inventoryItems",
+    "loop": true,
+    "conditions": {
+      "next": true,
+      "Done": false
+    }
+  },
+  "for_recipe_ingredients": {
+    "js": "recipieIngredients",
+    "loop": true,
+    "conditions": {
+      "next": true,
+      "Done": false
+    }
+  },
+  "is_daynight": {
+    "js": "daytime",
+    "aliases": [
+      {
+        "js": "nighttime",
+        "conditions": {
+          "Day": false,
+          "Night": true
+        }
+      }
+    ],
+    "conditions": {
+      "Day": true,
+      "Night": false
+    }
+  },
+  "can_produce": {
+    "js": "canProduce",
+    "conditions": {
+      "Can Produce": true,
+      "next": false
+    }
+  },
+  "faction_item_amount": {
+    "js": "factionItemAmount",
+    "conditions": {
+      "next": true,
+      "None": false
+    }
+  },
+  "scan": {
+    "js": "radar",
+    "conditions": {
+      "next": true,
+      "No Result": false
+    }
+  },
+  "mine": {
+    "conditions": {
+      "next": "ok",
+      "Cannot Mine": "unable",
+      "Full": "full"
+    }
+  },
+  "notify": {
+    "aliases": [
+      {
+        "txt": true,
+        "inArgs": []
+      },
+      {
+        "txt": true
+      }
+    ]
+  },
+  "count_item": {
+    "js": "count",
+    "type": "method",
+    "aliases": [
+      {
+        "js": "countReserved",
+        "c": 2
+      }
+    ]
+  },
+  "count_slots": {
+    "js": "countAllSlots",
+    "type": "method",
+    "aliases": [
+      {
+        "js": "countStorageSlots",
+        "c": 2
+      },
+      {
+        "js": "countGasSlots",
+        "c": 3
+      },
+      {
+        "js": "countVirusSlots",
+        "c": 4
+      },
+      {
+        "js": "countAnomolySlots",
+        "c": 5
+      }
+    ]
+  },
+  "dodrop": {
+    "js": "drop",
+    "optional": 1,
+    "aliases": [
+      {
+        "js": "dropSpecificAmount",
+        "c": 1
+      }
+    ]
+  },
+  "dopickup":{
+    "js": "pickup",
+    "optional": 1
+  },
+  "build": {
+    "bp": true
+  },
+  "produce": {
+    "bp": true
+  },
+  "set_signpost": {
+    "txt": true
+  },
+  "compare_entity": {
+    "type": "operator",
+    "conditions": {
+      "next": true,
+      "If Different": false
+    }
+  },
+  "compare_item": {
+    "type": "operator",
+    "conditions": {
+      "next": true,
+      "If Different": false
+    }
+  },
+  "check_number": {
+    "type": "operator",
+    "conditions": {
+      "next": "=",
+      "If Larger": ">",
+      "If Smaller": "<"
+    }
+  },
+  "set_reg": {
+    "type": "operator"
+  },
+  "last": {
+    "type": "operator"
+  },
+  "call": {
+    "type": "operator"
+  },
+  "is_a": {
+    "type": "method",
+    "conditions": {
+      "next": true,
+      "If Different": false
+    }
+  },
+  "switch": {
+    "type": "operator"
+  },
+  "combine_register": {
+    "optional": 0
+  }
+  
+}

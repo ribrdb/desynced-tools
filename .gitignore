@@ -1,3 +1,8 @@
+dist
+website/compiler.js
+website/bundle.out.js
+website/monaco-editor-0.45.0
+
 # Logs
 logs
 *.log

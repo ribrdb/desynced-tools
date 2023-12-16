@@ -1,0 +1,36 @@
+{
+    "name": "desynced-tools",
+    "version": "0.1.0",
+    "license": "MIT",
+    "dependencies": {
+        "typescript": "^5.3.2"
+    },
+    "devDependencies": {
+        "firebase": "^10.7.1",
+        "luaparse": "^0.3.1",
+        "@types/node": "^20.10.0",
+        "esbuild": "0.19.9",
+        "ts-node": "^10.9.1",
+        "@typescript/vfs": "1.5.0"
+    },
+    "scripts": {
+        "esbuild": "esbuild bundle.ts --outfile=app/bundle.out.js --bundle --format=esm --target=safari15 --external:util --external:node:* && esbuild compiler_bundle.ts --bundle --format=esm --target=safari15 --minify --outfile=app/compiler.js --external:path --external:fs",
+        "build": "tsc -p tsconfig.json"
+    },
+    "files": [
+        "dist",
+        "behavior.d.ts",
+        "LICENSE",
+        "README.md"
+    ],
+    "bin": {
+        "js2ds": "dist/js2ds.js",
+        "ds-as": "dist/as.js",
+        "ds-disas": "dist/disas.js"
+    },
+    "types": "behavior.d.ts",
+    "engines": {
+        "node": ">=17.0.0"
+    },
+    "repository": "github:ribrdb/desynced-tools"
+}

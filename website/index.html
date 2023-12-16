@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<title>Desynced Behavior Editor</title>
+<script id="Cookiebot" src="https://consent.cookiebot.com/uc.js" data-cbid="ed6d8cdf-847f-493b-ad0b-2b5235460b43" data-blockingmode="auto" type="text/javascript"></script>
+<style>
+  .col {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    height: 100%;
+  }
+  body,
+  html {
+    height: 100%;
+  }
+  #export {
+    margin-left:40px;
+  }
+</style>
+<div class="col">
+  <div id="header">
+   <select id="file">
+    <option value="tsSample1">TypeScript Sample</option>
+    <option value="asmSample1">Assembly Language Sample</option>
+    <option value="paste">Import Assembly from Clipboard</option>
+   </select>
+    <button id="export">Export</button>
+  </div>
+  <div id="editor" style="flex: 1 1 0%"></div>
+</div>
+<script src="monaco-editor-0.45.0/min/vs/loader.js"></script>
+<script type="module">
+  import * as ds from "./bundle.out.js";
+  const compilerPromise = import("./compiler.js");
+  /** @type {HTMLSelectElement} */
+  const fileSelect = document.getElementById("file");
+
+  require.config({ paths: { vs: "monaco-editor-0.45.0/min/vs" } });
+  require(["vs/editor/editor.main"], function () {
+    monaco.languages.register({ id: "dsbehavior" });
+    monaco.languages.setMonarchTokensProvider("dsbehavior", ds.asmSyntax);
+    monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
+      target: monaco.languages.typescript.ScriptTarget.ESNext,
+      lib: ["lib.es2023.d.ts"],
+    });
+    const behaviorFilename = "ts:behavior.d.ts";
+    monaco.languages.typescript.typescriptDefaults.addExtraLib(
+      ds.behavior_dts,
+      behaviorFilename
+    );
+    // When resolving definitions and references, the editor will try to use created models.
+    // Creating a model for the library allows "peek definition/references" commands to work with the library.
+    monaco.editor.createModel(
+      ds.behavior_dts,
+      "typescript",
+      monaco.Uri.parse(behaviorFilename)
+    );
+    const tsSample = monaco.editor.createModel(
+      `
+export function foo(v:Value) {
+    if (self.fullBattery()) {
+        return;
+    }
+    const missing = v.solve();
+    if (missing) {
+        notify("no solution");
+    } else {
+        notify("solved");
+    }
+    let a:number;
+    switch (missing?.type) {
+        case "Item": {
+            a = 1;
+            break;
+        }
+        case "Entity": {
+            a = 2;
+            break;
+        }
+        case "Component": {
+            a = 3;
+            break;
+        }
+        default:
+            a = 4;
+    }
+    for (const e of entitiesInRange(20, "v_construction")) {
+        const l = self.getDistance(e);
+    }
+}`,
+      "typescript",
+      monaco.Uri.parse("ts:sample.ts")
+    );
+    const asmSample = monaco.editor.createModel(
+      `
+.name	"foo"
+  .pname	p1, "v"
+  get_self	A
+  check_battery	false, A
+  solve	p1, B, :label0
+label0:
+  notify	$txt="no solution"
+  jump	:label1
+  notify	$txt="solved"
+  jump	:label1
+label1:
+  value_type	B, :label2, :label3, :label4
+label2:
+  set_reg	1
+  jump	:label5
+label3:
+  set_reg	2
+  jump	:label5
+label4:
+  set_reg	3
+  jump	:label5
+  set_reg	4
+label5:
+  for_entities_in_range	20, v_construction, nil, nil, B, false
+  jump	:label6
+label6:
+  get_distance	B, nil, A
+  .ret	`,
+      "dsbehavior",
+      monaco.Uri.parse("ts:sample.asm")
+    );
+
+    const txtModel = monaco.editor.createModel(
+      "",
+      "plaintext",
+      monaco.Uri.parse("ts:sample.txt")
+    );
+
+
+  const models = {
+    "tsSample1": tsSample,
+    "asmSample1": asmSample,
+  }
+  let pasteCount = 0;
+
+    const editor = monaco.editor.create(document.getElementById("editor"), {
+      model: tsSample,
+    });
+    fileSelect.value = "tsSample1";
+    fileSelect.addEventListener("change", async () => {
+      switch (fileSelect.value) {
+        case "tsSample1":
+          editor.setModel(tsSample);
+          break;
+        case "asmSample1":
+          editor.setModel(asmSample);
+          break;
+        case "paste":
+          try {
+          const text = await navigator.clipboard.readText();
+          const obj = ds.DesyncedStringToObject(text);
+          const asm = new ds.Dissasembler(obj).code();
+          const model = monaco.editor.createModel(
+            asm, "dsbehavior", `ts:paste${++pasteCount}.asm`
+          )
+          models [`paste${pasteCount}`] = model;
+          editor.setModel(model);
+          const option = document.createElement("option");
+          option.innerText = `Paste ${pasteCount}`;
+          option.value = `paste${pasteCount}`;
+          fileSelect.appendChild(option);
+          fileSelect.value = `paste${pasteCount}`;
+          return;
+          } catch (ex) {
+            fileSelect.value = undefined;
+            alert("Paste failed: "+ex.message);
+          }
+        default:
+          return;
+      }
+    });
+
+    document.getElementById("export").addEventListener("click", async () => {
+      const model = editor.getModel();
+      const isAssembly = model.getLanguageId() === "dsbehavior";
+      const code = model.getValue(monaco.editor.EndOfLinePreference.LF);
+      let asm;
+      if (isAssembly) {
+        asm = code;
+      } else {
+        const compiler = await compilerPromise;
+        const prog = await compiler.makeProgram(code);
+        asm = await compiler.compileProgram(prog);
+      }
+      const obj = await ds.assemble(asm);
+      const type = obj.frame ? "B" : "C";
+      const text = await ds.ObjectToDesyncedString(obj, type);
+      let copied = false;
+      if (navigator.userActivation.isActive) {
+        try {
+        await navigator.clipboard.writeText(text);
+        copied = true;
+        alert("Copied to clipboard");
+        } catch {}
+      } 
+      if (!copied) {
+        txtModel.setValue(text);
+        editor.setModel(txtModel);
+        editor.setSelection(txtModel.getFullModelRange());
+      }
+    });
+  });
+</script>
