@@ -115,7 +115,9 @@ function parseAssembly(code: string): AsmInstr[] {
   return instructions;
 }
 
-export async function assemble(code: string): Promise<RawBehavior|RawBlueprint> {
+export async function assemble(
+  code: string
+): Promise<RawBehavior | RawBlueprint> {
   let instructions = parseAssembly(code);
   const program: Program = {
     main: instructions,
@@ -206,7 +208,7 @@ class Assembler {
           bp.locks ??= [];
           const lockNo = Number(inst.args[0]);
           const type = inst.args[1];
-          if (type !== 'true' && type !== 'false') {
+          if (type !== "true" && type !== "false") {
             bp.locks[lockNo] = type;
           }
           break;
@@ -217,12 +219,17 @@ class Assembler {
         case ".component":
           bp.components ??= [];
           const [num, id, code] = inst.args;
-          if (typeof code === 'string' && code.startsWith(':')) {
+          if (typeof code === "string" && code.startsWith(":")) {
             const behavior = this.program.others.get(code.substring(1));
             if (!behavior) {
-              throw new Error(`Behavior ${code} not found at line ${inst.lineno}`);
+              throw new Error(
+                `Behavior ${code} not found at line ${inst.lineno}`
+              );
             }
-            const p = new Assembler({...this.program, main: behavior}).assembleBehavior();
+            const p = new Assembler({
+              ...this.program,
+              main: behavior,
+            }).assembleBehavior();
             bp.components.push([id, Number(num), p]);
           } else {
             bp.components.push([id, Number(num)]);
@@ -230,7 +237,7 @@ class Assembler {
       }
     }
     if (bp.locks) {
-      for (let i= 0; i < bp.locks.length; i++) {
+      for (let i = 0; i < bp.locks.length; i++) {
         bp.locks[i] ??= false;
       }
     }
@@ -295,21 +302,17 @@ class Assembler {
           instr.args.splice(nextIndex, 1);
         }
         if (isPseudoJump(instr)) {
+          if (!instr.args[0]) {
+            throw new Error(`Invalid jump instruction at line ${instr.lineno}`);
+          }
           if (instr.labels?.length) {
             instr.labels?.forEach((l) =>
               labelAliases.set(l, instr.args[0].substring(1))
             );
-            code.splice(i, 1);
-          } else {
-            if (!instr.args[0]) {
-              throw new Error(
-                `Invalid jump instruction at line ${instr.lineno}`
-              );
-            }
-            replaceJump(i, instr.args[0].substring(1));
           }
-        }
-        if (instr.op.startsWith(".")) {
+
+          replaceJump(i, instr.args[0].substring(1));
+        } else if (instr.op.startsWith(".")) {
           switch (instr.op) {
             case ".ret":
               if (instr.labels?.length) {
@@ -379,7 +382,7 @@ class Assembler {
         while (labelAliases.has(v)) {
           v = labelAliases.get(v)!;
         }
-        if (labelMap.has(v)) {
+        if (!labelMap.has(v)) {
           throw new Error(`Unknown label ${v}`);
         }
         labelMap.set(k, labelMap.get(v)!);
