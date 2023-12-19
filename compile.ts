@@ -468,6 +468,9 @@ class Compiler {
         const v = this.variable(e);
         this.#emit(methods.getSelf, v);
       }
+      if (dest) {
+        this.#emit(methods.setReg, this.variable(e), this.ref(dest, 1, "w"));
+      }
       return this.variable(e);
     } else if (ts.isNumericLiteral(e)) {
       const value = Number(e.text);
