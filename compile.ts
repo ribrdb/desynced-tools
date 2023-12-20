@@ -803,7 +803,7 @@ class Compiler {
           assertNoDest();
           variable = this.compileResolvedCall(
             expression,
-            "check_number",
+            "checkNumber",
             getNumeric(expression.left),
             [getNumeric(expression.right)]
           );
@@ -815,7 +815,7 @@ class Compiler {
           assertNoDest();
           variable = this.compileResolvedCall(
             expression,
-            "check_number",
+            "checkNumber",
             getNumeric(expression.left),
             [getNumeric(expression.right)]
           );
@@ -902,7 +902,7 @@ class Compiler {
       assertNoDest();
       variable = this.compileResolvedCall(
         expression,
-        "check_number",
+        "checkNumber",
         getNumeric(expression.left),
         [getNumeric(expression.right)]
       );
