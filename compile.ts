@@ -711,13 +711,11 @@ class Compiler {
 
   compileIf(s: ts.IfStatement, dest?: Variable, parentEnd?: string) {
     if (
-      ts.isLiteralExpression(s.expression) &&
       s.expression.kind === ts.SyntaxKind.TrueKeyword
     ) {
       this.compileStatement(s.thenStatement);
       return;
     } else if (
-      ts.isLiteralExpression(s.expression) &&
       s.expression.kind === ts.SyntaxKind.FalseKeyword
     ) {
       if (s.elseStatement) {
