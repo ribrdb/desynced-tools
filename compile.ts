@@ -801,7 +801,7 @@ class Compiler {
         case ts.SyntaxKind.LessThanEqualsToken:
           extraKey = "=";
         case ts.SyntaxKind.LessThanToken:
-          key = "<;";
+          key = "<";
           assertNoDest();
           variable = this.compileResolvedCall(
             expression,
@@ -813,7 +813,7 @@ class Compiler {
         case ts.SyntaxKind.GreaterThanEqualsToken:
           extraKey = "=";
         case ts.SyntaxKind.GreaterThanToken:
-          key = ">;";
+          key = ">";
           assertNoDest();
           variable = this.compileResolvedCall(
             expression,
