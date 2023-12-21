@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`/Users/ryan/Developer/desynced-tools/tests/issue2.txt 1`] = `
+"main:
+  .name	"foo"
+label0:
+  set_reg	goto, goto
+  jump	:label0"
+`;

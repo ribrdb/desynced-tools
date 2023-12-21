@@ -1,0 +1,14 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`/Users/ryan/Developer/desynced-tools/tests/issue2.asm 1`] = `
+{
+  "0": {
+    "0": -1,
+    "1": -1,
+    "next": 1,
+    "op": "set_reg",
+  },
+  "name": "foo",
+  "parameters": [],
+}
+`;
