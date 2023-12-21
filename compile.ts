@@ -628,7 +628,7 @@ class Compiler {
     }
     this.#emit(info, ...args);
     dest.exec?.forEach((ref) => {
-      this.#rewrite(ref, "false", true);
+      this.#rewrite(ref, null);
     });
     return dest;
   }
@@ -829,8 +829,8 @@ class Compiler {
           variable = this.compileResolvedCall(
             expression,
             "checkNumber",
-            getNumeric(expression.left),
-            [getNumeric(expression.right)]
+            undefined,
+            [getNumeric(expression.left), getNumeric(expression.right)]
           );
           break;
         case ts.SyntaxKind.GreaterThanEqualsToken:
@@ -841,8 +841,8 @@ class Compiler {
           variable = this.compileResolvedCall(
             expression,
             "checkNumber",
-            getNumeric(expression.left),
-            [getNumeric(expression.right)]
+            undefined,
+            [getNumeric(expression.left), getNumeric(expression.right)]
           );
           break;
         default:
@@ -862,7 +862,7 @@ class Compiler {
     let ref = variable.exec!.get(key)!;
     if (extraKey) {
       ref = Object.assign({}, ref, {
-        extraKey: variable.exec!.get(extraKey)!,
+        extraArg: variable.exec!.get(extraKey)!.arg,
       });
     }
     return { variable, ref };
@@ -906,9 +906,9 @@ class Compiler {
         assertNoDest();
         variable = this.compileResolvedCall(
           expression,
-          "compare_entity",
-          expression.left,
-          [expression.right]
+          "compareEntity",
+          undefined,
+          [expression.left, expression.right]
         );
         return { variable, ref: variable.exec!.get(true)! };
       }
@@ -928,8 +928,8 @@ class Compiler {
       variable = this.compileResolvedCall(
         expression,
         "checkNumber",
-        getNumeric(expression.left),
-        [getNumeric(expression.right)]
+        undefined,
+        [getNumeric(expression.left), getNumeric(expression.right)]
       );
       key = "=";
     } else if (ts.isStringLiteral(expression.left)) {
@@ -942,9 +942,9 @@ class Compiler {
       assertNoDest();
       variable = this.compileResolvedCall(
         expression,
-        "compare_entity",
-        expression.left,
-        [expression.right]
+        "compareEntity",
+        undefined,
+        [expression.left, expression.right]
       );
     }
     return { variable, ref: variable.exec!.get(key)! };
@@ -1104,7 +1104,7 @@ class Compiler {
     return this.#rewrite(ref, ":" + label, skipIfSet);
   }
 
-  #rewrite(ref: ArgRef, value: string, skipIfSet = false) {
+  #rewrite(ref: ArgRef, value: string | null, skipIfSet = false) {
     if (ref.extraArg) {
       this.#rewrite(
         { instruction: ref.instruction, arg: ref.extraArg, dir: ref.dir },
@@ -1114,13 +1114,13 @@ class Compiler {
     }
     const instr = this.instructions[ref.instruction];
     if (ref.arg === "next") {
-      if (skipIfSet && instr.next !== "false") {
+      if (skipIfSet && instr.next !== null) {
         return;
       }
       instr.next = value;
       return;
     }
-    if (skipIfSet && instr.args[ref.arg] !== "false") {
+    if (skipIfSet && instr.args[ref.arg] !== null) {
       return;
     }
     instr.args[ref.arg] = value;
@@ -1132,8 +1132,8 @@ class Compiler {
 }
 interface Instruction {
   name: string;
-  args: string[];
-  next?: string;
+  args: (string | null)[];
+  next?: (string | null);
   comment?: string;
 }
 interface ArgRef {
