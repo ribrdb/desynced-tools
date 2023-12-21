@@ -380,6 +380,7 @@ fs.writeFileSync(
   loop?: boolean;
   special?: 'txt'|'bp';
   c?: number;
+  sub?: string;
 }
 export const methods: { [key: string]: MethodInfo } = ${JSON.stringify(
     compileInfos,
