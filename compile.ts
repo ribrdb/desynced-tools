@@ -71,10 +71,25 @@ class Compiler {
   dynamicLabelCounter = 0;
   instructions: Instruction[] = [];
   scope = new Map<string, Variable>();
+  outputs: Variable[] = [];
   haveBehavior = false;
   loops: LoopInfo[] = [];
 
   constructor(private typeChecker: ts.TypeChecker) {}
+
+  addOutputParameter() {
+    let outIndex = this.outputs.length;
+    let i = this.paramCounter + 1;
+    this.paramCounter++;
+    const reg = `p${i}`;
+    this.#rawEmit(".pname", reg);
+    this.#rawEmit(".out", reg);
+    this.outputs.push({
+      name: `out${outIndex}`,
+      reg,
+      refs: [],
+    });
+  }
 
   compileBehavior(f: ts.FunctionDeclaration) {
     if (this.haveBehavior) {
@@ -90,6 +105,19 @@ class Compiler {
       this.#rawEmit(".pname", reg, name);
       this.variable(param.name as ts.Identifier, reg);
     });
+    if (f.type) {
+      let outsCount = 0;
+      if (ts.isTypeReferenceNode(f.type)) {
+        outsCount = 1;
+      } else if (ts.isTupleTypeNode(f.type)) {
+        outsCount = f.type.elements.length;
+      } else {
+        this.#error(`Unsupported return type.`, f.type);
+      }
+      for (let outIndex = 0; outIndex < outsCount; outIndex++) {
+        this.addOutputParameter();
+      }
+    }
     f.body?.statements.forEach(this.compileStatement.bind(this));
     this.#regAlloc();
   }
@@ -163,8 +191,21 @@ class Compiler {
     } else if (ts.isIfStatement(n)) {
       this.compileIf(n);
     } else if (ts.isReturnStatement(n)) {
+      let values: ts.Expression[] = [];
       if (n.expression) {
-        this.#error("unsupported return expression", n.expression);
+        if (ts.isArrayLiteralExpression(n.expression)) {
+          n.expression.elements.map((el) => {
+            values.push(el);
+          });
+        } else {
+          values.push(n.expression);
+        }
+        while (values.length > this.outputs.length) {
+          this.addOutputParameter();
+        }
+        values.forEach((value, i) => {
+          this.compileExpr(value, this.outputs[i]);
+        });
       }
       this.#rawEmit(".ret");
     } else if (ts.isBlock(n)) {
