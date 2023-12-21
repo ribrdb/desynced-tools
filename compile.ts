@@ -984,10 +984,31 @@ class Compiler {
   compileVarDecl(s: ts.VariableDeclarationList) {
     s.declarations.forEach((decl: ts.VariableDeclaration) => {
       if (decl.initializer) {
-        this.compileExpr(
-          decl.initializer,
-          this.variable(decl.name as ts.Identifier)
-        );
+        if (ts.isIdentifier(decl.name)) {
+          this.compileExpr(decl.initializer, this.variable(decl.name));
+        } else if (ts.isArrayBindingPattern(decl.name)) {
+          if (ts.isCallExpression(decl.initializer)) {
+            const outs = decl.name.elements.map((el) => {
+              if (ts.isOmittedExpression(el)) {
+                return undefined;
+              } else if (ts.isIdentifier(el.name)) {
+                return this.variable(el.name);
+              } else {
+                this.#error(
+                  `unsupported array element ${el.kind} ${
+                    ts.SyntaxKind[el.kind]
+                  }`,
+                  decl
+                );
+              }
+            });
+            return this.compileCall(decl.initializer, outs);
+          } else {
+            this.#error("only call expression are valid for array initializer", decl);
+          }
+        } else {
+          this.#error("Unable to bind object", decl);
+        }
       }
     });
   }
