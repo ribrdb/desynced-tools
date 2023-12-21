@@ -341,15 +341,11 @@ class Compiler {
           }
         }
 
-        this.#emitLabel(head);
-        if (ts.isWhileStatement(n)) {
-          this.#emitLabel(cont);
+        if (ts.isDoStatement(n)) {
+          this.#jump(body);
         }
-        let cond = ts.isForStatement(n)
-          ? n.condition
-          : ts.isWhileStatement(n)
-          ? n.expression
-          : undefined;
+        this.#emitLabel(head);
+        let cond = ts.isForStatement(n) ? n.condition : n.expression;
         if (cond) {
           let literal = this.#conditionLiteral(cond);
           if (literal == undefined) {
@@ -364,25 +360,13 @@ class Compiler {
         }
         this.#emitLabel(body);
         this.compileStatement(n.statement);
+        this.#emitLabel(cont);
         if (ts.isForStatement(n)) {
-          this.#emitLabel(cont);
           if (n.incrementor) {
             this.compileExpr(n.incrementor);
           }
-          this.#jump(head);
-        } else if (ts.isDoStatement(n)) {
-          this.#emitLabel(cont);
-          let literal = this.#conditionLiteral(n.expression);
-          if (literal == undefined) {
-            const condExpr = this.compileCondition(n.expression, undefined);
-            this.#rewriteLabel(condExpr.ref, body);
-            condExpr.variable.exec!.forEach((v) => {
-              this.#rewriteLabel(v, brk, true);
-            });
-          } else if (literal) {
-            this.#jump(body);
-          }
         }
+        this.#jump(head);
         this.#emitLabel(brk);
       }
     );
