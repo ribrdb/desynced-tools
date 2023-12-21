@@ -481,9 +481,9 @@ class Assembler {
       return -1;
     } else if (a == "store") {
       return -2;
-    } else if (a == "signal") {
-      return -3;
     } else if (a == "visual") {
+      return -3;
+    } else if (a == "signal") {
       return -4;
     } else if (a.match(/^p\d+$/)) {
       const i = Number(a.substring(1));
