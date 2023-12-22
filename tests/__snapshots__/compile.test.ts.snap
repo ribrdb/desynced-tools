@@ -1,0 +1,85 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`/Users/ryan/Developer/desynced-tools/tests/if_unit_type.ts 1`] = `
+"  .name	"test"
+  .pname	p1, a
+  unit_type	p1, :l2, :l1, :l3
+  jump	:l3
+l1:
+  notify	nil, $txt="Bot"
+  jump	:l0
+l2:
+  notify	nil, $txt="Building"
+  jump	:l0
+l3:
+  notify	nil, $txt="Other"
+  jump	:l0
+l0:"
+`;
+
+exports[`/Users/ryan/Developer/desynced-tools/tests/numeric_compare.ts 1`] = `
+"  .name	"foo"
+  .pname	p1, v
+  get_battery	A
+  check_number	:l0, :l1, A, 20
+  jump	:l0
+l1:
+  gethome	
+  domove	r3
+  .ret	
+  jump	:l0
+l0:
+  get_self	A
+  get_health	A, B
+  check_number	:l4, :l3, B, 50
+  jump	:l3
+l3:
+  gethome	
+  domove	r8
+  jump	:l2
+l4:
+  notify	nil, $txt="ok"
+  jump	:l2
+l2:"
+`;
+
+exports[`/Users/ryan/Developer/desynced-tools/tests/test1.ts 1`] = `
+"  .name	"foo"
+  .pname	p1, v
+  get_self	A
+  check_battery	:l1, A
+  jump	:l0
+l1:
+  .ret	
+  jump	:l0
+l0:
+  solve	p1, B, :l3
+  jump	:l4
+l3:
+  notify	nil, $txt="no solution"
+  jump	:l2
+l4:
+  notify	nil, $txt="solved"
+  jump	:l2
+l2:
+  value_type	B, :l6, :l7, :l8, :l9, :l9, :l9
+  jump	:l9
+l6:
+  set_reg	1, nil
+  jump	:l5
+l7:
+  set_reg	2, nil
+  jump	:l5
+l8:
+  set_reg	3, nil
+  jump	:l5
+l9:
+  set_reg	4, nil
+l5:
+  for_entities_in_range	20, "v_construction", nil, nil, B, :l11
+  jump	:l10
+l10:
+  get_distance	B, nil, A
+  .ret	
+l11:"
+`;
