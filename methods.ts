@@ -8,6 +8,7 @@ export interface MethodInfo {
   loop?: boolean;
   special?: 'txt'|'bp';
   c?: number;
+  sub?: string;
 }
 export const methods: { [key: string]: MethodInfo } = {
   "nop": {

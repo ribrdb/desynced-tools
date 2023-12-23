@@ -44,15 +44,25 @@ function compileFile(f: ts.SourceFile, typeChecker: ts.TypeChecker): string {
   const c = new Compiler(typeChecker);
   f.statements.forEach((n) => {
     if (ts.isFunctionDeclaration(n)) {
-      if (n.modifiers?.some((m) => m.kind === ts.SyntaxKind.ExportKeyword)) {
-        c.compileBehavior(n);
-      } else {
-        c.compileSub(n);
+      let subName = (n.name as ts.Identifier).text;
+      if (c.subs.has(subName)) {
+        throw new Error("sub ${subName} declared multiple times");
       }
+      c.subs.set(subName, n);
     } else {
       throw new Error(`unsupported node ${n.kind} ${ts.SyntaxKind[n.kind]}`);
     }
   });
+  for (const sub of c.subs.values()) {
+    if (isMainFunction(sub)) {
+      c.compileBehavior(sub, true);
+    }
+  }
+  for (const sub of c.subs.values()) {
+    if (!isMainFunction(sub)) {
+      c.compileBehavior(sub, false);
+    }
+  }
   return c.asm();
 }
 
@@ -63,27 +73,23 @@ interface LoopInfo {
   needLabel?: boolean;
 }
 
-class Compiler {
-  labelCounter = 0;
+class FunctionScope {
   regCounter = 0;
   tempCounter = 0;
   paramCounter = 0;
-  dynamicLabelCounter = 0;
   instructions: Instruction[] = [];
   scope = new Map<string, Variable>();
   outputs: Variable[] = [];
   haveBehavior = false;
   loops: LoopInfo[] = [];
 
-  constructor(private typeChecker: ts.TypeChecker) {}
-
   addOutputParameter() {
     let outIndex = this.outputs.length;
     let i = this.paramCounter + 1;
     this.paramCounter++;
     const reg = `p${i}`;
-    this.#rawEmit(".pname", reg);
-    this.#rawEmit(".out", reg);
+    this.rawEmit(".pname", reg);
+    this.rawEmit(".out", reg);
     this.outputs.push({
       name: `out${outIndex}`,
       reg,
@@ -91,42 +97,83 @@ class Compiler {
     });
   }
 
-  compileBehavior(f: ts.FunctionDeclaration) {
-    if (this.haveBehavior) {
+  rawEmit(name: string, ...args: string[]) {
+    this.instructions.push({ name, args: args });
+  }
+
+}
+
+function isMainFunction(f: ts.FunctionDeclaration): boolean {
+  return f.modifiers?.some((m) => m.kind === ts.SyntaxKind.ExportKeyword) || false;
+}
+
+class Compiler {
+  labelCounter = 0;
+  dynamicLabelCounter = 0;
+  subs = new Map<string, ts.FunctionDeclaration>();
+  functionScopes: FunctionScope[] = [];
+  currentScope: FunctionScope = new FunctionScope();
+  haveBehavior = false;
+
+  constructor(private typeChecker: ts.TypeChecker) {}
+
+  setupNewScope() {
+    this.currentScope = new FunctionScope();
+    this.functionScopes.push(this.currentScope);
+  }
+
+  compileBehavior(f: ts.FunctionDeclaration, isMain: boolean) {
+    let subName = (f.name as ts.Identifier).text;
+    if (isMain && this.haveBehavior) {
       throw new Error("only one behavior supported per file");
     }
-    this.haveBehavior = true;
+    this.haveBehavior = isMain;
+    this.setupNewScope();
     // TODO: use jsdoc if present
-    this.#rawEmit(".name", JSON.stringify((f.name as ts.Identifier).text));
-    f.parameters.forEach((param, i) => {
-      const name = param.name.getText();
-      const reg = `p${i + 1}`;
-      this.paramCounter = i + 1;
-      this.#rawEmit(".pname", reg, name);
-      this.variable(param.name as ts.Identifier, reg);
-    });
+    this.#emitLabel(subName);
+    if (!isMain) {
+      this.#rawEmit(".sub");
+    }
+    this.#rawEmit(".name", JSON.stringify(subName));
+    this.compileInstructions(f);
+  }
+
+  countOutputs(f: ts.FunctionDeclaration): number {
     if (f.type) {
-      let outsCount = 0;
       if (ts.isTypeReferenceNode(f.type)) {
-        outsCount = 1;
+        return 1;
       } else if (ts.isTupleTypeNode(f.type)) {
-        outsCount = f.type.elements.length;
+        return f.type.elements.length;
       } else {
         this.#error(`Unsupported return type.`, f.type);
       }
-      for (let outIndex = 0; outIndex < outsCount; outIndex++) {
-        this.addOutputParameter();
-      }
+    }
+    return 0;
+  }
+
+  compileInstructions(f: ts.FunctionDeclaration) {
+    f.parameters.forEach((param, i) => {
+      const name = param.name.getText();
+      const reg = `p${i + 1}`;
+      this.currentScope.paramCounter = i + 1;
+      this.#rawEmit(".pname", reg, name);
+      this.variable(param.name as ts.Identifier, reg);
+    });
+    let outsCount = this.countOutputs(f);
+    for (let outIndex = 0; outIndex < outsCount; outIndex++) {
+      this.currentScope.addOutputParameter();
     }
     f.body?.statements.forEach(this.compileStatement.bind(this));
+    this.#rawEmit(".ret");
     this.#regAlloc();
   }
+
 
   #regAlloc() {
     // TODO: could probably do better dataflow analysis if we used SSA.
     const available = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
     const vars: Liveness[] = [];
-    for (const v of this.scope.values()) {
+    for (const v of this.currentScope.scope.values()) {
       if (/^(p\d+|signal|visual|store|goto)$/.test(v.reg)) {
         continue;
       }
@@ -155,11 +202,11 @@ class Compiler {
     }
     vars.sort((a, b) => a.start - b.start);
     let live: Liveness[] = [];
-    for (let i = 0; i < this.instructions.length; i++) {
+    for (let i = 0; i < this.currentScope.instructions.length; i++) {
       while (vars[0]?.start == i) {
         const v = vars.shift()!;
         if (available.length == 0) {
-          available.push(`p${++this.paramCounter}`);
+          available.push(`p${++this.currentScope.paramCounter}`);
           this.#rawEmit(
             ".pname",
             available[0],
@@ -180,7 +227,7 @@ class Compiler {
   }
 
   comment(txt: string) {
-    this.instructions[this.instructions.length - 1].comment = txt;
+    this.currentScope.instructions[this.currentScope.instructions.length - 1].comment = txt;
   }
 
   compileStatement(n: ts.Statement) {
@@ -200,11 +247,11 @@ class Compiler {
         } else {
           values.push(n.expression);
         }
-        while (values.length > this.outputs.length) {
-          this.addOutputParameter();
+        while (values.length > this.currentScope.outputs.length) {
+          this.currentScope.addOutputParameter();
         }
         values.forEach((value, i) => {
-          this.compileExpr(value, this.outputs[i]);
+          this.compileExpr(value, this.currentScope.outputs[i]);
         });
       }
       this.#rawEmit(".ret");
@@ -240,20 +287,20 @@ class Compiler {
     } else if (ts.isBreakOrContinueStatement(n)) {
       let isContinue = n.kind == ts.SyntaxKind.ContinueStatement;
       let info: LoopInfo | undefined;
-      for (let i = this.loops.length - 1; i >= 0; i--) {
+      for (let i = this.currentScope.loops.length - 1; i >= 0; i--) {
         if (n.label) {
-          if (this.loops[i].label == n.label.text) {
-            info = this.loops[i];
+          if (this.currentScope.loops[i].label == n.label.text) {
+            info = this.currentScope.loops[i];
             break;
           }
         } else {
           if (isContinue) {
-            if (this.loops[i].brk) {
-              info = this.loops[i];
+            if (this.currentScope.loops[i].brk) {
+              info = this.currentScope.loops[i];
               break;
             }
-          } else if (!this.loops[i].needLabel) {
-            info = this.loops[i];
+          } else if (!this.currentScope.loops[i].needLabel) {
+            info = this.currentScope.loops[i];
             break;
           }
         }
@@ -293,10 +340,10 @@ class Compiler {
 
   #withLoop(info: LoopInfo, cb: () => void) {
     try {
-      this.loops.push(info);
+      this.currentScope.loops.push(info);
       cb();
     } finally {
-      this.loops.pop();
+      this.currentScope.loops.pop();
     }
   }
 
@@ -429,7 +476,7 @@ class Compiler {
             if (dest) {
               this.#emit(methods.setReg, lvar, dest);
               dest.refs.push({
-                instruction: this.instructions.length,
+                instruction: this.currentScope.instructions.length,
                 arg: 0,
                 dir: "w",
               });
@@ -489,7 +536,7 @@ class Compiler {
         }
       }
     } else if (ts.isIdentifier(e)) {
-      if (e.text == "self" && !this.scope.has(e.text)) {
+      if (e.text == "self" && !this.currentScope.scope.has(e.text)) {
         const v = this.variable(e);
         this.#emit(methods.getSelf, v);
       }
@@ -575,7 +622,24 @@ class Compiler {
   ): Variable {
     let dest = outs[0] || this.#temp();
     const args: (string | Variable)[] = [];
-    const info = methods[name];
+    let info = methods[name];
+    if (!info && this.subs.has(name)) {
+      let f = this.subs.get(name)!;
+      let ins: number[] = [];
+      for (let i = 0; i < f.parameters.length; i++) {
+        ins.push(i);
+      }
+      let out: number[] = [];
+      for (let i = 0; i < this.countOutputs(f); i++) {
+        out.push(f.parameters.length + i);
+      }
+      info = {
+        id: "call",
+        in: ins,
+        out,
+        sub: name,
+      }
+    }
     if (!info) {
       this.#error(`unknown method ${name}`, refNode);
     }
@@ -610,21 +674,25 @@ class Compiler {
       dest.exec = new Map();
       for (const [e, i] of Object.entries(info.exec)) {
         dest.exec.set(e.match(/^(true|false)$/) ? e == "true" : e, {
-          instruction: this.instructions.length,
+          instruction: this.currentScope.instructions.length,
           arg: i,
           dir: "w",
         });
       }
     }
-    if (txtArg) {
-      args.push(`$txt=${JSON.stringify(txtArg)}`);
-    } else if (info.c != null) {
-      args.push(`$c=${info.c}`);
-    }
     for (let i = 0; i < args.length; i++) {
       if (!args[i]) {
         args[i] = "nil";
       }
+    }
+    if (txtArg) {
+      args.push(`$txt=${JSON.stringify(txtArg)}`);
+    }
+    if (info.c != null) {
+      args.push(`$c=${info.c}`);
+    }
+    if (info.sub) {
+      args.push(`$sub=:${info.sub}`);
     }
     this.#emit(info, ...args);
     dest.exec?.forEach((ref) => {
@@ -1003,7 +1071,7 @@ class Compiler {
   }
 
   #temp() {
-    return this.variable(`t${this.tempCounter++}`);
+    return this.variable(`t${this.currentScope.tempCounter++}`);
   }
 
   compileVarDecl(s: ts.VariableDeclarationList) {
@@ -1043,14 +1111,14 @@ class Compiler {
     if (name.match(/^(goto|store|visual|signal)$/)) {
       reg = name;
     }
-    if (!this.scope.has(name)) {
-      this.scope.set(name, {
+    if (!this.currentScope.scope.has(name)) {
+      this.currentScope.scope.set(name, {
         name,
-        reg: reg ?? `r${this.regCounter++}`,
+        reg: reg ?? `r${this.currentScope.regCounter++}`,
         refs: [],
       });
     }
-    return this.scope.get(name)!;
+    return this.currentScope.scope.get(name)!;
   }
 
   ref(
@@ -1059,12 +1127,8 @@ class Compiler {
     dir: "r" | "w" | "rw" = "rw"
   ): Variable {
     const v = isVar(varname) ? varname : this.variable(varname);
-    v.refs.push({ instruction: this.instructions.length, arg: argNum, dir });
+    v.refs.push({ instruction: this.currentScope.instructions.length, arg: argNum, dir });
     return v;
-  }
-
-  compileSub(f: ts.FunctionDeclaration) {
-    throw new Error(" subs not implemented");
   }
 
   #label() {
@@ -1072,8 +1136,7 @@ class Compiler {
   }
 
   #rawEmit(name: string, ...args: string[]) {
-    this.instructions.push({ name, args: args });
-    
+    this.currentScope.rawEmit(name, ...args);
   }
 
   #emit(info: MethodInfo, ...args: (string | Variable)[]) {
@@ -1097,7 +1160,7 @@ class Compiler {
     while (strArgs[strArgs.length - 1] == "nil") {
       strArgs.pop();
     }
-    this.instructions.push({ name, args: strArgs });
+    this.currentScope.instructions.push({ name, args: strArgs });
   }
 
   #rewriteLabel(ref: ArgRef, label: string, skipIfSet = false) {
@@ -1112,7 +1175,7 @@ class Compiler {
         skipIfSet
       );
     }
-    const instr = this.instructions[ref.instruction];
+    const instr = this.currentScope.instructions[ref.instruction];
     if (ref.arg === "next") {
       if (skipIfSet && instr.next !== null) {
         return;
@@ -1127,7 +1190,7 @@ class Compiler {
   }
 
   asm() {
-    return this.instructions.map(formatInstruction).join("\n");
+    return this.functionScopes.flatMap((scope) => scope.instructions).map(formatInstruction).join("\n");
   }
 }
 interface Instruction {
