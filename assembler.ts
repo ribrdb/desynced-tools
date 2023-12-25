@@ -281,7 +281,7 @@ class Assembler {
         const instr = code[ip];
         if (ip == 0) {
           instr.op = "set_reg";
-          instr.next = instr.args[0].substring(1);
+          instr.next = target;
           instr.args = [];
         } else {
           code[ip - 1].next = target;
@@ -360,7 +360,16 @@ class Assembler {
                 `Unknown pseudo instruction ${instr.op} at line ${instr.lineno}`
               );
           }
-          code.splice(i, 1);
+          if (typeof instr.next == "number") {
+                throw new Error(
+                  `Unexpected type of "instr.next". Labels should not be resolved`
+                );
+          }
+          if (instr.next !== undefined) {
+            replaceJump(i, instr.next);
+          } else {
+            code.splice(i, 1);
+          }
         }
       }
 
