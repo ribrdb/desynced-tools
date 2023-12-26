@@ -52,6 +52,7 @@ exports[`label.asm 1`] = `
     "txt": "1",
   },
   "7": {
+    "next": false,
     "op": "exit",
   },
   "parameters": [],

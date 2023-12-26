@@ -263,6 +263,13 @@ class Assembler {
 
       const returnLabels = new Set<string>();
       const labelAliases = new Map<string, string>();
+      const resolveLabelAlias = (label: string): string => {
+        while (labelAliases.has(label)) {
+          label = labelAliases.get(label)!;
+        }
+        return label;
+      }
+
       // Pass 1:remove dead code
       for (let i = code.length - 1; i > 0; i--) {
         let instr = code[i];
@@ -280,7 +287,7 @@ class Assembler {
       const replaceJump = (ip: number, target: string | false) => {
         const instr = code[ip];
         if (ip == 0) {
-          instr.op = "set_reg";
+          instr.op = "nop";
           instr.next = target;
           instr.args = [];
         } else {
@@ -373,8 +380,94 @@ class Assembler {
         }
       }
 
+      // Makes last instruction a jump to end
+      let lastInstr = code[code.length - 1];
+      if (lastInstr.next === undefined) {
+        lastInstr.next = false;
+      }
+
+      // Pass 3: Remove nop
+      for (let i = code.length - 1; i >= 0; i--) {
+        let instr = code[i];
+        if (instr.op !== "nop") {
+          continue;
+        }
+
+        // Remove the nop instruction.
+        code.splice(i, 1);
+
+        if (instr.next !== undefined) {
+          if (typeof instr.next == "number") {
+                throw new Error(
+                  `Unexpected type of "instr.next". Labels should not be resolved`
+                );
+          }
+          const next: string | false = instr.next;
+          // Handle the case when the nop is a jump
+          instr.labels?.forEach((l) => {
+            if (next == false) {
+              returnLabels.add(l);
+            } else {
+              labelAliases.set(l, next);
+            }
+          });
+          if (i > 0) {
+            let prev = code[i-1];
+            if (prev.next == undefined) {
+              prev.next = next;
+            }
+          } else {
+            // The code starts with a nop that is a jump. Reorder the instructions.
+            if (next == false) {
+              // The code is actually empty.
+              code = [];
+              break;
+            }
+            let target = resolveLabelAlias(next);
+            let targetIndex: number | undefined = undefined;
+            for (let j = 0; j < code.length; ++j) {
+              if (code[j].labels?.includes(target)) {
+                targetIndex = j;
+                break;
+              }
+            }
+            if (targetIndex === undefined) {
+              throw new Error(`Unknown label ${target}`);
+            }
+            // If targetIndex is 0, no reordering is required.
+            if (targetIndex != 0) {
+              // Reorder code starting at targetIndex
+              let newCode = code.splice(targetIndex);
+              // If the code before targetIndex has no next, then it now requires one
+              let newLastInstr = code[code.length - 1];
+              if (newLastInstr.next === undefined) {
+                newLastInstr.next = target;
+              }
+              code = newCode.concat(code)
+            }
+          }
+        } else if (instr.labels?.length || 0 > 0) {
+          // Handle the case when the nop is a label
+          if (i < code.length) {
+            // There is an instruction after the nop, move the labels
+            let next = code[i];
+            next.labels = next.labels || [];
+            instr.labels?.forEach((l) => {
+              next.labels!.push(l);
+            });
+          } else {
+            // There is no instruction after the nop, The labels are return labels.
+            instr.labels?.forEach((l) => {
+              returnLabels.add(l);
+            });
+          }
+        }
+        // If the nop is neither a jump nor a label, it can be deleted without
+        // any other change.
+      }
+
       const labelMap = new Map<string, number | false>();
-      // Pass 3 & 4: resolve labels
+      // Pass 4 & 5: resolve labels
       for (let i = 0; i < code.length; i++) {
         let instr = code[i];
         if (instr.labels?.length) {
@@ -389,9 +482,7 @@ class Assembler {
         labelMap.set(l, false);
       });
       labelAliases.forEach((v, k) => {
-        while (labelAliases.has(v)) {
-          v = labelAliases.get(v)!;
-        }
+        v = resolveLabelAlias(v);
         if (!labelMap.has(v)) {
           throw new Error(`Unknown label ${v}`);
         }
