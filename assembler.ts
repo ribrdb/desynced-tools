@@ -400,7 +400,9 @@ class Assembler {
                 `Unknown label ${instr.next} at line ${instr.lineno}`
               );
             }
-            result[i].next = resolved;
+            if (resolved != i + 2) {
+              result[i].next = resolved;
+            }
           } else {
             result[i].next = instr.next;
           }
