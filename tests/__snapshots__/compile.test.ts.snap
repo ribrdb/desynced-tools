@@ -1,7 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`/Users/ryan/Developer/desynced-tools/tests/if_unit_type.ts 1`] = `
-"  .name	"test"
+"test:
+  .name	"test"
   .pname	p1, a
   unit_type	p1, :l2, :l1, :l3
   jump	:l3
@@ -14,11 +15,13 @@ l2:
 l3:
   notify	nil, $txt="Other"
   jump	:l0
-l0:"
+l0:
+  .ret	"
 `;
 
 exports[`/Users/ryan/Developer/desynced-tools/tests/numeric_compare.ts 1`] = `
-"  .name	"foo"
+"foo:
+  .name	"foo"
   .pname	p1, v
   get_battery	A
   check_number	:l0, :l1, A, 20
@@ -40,11 +43,13 @@ l3:
 l4:
   notify	nil, $txt="ok"
   jump	:l2
-l2:"
+l2:
+  .ret	"
 `;
 
 exports[`/Users/ryan/Developer/desynced-tools/tests/test1.ts 1`] = `
-"  .name	"foo"
+"foo:
+  .name	"foo"
   .pname	p1, v
   get_self	A
   check_battery	:l1, A
@@ -81,5 +86,6 @@ l5:
 l10:
   get_distance	B, nil, A
   .ret	
-l11:"
+l11:
+  .ret	"
 `;
