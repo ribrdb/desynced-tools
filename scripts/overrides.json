@@ -157,6 +157,7 @@
   },
   "equip_component": {
     "js": "equip",
+    "optional": 1,
     "conditions": {
       "No Component": false,
       "next": true
@@ -164,6 +165,7 @@
   },
   "unequip_component": {
     "js": "unequip",
+    "optional": 1,
     "conditions": {
       "No Component": false,
       "next": true
@@ -301,7 +303,8 @@
     "optional": 1
   },
   "build": {
-    "bp": true
+    "bp": true,
+    "optional": 1
   },
   "produce": {
     "bp": true
@@ -352,6 +355,11 @@
   },
   "combine_register": {
     "optional": 0
+  },
+  "get_comp_reg": {
+    "optional": 1
+  },
+  "set_comp_reg": {
+    "optional": 2
   }
-  
 }

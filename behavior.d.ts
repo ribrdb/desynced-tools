@@ -18,6 +18,10 @@ declare class Value {
    */
   inBlight: boolean;
   /**
+   * Checks the movement state of an entity
+   */
+  isMoving: "Moving" | "Not Moving" | "Path Blocked" | "No Result";
+  /**
    * Gets the resource type from an resource node
    */
   resourceType?: Value;
@@ -191,13 +195,15 @@ declare function clearResearch(tech: Value): void;
 /**
  * Writes a value into a component register
  * @param component_index Component and register number to set
+ * @param group_index? Component group index if multiple are equipped
  */
-declare function setCompReg(value: Value | AnyValue, component_index: Value | CompNum): void;
+declare function setCompReg(value: Value | AnyValue, component_index: Value | CompNum, group_index?: Value | number): void;
 /**
  * Reads a value from a component register
  * @param component_index Component and register number to set
+ * @param group_index? Component group index if multiple are equipped
  */
-declare function getCompReg(component_index: Value | CompNum): Value;
+declare function getCompReg(component_index: Value | CompNum, group_index?: Value | number): Value;
 /**
  * Sets the numerical/coordinate part of a value
  */
@@ -247,13 +253,13 @@ declare function modulo(num: Value | CoordNum, by: Value | CoordNum): Value;
 declare function haveFreeSpace(item: Value | ItemNum): boolean;
 /**
  * Fix all storage slots or a specific item slot index
- * @param item Item type to try fixing to the slots 
+ * @param item Item type to try fixing to the slots
  * @param slot_index Individual slot to fix
  */
 declare function lockSlots(item: Value | ItemNum, slot_index: Value | number): void;
 /**
  * Unfix all inventory slots or a specific item slot index
- * @param slot_index Individual slot to unfix 
+ * @param slot_index Individual slot to unfix
  */
 declare function unlockSlots(slot_index: Value | number): void;
 /**
@@ -312,13 +318,15 @@ declare function getMaxStack(item: Value | ItemNum): Value;
 /**
  * Equips a component if it exists
  * @param component Component to equip
+ * @param slot_index? Individual slot to equip component from
  */
-declare function equip(component: Value | Comp): boolean;
+declare function equip(component: Value | Comp, slot_index?: Value | number): boolean;
 /**
  * Unequips a component if it exists
  * @param component Component to unequip
+ * @param slot_index? Individual slot to try to unequip component from
  */
-declare function unequip(component: Value | Comp): boolean;
+declare function unequip(component: Value | Comp, slot_index?: Value | number): boolean;
 /**
  * Gets the closest visible entity matching a filter
  * @param filter1? Filter to check
@@ -328,20 +336,20 @@ declare function unequip(component: Value | Comp): boolean;
  */
 declare function getClosestEntity(filter1?: Value | RadarFilter, filter2?: Value | RadarFilter, filter3?: Value | RadarFilter): Value;
 /**
- * Drop off items at a unit
+ * Drop off items at a unit or destination
 
 If a number is set it will drop off an amount to fill the target unit up to that amount
 If unset it will try to drop off everything.
- * @param destination Unit to bring items to
+ * @param destination Unit or destination to bring items to
  * @param item_amount? Item and amount to drop off
  */
 declare function drop(destination: Value, item_amount?: Value | ItemNum): void;
 /**
- * Drop off items at a unit
+ * Drop off items at a unit or destination
 
 If a number is set it will drop off an amount to fill the target unit up to that amount
 If unset it will try to drop off everything.
- * @param destination Unit to bring items to
+ * @param destination Unit or destination to bring items to
  * @param item_amount? Item and amount to drop off
  */
 declare function dropSpecificAmount(destination: Value, item_amount?: Value | ItemNum): void;
@@ -383,7 +391,7 @@ declare function firstInventoryItem(): Value | undefined;
  */
 declare function getInventoryItem(index: Value | number): Value | undefined;
 /**
- * Loops through Inventory 
+ * Loops through Inventory
  * @returns [Item Inventory, Items reserved for outgoing order or recipe, Items available, Space reserved for an incoming order, Remaining space]
  */
 declare function inventoryItems(): IterableIterator<[Value, Value, Value, Value, Value]>;
@@ -398,6 +406,17 @@ declare function recipieIngredients(recipe: Value | Item): IterableIterator<Valu
  * @param item Item and amount to transfer
  */
 declare function orderTransfer(target: Value, item: Value | ItemNum): void;
+/**
+ * Check if a specific item slot index is fixed
+ * @param slot_index Individual slot to check
+ */
+declare function isFixed(slot_index: Value | number): boolean;
+/**
+ * Check if a specific component has been equipped
+ * @param component Component to check
+ * @returns Returns how many instances of a component equipped on this Unit
+ */
+declare function isEquipped(component: Value | Comp): Value | undefined;
 /**
  * Shuts down the power of the Unit
  */
@@ -516,7 +535,7 @@ declare function percentValue(value: Value, max_value: Value): Value;
  * Remaps a value between two ranges
  * @param value Value to Remap
  * @param input_low Low value for input
- * @param input_high High value for input 
+ * @param input_high High value for input
  * @param target_low Low value for target
  * @param target_high High value for target
  * @returns Remapped value
@@ -579,8 +598,9 @@ declare function ping(target: Value): void;
 /**
  * Places a construction site for a specific structure
  * @param coordinate Target location, or at currently location if not specified
+ * @param rotation? Building Rotation (0 to 3) (default 0)
  */
-declare function build(coordinate: Value | CoordNum): void;
+declare function build(coordinate: Value | CoordNum, rotation?: Value | number): boolean;
 /**
  * Sets a production component to produce a blueprint
  */

@@ -283,18 +283,22 @@ export const instructions:{[key:string]:InstrInfo} = {
     "type": "function",
     "inArgs": [
       0,
-      1
-    ]
+      1,
+      2
+    ],
+    "optional": 2
   },
   "get_comp_reg": {
     "js": "getCompReg",
     "type": "function",
     "inArgs": [
-      0
+      0,
+      2
     ],
     "outArgs": [
       1
-    ]
+    ],
+    "optional": 1
   },
   "set_number": {
     "js": "setNumber",
@@ -702,11 +706,13 @@ export const instructions:{[key:string]:InstrInfo} = {
     "js": "equip",
     "type": "function",
     "inArgs": [
-      1
+      1,
+      2
     ],
     "execArgs": [
       0
     ],
+    "optional": 1,
     "conditions": {
       "No Component": false,
       "next": true
@@ -716,11 +722,13 @@ export const instructions:{[key:string]:InstrInfo} = {
     "js": "unequip",
     "type": "function",
     "inArgs": [
-      1
+      1,
+      2
     ],
     "execArgs": [
       0
     ],
+    "optional": 1,
     "conditions": {
       "No Component": false,
       "next": true
@@ -936,6 +944,56 @@ export const instructions:{[key:string]:InstrInfo} = {
       "Different": false
     },
     "thisArg": 0
+  },
+  "is_moving": {
+    "js": "isMoving",
+    "type": "property",
+    "inArgs": [
+      3
+    ],
+    "execArgs": [
+      0,
+      1,
+      2
+    ],
+    "thisArg": 3,
+    "conditions": {
+      "next": "Moving",
+      "Not Moving": "Not Moving",
+      "Path Blocked": "Path Blocked",
+      "No Result": "No Result"
+    }
+  },
+  "is_fixed": {
+    "js": "isFixed",
+    "type": "function",
+    "inArgs": [
+      0
+    ],
+    "execArgs": [
+      1
+    ],
+    "conditions": {
+      "next": true,
+      "Is Fixed": false
+    }
+  },
+  "is_equipped": {
+    "js": "isEquipped",
+    "type": "function",
+    "inArgs": [
+      0
+    ],
+    "outArgs": [
+      2
+    ],
+    "execArgs": [
+      1
+    ],
+    "conditions": {
+      "next": true,
+      "Component Equipped": false
+    }
   },
   "shutdown": {
     "type": "function"
@@ -1271,9 +1329,18 @@ export const instructions:{[key:string]:InstrInfo} = {
   "build": {
     "type": "function",
     "inArgs": [
-      0
+      0,
+      1
     ],
-    "bp": true
+    "execArgs": [
+      2
+    ],
+    "bp": true,
+    "optional": 1,
+    "conditions": {
+      "next": true,
+      "Construction Failed": false
+    }
   },
   "produce": {
     "type": "function",

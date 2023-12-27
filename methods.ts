@@ -209,13 +209,15 @@ export const methods: { [key: string]: MethodInfo } = {
     "id": "set_comp_reg",
     "in": [
       0,
-      1
+      1,
+      2
     ]
   },
   "getCompReg": {
     "id": "get_comp_reg",
     "in": [
-      0
+      0,
+      2
     ],
     "out": 1
   },
@@ -557,7 +559,8 @@ export const methods: { [key: string]: MethodInfo } = {
       "true": "next"
     },
     "in": [
-      1
+      1,
+      2
     ]
   },
   "unequip": {
@@ -567,7 +570,8 @@ export const methods: { [key: string]: MethodInfo } = {
       "true": "next"
     },
     "in": [
-      1
+      1,
+      2
     ]
   },
   "getClosestEntity": {
@@ -729,6 +733,40 @@ export const methods: { [key: string]: MethodInfo } = {
       0,
       1
     ]
+  },
+  "isMoving": {
+    "id": "is_moving",
+    "thisArg": 3,
+    "exec": {
+      "Moving": "next",
+      "Not Moving": 0,
+      "Path Blocked": 1,
+      "No Result": 2
+    },
+    "in": [
+      3
+    ]
+  },
+  "isFixed": {
+    "id": "is_fixed",
+    "exec": {
+      "true": "next",
+      "false": 1
+    },
+    "in": [
+      0
+    ]
+  },
+  "isEquipped": {
+    "id": "is_equipped",
+    "exec": {
+      "true": "next",
+      "false": 1
+    },
+    "in": [
+      0
+    ],
+    "out": 2
   },
   "shutdown": {
     "id": "shutdown"
@@ -983,8 +1021,13 @@ export const methods: { [key: string]: MethodInfo } = {
   "build": {
     "id": "build",
     "special": "bp",
+    "exec": {
+      "true": "next",
+      "false": 2
+    },
     "in": [
-      0
+      0,
+      1
     ]
   },
   "produce": {

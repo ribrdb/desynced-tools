@@ -1,3 +1,7 @@
+// To update the instruction defs:
+// - generate instructions.json: `node scripts/extractor.cjs path/to/instructions.lua`
+// - `npx ts-node scripts/geninstr.ts`
+
 import * as fs from "fs";
 import instrJson from "../instructions.json";
 import overrides from "./overrides.json";
