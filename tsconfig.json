@@ -19,5 +19,6 @@
             "*.ts",
             "*.js",
             "package.json"
-        ]
+        ],
+        "exclude": ["compiler_bundle.ts"]
 }

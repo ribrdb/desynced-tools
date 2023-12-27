@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`/Users/ryan/Developer/desynced-tools/tests/issue2.asm 1`] = `
+exports[`issue2.asm 1`] = `
 {
   "0": {
     "0": -1,

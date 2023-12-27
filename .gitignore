@@ -136,3 +136,4 @@ dist
 .firebaserc
 firebase.json
 .firebase
+.DS_Store
