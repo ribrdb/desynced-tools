@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`/Users/ryan/Developer/desynced-tools/tests/if_unit_type.ts 1`] = `
+exports[`if_unit_type.ts 1`] = `
 "test:
   .name	"test"
   .pname	p1, a
@@ -19,7 +19,7 @@ l0:
   .ret	"
 `;
 
-exports[`/Users/ryan/Developer/desynced-tools/tests/numeric_compare.ts 1`] = `
+exports[`numeric_compare.ts 1`] = `
 "foo:
   .name	"foo"
   .pname	p1, v
@@ -47,7 +47,7 @@ l2:
   .ret	"
 `;
 
-exports[`/Users/ryan/Developer/desynced-tools/tests/test1.ts 1`] = `
+exports[`test1.ts 1`] = `
 "foo:
   .name	"foo"
   .pname	p1, v
