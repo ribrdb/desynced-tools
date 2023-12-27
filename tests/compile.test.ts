@@ -4,6 +4,7 @@ import { CompilerOptions, compileProgram } from "../compile";
 import { globSync } from "glob";
 
 for (const filename of globSync(`${__dirname}/*.ts`)) {
+  console.log(filename);
   if (filename.endsWith(".test.ts")) {
     continue;
   }
