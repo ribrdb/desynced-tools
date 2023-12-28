@@ -30,6 +30,26 @@ interface SubInfo {
   instructions: AsmInstr[];
 }
 
+class LabelInfo {
+  returnLabels = new Set<string>();
+  labelAliases = new Map<string, string>();
+
+  resolve(label: string): string {
+    while (this.labelAliases.has(label)) {
+      label = this.labelAliases.get(label)!;
+    }
+    return label;
+  }
+
+  alias(sourceLabel: string, targetLabel: string) {
+    this.labelAliases.set(sourceLabel, targetLabel);
+  }
+
+  return(label: string) {
+    this.returnLabels.add(label);
+  }
+}
+
 const ops: {
   [key: string]: MethodInfo;
 } = {};
@@ -252,322 +272,328 @@ class Assembler {
     return main;
   }
 
+  #handlePseudoInstructions(code: AsmInstr[], labelInfo: LabelInfo): RawBehavior {
+    const result: RawBehavior = {};
+    const replaceJump = (ip: number, target: string | false) => {
+      const instr = code[ip];
+      if (ip == 0) {
+        instr.op = "nop";
+        instr.next = target;
+        instr.args = [];
+      } else {
+        code[ip - 1].next = target;
+        code.splice(ip, 1);
+      }
+    };
+
+    for (let i = code.length - 1; i >= 0; i--) {
+      let instr = code[i];
+      let nextIndex = instr.args.findIndex((v) => {
+        let m = v.match(/^\$next=:(\w+)$/);
+        if (m) {
+          instr.next = m[1];
+          return true;
+        }
+      });
+      if (nextIndex >= 0) {
+        instr.args.splice(nextIndex, 1);
+      }
+      if (isPseudoJump(instr)) {
+        if (!instr.args[0]) {
+          throw new Error(`Invalid jump instruction at line ${instr.lineno}`);
+        }
+        instr.labels.forEach((l) =>
+          labelInfo.alias(l, instr.args[0].substring(1))
+        );
+
+        replaceJump(i, instr.args[0].substring(1));
+      } else if (instr.op.startsWith(".")) {
+        switch (instr.op) {
+          case ".ret":
+            if (instr.labels.length > 0) {
+              instr.labels.forEach((l) => labelInfo.return(l));
+            } else {
+              replaceJump(i, false);
+              continue;
+            }
+            break;
+          case ".sub":
+          case ".behavior":
+          case ".blueprint":
+            break;
+          case ".name":
+            result.name = instr.args[0];
+            break;
+          case ".pname": {
+            const [reg, name] = instr.args;
+            const m = reg.match(/^p(\d)+/);
+            if (!m) {
+              throw new Error(
+                `Unknown parameter register ${reg} at line ${instr.lineno}`
+              );
+            }
+            result.pnames ??= [];
+            result.pnames[(m![1] as any) - 1] = name;
+            break;
+          }
+          case ".out": {
+            const [reg] = instr.args;
+            const m = reg.match(/^p(\d)+/);
+            if (!m) {
+              throw new Error(
+                `Unknown parameter register ${reg} at line ${instr.lineno}`
+              );
+            }
+            result.parameters ??= [];
+            result.parameters[(m![1] as any) - 1] = true;
+            break;
+          }
+
+          default:
+            throw new Error(
+              `Unknown pseudo instruction ${instr.op} at line ${instr.lineno}`
+            );
+        }
+        if (typeof instr.next == "number") {
+              throw new Error(
+                `Unexpected type of "instr.next". Labels should not be resolved`
+              );
+        }
+        if (instr.next !== undefined) {
+          replaceJump(i, instr.next);
+        } else {
+          code.splice(i, 1);
+        }
+      }
+    }
+    return result;
+  }
+
+  #removeNopInstructions(code: AsmInstr[], labelInfo: LabelInfo) {
+    // Makes last instruction a jump to end
+    let lastInstr = code[code.length - 1];
+    if (lastInstr.next === undefined) {
+      lastInstr.next = false;
+    }
+
+    // Remove nop instructions from last to first.
+    for (let i = code.length - 1; i >= 0; i--) {
+      let instr = code[i];
+      if (instr.op !== "nop") {
+        continue;
+      }
+
+      // Remove the nop instruction.
+      code.splice(i, 1);
+
+      if (instr.next !== undefined) {
+        if (typeof instr.next == "number") {
+              throw new Error(
+                `Unexpected type of "instr.next". Labels should not be resolved`
+              );
+        }
+        const next: string | false = instr.next;
+        // Handle the case when the nop is a jump
+        instr.labels.forEach((l) => {
+          if (next == false) {
+            labelInfo.return(l);
+          } else {
+            labelInfo.alias(l, next);
+          }
+        });
+        if (i > 0) {
+          let prev = code[i-1];
+          if (prev.next == undefined) {
+            prev.next = next;
+          }
+        } else {
+          // The code starts with a nop that is a jump. Reorder the instructions.
+          if (next == false) {
+            // The code is actually empty.
+            code.length = 0;
+            break;
+          }
+          let target = labelInfo.resolve(next);
+          let targetIndex: number | undefined = undefined;
+          for (let j = 0; j < code.length; ++j) {
+            if (code[j].labels.includes(target)) {
+              targetIndex = j;
+              break;
+            }
+          }
+          if (targetIndex === undefined) {
+            throw new Error(`Unknown label ${target}`);
+          }
+          // If targetIndex is 0, no reordering is required.
+          if (targetIndex != 0) {
+            // Reorder code starting at targetIndex
+            let prefix = code.splice(0, targetIndex);
+
+            // If the code before targetIndex has no next, then it now requires one
+            let newLastInstr = prefix[prefix.length - 1];
+            if (newLastInstr.next === undefined) {
+              newLastInstr.next = target;
+            }
+            code.push(... prefix);
+          }
+        }
+      } else if (instr.labels.length > 0) {
+        // Handle the case when the nop is a label
+        if (i < code.length) {
+          // There is an instruction after the nop, move the labels
+          let next = code[i];
+          next.labels = next.labels || [];
+          instr.labels.forEach((l) => {
+            next.labels!.push(l);
+          });
+        } else {
+          // There is no instruction after the nop, The labels are return labels.
+          instr.labels.forEach((l) => {
+            labelInfo.return(l);
+          });
+        }
+      }
+      // If the nop is neither a jump nor a label, it can be deleted without
+      // any other change.
+    }
+  }
+
+  #removeDeadCode(code: AsmInstr[], labelInfo: LabelInfo) {
+    // Try to remove dead code until there is no more changes.
+    let codeIsStable = false;
+    while (!codeIsStable) {
+      codeIsStable = true;
+
+      // 1. Compute the list of labels that are the target of a jump or an operations
+      const accessibleLabels = new Set<string>();
+      for (let instr of code) {
+        if (typeof instr.next == "string") {
+          accessibleLabels.add(instr.next);
+        }
+        for (let arg of instr.args) {
+          if (arg.startsWith(":")) {
+            accessibleLabels.add(labelInfo.resolve(arg.substring(1)));
+          }
+        }
+      }
+
+      // 2. Remove unreachable code only considering accessibleLabels
+      for (let i = code.length - 1; i > 0; i--) {
+        let instr = code[i];
+        let prev = code[i - 1];
+        let prevInfo = instructions[prev.op];
+        instr.labels = instr.labels.filter((l) => accessibleLabels.has(l));
+        if (instr.labels.length > 0) {
+          continue;
+        }
+        if (instr.op === "label") continue;
+        if (prev.next !== undefined || prevInfo?.terminates) {
+          code.splice(i, 1);
+          codeIsStable = false;
+        }
+      }
+    }
+  }
+
+  #resolveLabels(code: AsmInstr[], labelInfo: LabelInfo, result: RawBehavior): RawBehavior {
+    const labelMap = new Map<string, number | false>();
+    // Pass 4 & 5: resolve labels
+    for (let i = 0; i < code.length; i++) {
+      let instr = code[i];
+      instr.labels.forEach((l) => {
+        if (!labelMap.has(l)) {
+          labelMap.set(l, i + 1);
+        }
+      });
+    }
+    labelInfo.returnLabels.forEach((l) => {
+      labelMap.set(l, false);
+    });
+    labelInfo.labelAliases.forEach((v, k) => {
+      v = labelInfo.resolve(v);
+      if (!labelMap.has(v)) {
+        throw new Error(`Unknown label ${v}`);
+      }
+      labelMap.set(k, labelMap.get(v)!);
+    });
+    for (let i = 0; i < code.length; i++) {
+      let instr = code[i];
+      result[i] = {
+        op: instr.op,
+      };
+      if (instr.next != null && instr.next != i + 2) {
+        if (typeof instr.next == "string") {
+          const resolved = labelMap.get(instr.next);
+          if (resolved == null) {
+            throw new Error(
+              `Unknown label ${instr.next} at line ${instr.lineno}`
+            );
+          }
+          if (resolved != i + 2) {
+            result[i].next = resolved;
+          }
+        } else {
+          result[i].next = instr.next;
+        }
+      }
+      if (instr.comment) {
+        result[i].cmt = instr.comment;
+      }
+      instr.args
+        .filter((v) => {
+          const m = v.match(/^\$(\w+)=(.+)/);
+          if (m) {
+            result[i][m[1]] = this.convertArg(m[2], m[1]);
+            return false;
+          }
+          return true;
+        })
+        .map((v) => {
+          if (v.startsWith(":")) {
+            const resolved = labelMap.get(v.substring(1));
+            if (resolved == null) {
+              throw new Error(`Unknown label ${v} at line ${instr.lineno}`);
+            }
+            if (resolved == i + 2) {
+              return "nil";
+            } else if (typeof resolved == "number") {
+              return `:${resolved}`;
+            } else {
+              return resolved.toString();
+            }
+          }
+          return v;
+        })
+        .forEach((v, vi) => {
+          let arg = this.convertArg(v, undefined, instr.outArgs.includes(vi));
+          if (arg != null) {
+            result[i][vi] = arg;
+          }
+        });
+    }
+    for (let i = 0; i < this.params.length; i++) {
+      this.params[i] ??= false;
+    }
+    result.parameters = this.params;
+
+    return result;
+  }
+
   assembleSub(code: AsmInstr[]): RawBehavior {
     const savedParams = this.params;
     this.params = [];
     try {
-      const result: RawBehavior = {};
       if (code.length == 0 || code[0].op == ".ret") {
-        return result;
+        return {};
       }
 
-      const returnLabels = new Set<string>();
-      const labelAliases = new Map<string, string>();
-      const resolveLabelAlias = (label: string): string => {
-        while (labelAliases.has(label)) {
-          label = labelAliases.get(label)!;
-        }
-        return label;
-      }
+      let labelInfo = new LabelInfo();
 
-      const replaceJump = (ip: number, target: string | false) => {
-        const instr = code[ip];
-        if (ip == 0) {
-          instr.op = "nop";
-          instr.next = target;
-          instr.args = [];
-        } else {
-          code[ip - 1].next = target;
-          code.splice(ip, 1);
-        }
-      };
+      const result = this.#handlePseudoInstructions(code, labelInfo);
+      this.#removeNopInstructions(code, labelInfo);
+      this.#removeDeadCode(code, labelInfo);
+      return this.#resolveLabels(code, labelInfo, result);
 
-      // Pass 1: remove pseudo instructions
-      for (let i = code.length - 1; i >= 0; i--) {
-        let instr = code[i];
-        let nextIndex = instr.args.findIndex((v) => {
-          let m = v.match(/^\$next=:(\w+)$/);
-          if (m) {
-            instr.next = m[1];
-            return true;
-          }
-        });
-        if (nextIndex >= 0) {
-          instr.args.splice(nextIndex, 1);
-        }
-        if (isPseudoJump(instr)) {
-          if (!instr.args[0]) {
-            throw new Error(`Invalid jump instruction at line ${instr.lineno}`);
-          }
-          instr.labels.forEach((l) =>
-            labelAliases.set(l, instr.args[0].substring(1))
-          );
-
-          replaceJump(i, instr.args[0].substring(1));
-        } else if (instr.op.startsWith(".")) {
-          switch (instr.op) {
-            case ".ret":
-              if (instr.labels.length > 0) {
-                instr.labels.forEach((l) => returnLabels.add(l));
-              } else {
-                replaceJump(i, false);
-                continue;
-              }
-              break;
-            case ".sub":
-            case ".behavior":
-            case ".blueprint":
-              break;
-            case ".name":
-              result.name = instr.args[0];
-              break;
-            case ".pname": {
-              const [reg, name] = instr.args;
-              const m = reg.match(/^p(\d)+/);
-              if (!m) {
-                throw new Error(
-                  `Unknown parameter register ${reg} at line ${instr.lineno}`
-                );
-              }
-              result.pnames ??= [];
-              result.pnames[(m![1] as any) - 1] = name;
-              break;
-            }
-            case ".out": {
-              const [reg] = instr.args;
-              const m = reg.match(/^p(\d)+/);
-              if (!m) {
-                throw new Error(
-                  `Unknown parameter register ${reg} at line ${instr.lineno}`
-                );
-              }
-              result.parameters ??= [];
-              result.parameters[(m![1] as any) - 1] = true;
-              break;
-            }
-
-            default:
-              throw new Error(
-                `Unknown pseudo instruction ${instr.op} at line ${instr.lineno}`
-              );
-          }
-          if (typeof instr.next == "number") {
-                throw new Error(
-                  `Unexpected type of "instr.next". Labels should not be resolved`
-                );
-          }
-          if (instr.next !== undefined) {
-            replaceJump(i, instr.next);
-          } else {
-            code.splice(i, 1);
-          }
-        }
-      }
-
-      // Makes last instruction a jump to end
-      let lastInstr = code[code.length - 1];
-      if (lastInstr.next === undefined) {
-        lastInstr.next = false;
-      }
-
-      // Pass 2: Remove nop
-      for (let i = code.length - 1; i >= 0; i--) {
-        let instr = code[i];
-        if (instr.op !== "nop") {
-          continue;
-        }
-
-        // Remove the nop instruction.
-        code.splice(i, 1);
-
-        if (instr.next !== undefined) {
-          if (typeof instr.next == "number") {
-                throw new Error(
-                  `Unexpected type of "instr.next". Labels should not be resolved`
-                );
-          }
-          const next: string | false = instr.next;
-          // Handle the case when the nop is a jump
-          instr.labels.forEach((l) => {
-            if (next == false) {
-              returnLabels.add(l);
-            } else {
-              labelAliases.set(l, next);
-            }
-          });
-          if (i > 0) {
-            let prev = code[i-1];
-            if (prev.next == undefined) {
-              prev.next = next;
-            }
-          } else {
-            // The code starts with a nop that is a jump. Reorder the instructions.
-            if (next == false) {
-              // The code is actually empty.
-              code = [];
-              break;
-            }
-            let target = resolveLabelAlias(next);
-            let targetIndex: number | undefined = undefined;
-            for (let j = 0; j < code.length; ++j) {
-              if (code[j].labels.includes(target)) {
-                targetIndex = j;
-                break;
-              }
-            }
-            if (targetIndex === undefined) {
-              throw new Error(`Unknown label ${target}`);
-            }
-            // If targetIndex is 0, no reordering is required.
-            if (targetIndex != 0) {
-              // Reorder code starting at targetIndex
-              let newCode = code.splice(targetIndex);
-              // If the code before targetIndex has no next, then it now requires one
-              let newLastInstr = code[code.length - 1];
-              if (newLastInstr.next === undefined) {
-                newLastInstr.next = target;
-              }
-              code = newCode.concat(code)
-            }
-          }
-        } else if (instr.labels.length > 0) {
-          // Handle the case when the nop is a label
-          if (i < code.length) {
-            // There is an instruction after the nop, move the labels
-            let next = code[i];
-            next.labels = next.labels || [];
-            instr.labels.forEach((l) => {
-              next.labels!.push(l);
-            });
-          } else {
-            // There is no instruction after the nop, The labels are return labels.
-            instr.labels.forEach((l) => {
-              returnLabels.add(l);
-            });
-          }
-        }
-        // If the nop is neither a jump nor a label, it can be deleted without
-        // any other change.
-      }
-
-      // Pass 3:remove dead code
-
-      // Try to remove dead code until there is no more changes.
-      let codeIsStable = false;
-      while (!codeIsStable) {
-        codeIsStable = true;
-
-        // 1. Compute the list of labels that are the target of a jump or an operations
-        const accessibleLabels = new Set<string>();
-        for (let instr of code) {
-          if (typeof instr.next == "string") {
-            accessibleLabels.add(instr.next);
-          }
-          for (let arg of instr.args) {
-            if (arg.startsWith(":")) {
-              accessibleLabels.add(resolveLabelAlias(arg.substring(1)));
-            }
-          }
-        }
-
-        // 2. Remove unreachable code only considering accessibleLabels
-        for (let i = code.length - 1; i > 0; i--) {
-          let instr = code[i];
-          let prev = code[i - 1];
-          let prevInfo = instructions[prev.op];
-          instr.labels = instr.labels.filter((l) => accessibleLabels.has(l));
-          if (instr.labels.length > 0) {
-            continue;
-          }
-          if (instr.op === "label") continue;
-          if (prev.next !== undefined || prevInfo?.terminates) {
-            code.splice(i, 1);
-            codeIsStable = false;
-          }
-        }
-      }
-
-      const labelMap = new Map<string, number | false>();
-      // Pass 4 & 5: resolve labels
-      for (let i = 0; i < code.length; i++) {
-        let instr = code[i];
-        instr.labels.forEach((l) => {
-          if (!labelMap.has(l)) {
-            labelMap.set(l, i + 1);
-          }
-        });
-      }
-      returnLabels.forEach((l) => {
-        labelMap.set(l, false);
-      });
-      labelAliases.forEach((v, k) => {
-        v = resolveLabelAlias(v);
-        if (!labelMap.has(v)) {
-          throw new Error(`Unknown label ${v}`);
-        }
-        labelMap.set(k, labelMap.get(v)!);
-      });
-      for (let i = 0; i < code.length; i++) {
-        let instr = code[i];
-        result[i] = {
-          op: instr.op,
-        };
-        if (instr.next != null && instr.next != i + 2) {
-          if (typeof instr.next == "string") {
-            const resolved = labelMap.get(instr.next);
-            if (resolved == null) {
-              throw new Error(
-                `Unknown label ${instr.next} at line ${instr.lineno}`
-              );
-            }
-            if (resolved != i + 2) {
-              result[i].next = resolved;
-            }
-          } else {
-            result[i].next = instr.next;
-          }
-        }
-        if (instr.comment) {
-          result[i].cmt = instr.comment;
-        }
-        instr.args
-          .filter((v) => {
-            const m = v.match(/^\$(\w+)=(.+)/);
-            if (m) {
-              result[i][m[1]] = this.convertArg(m[2], m[1]);
-              return false;
-            }
-            return true;
-          })
-          .map((v) => {
-            if (v.startsWith(":")) {
-              const resolved = labelMap.get(v.substring(1));
-              if (resolved == null) {
-                throw new Error(`Unknown label ${v} at line ${instr.lineno}`);
-              }
-              if (resolved == i + 2) {
-                return "nil";
-              } else if (typeof resolved == "number") {
-                return `:${resolved}`;
-              } else {
-                return resolved.toString();
-              }
-            }
-            return v;
-          })
-          .forEach((v, vi) => {
-            let arg = this.convertArg(v, undefined, instr.outArgs.includes(vi));
-            if (arg != null) {
-              result[i][vi] = arg;
-            }
-          });
-      }
-      for (let i = 0; i < this.params.length; i++) {
-        this.params[i] ??= false;
-      }
-      result.parameters = this.params;
-
-      return result;
     } finally {
       this.params = savedParams;
     }
