@@ -10,7 +10,7 @@ interface AsmInstr {
   args: string[];
   outArgs: number[];
   comment?: string;
-  labels?: string[];
+  labels: string[];
   lineno: number;
   next?: string | false | number;
 }
@@ -102,7 +102,7 @@ function parseAssembly(code: string): AsmInstr[] {
     }
   }
 
-  if (comment || labels.length) {
+  if (comment || labels.length > 0) {
     instructions.push({
       op: ".ret",
       args: [],
@@ -143,7 +143,7 @@ export async function assemble(
     }
     if (key) {
       const label =
-        instructions[i]?.labels?.[0] ?? instructions[i + 1]?.labels?.[0];
+        instructions[i]?.labels[0] ?? instructions[i + 1]?.labels[0];
       if (!label) {
         throw new Error(
           `No label for ${instructions[i].op} at line ${instructions[i].lineno}`
@@ -299,18 +299,16 @@ class Assembler {
           if (!instr.args[0]) {
             throw new Error(`Invalid jump instruction at line ${instr.lineno}`);
           }
-          if (instr.labels?.length) {
-            instr.labels?.forEach((l) =>
-              labelAliases.set(l, instr.args[0].substring(1))
-            );
-          }
+          instr.labels.forEach((l) =>
+            labelAliases.set(l, instr.args[0].substring(1))
+          );
 
           replaceJump(i, instr.args[0].substring(1));
         } else if (instr.op.startsWith(".")) {
           switch (instr.op) {
             case ".ret":
-              if (instr.labels?.length) {
-                instr.labels?.forEach((l) => returnLabels.add(l));
+              if (instr.labels.length > 0) {
+                instr.labels.forEach((l) => returnLabels.add(l));
               } else {
                 replaceJump(i, false);
                 continue;
@@ -390,7 +388,7 @@ class Assembler {
           }
           const next: string | false = instr.next;
           // Handle the case when the nop is a jump
-          instr.labels?.forEach((l) => {
+          instr.labels.forEach((l) => {
             if (next == false) {
               returnLabels.add(l);
             } else {
@@ -412,7 +410,7 @@ class Assembler {
             let target = resolveLabelAlias(next);
             let targetIndex: number | undefined = undefined;
             for (let j = 0; j < code.length; ++j) {
-              if (code[j].labels?.includes(target)) {
+              if (code[j].labels.includes(target)) {
                 targetIndex = j;
                 break;
               }
@@ -432,18 +430,18 @@ class Assembler {
               code = newCode.concat(code)
             }
           }
-        } else if (instr.labels?.length || 0 > 0) {
+        } else if (instr.labels.length > 0) {
           // Handle the case when the nop is a label
           if (i < code.length) {
             // There is an instruction after the nop, move the labels
             let next = code[i];
             next.labels = next.labels || [];
-            instr.labels?.forEach((l) => {
+            instr.labels.forEach((l) => {
               next.labels!.push(l);
             });
           } else {
             // There is no instruction after the nop, The labels are return labels.
-            instr.labels?.forEach((l) => {
+            instr.labels.forEach((l) => {
               returnLabels.add(l);
             });
           }
@@ -477,8 +475,8 @@ class Assembler {
           let instr = code[i];
           let prev = code[i - 1];
           let prevInfo = instructions[prev.op];
-          instr.labels = instr.labels?.filter((l) => accessibleLabels.has(l));
-          if (instr.labels?.length ?? 0 > 0) {
+          instr.labels = instr.labels.filter((l) => accessibleLabels.has(l));
+          if (instr.labels.length > 0) {
             continue;
           }
           if (instr.op === "label") continue;
@@ -493,13 +491,11 @@ class Assembler {
       // Pass 4 & 5: resolve labels
       for (let i = 0; i < code.length; i++) {
         let instr = code[i];
-        if (instr.labels?.length) {
-          instr.labels.forEach((l) => {
-            if (!labelMap.has(l)) {
-              labelMap.set(l, i + 1);
-            }
-          });
-        }
+        instr.labels.forEach((l) => {
+          if (!labelMap.has(l)) {
+            labelMap.set(l, i + 1);
+          }
+        });
       }
       returnLabels.forEach((l) => {
         labelMap.set(l, false);
