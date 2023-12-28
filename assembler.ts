@@ -270,20 +270,6 @@ class Assembler {
         return label;
       }
 
-      // Pass 1:remove dead code
-      for (let i = code.length - 1; i > 0; i--) {
-        let instr = code[i];
-        let prev = code[i - 1];
-        let prevInfo = instructions[prev.op];
-        if (instr.labels?.length ?? 0 > 0) {
-          continue;
-        }
-        if (instr.op === "label") continue;
-        if (prev.op == ".ret" || isPseudoJump(prev) || prevInfo?.terminates) {
-          code.splice(i, 1);
-        }
-      }
-
       const replaceJump = (ip: number, target: string | false) => {
         const instr = code[ip];
         if (ip == 0) {
@@ -296,7 +282,7 @@ class Assembler {
         }
       };
 
-      // Pass 2: remove pseudo instructions
+      // Pass 1: remove pseudo instructions
       for (let i = code.length - 1; i >= 0; i--) {
         let instr = code[i];
         let nextIndex = instr.args.findIndex((v) => {
@@ -386,7 +372,7 @@ class Assembler {
         lastInstr.next = false;
       }
 
-      // Pass 3: Remove nop
+      // Pass 2: Remove nop
       for (let i = code.length - 1; i >= 0; i--) {
         let instr = code[i];
         if (instr.op !== "nop") {
@@ -464,6 +450,43 @@ class Assembler {
         }
         // If the nop is neither a jump nor a label, it can be deleted without
         // any other change.
+      }
+
+      // Pass 3:remove dead code
+
+      // Try to remove dead code until there is no more changes.
+      let codeIsStable = false;
+      while (!codeIsStable) {
+        codeIsStable = true;
+
+        // 1. Compute the list of labels that are the target of a jump or an operations
+        const accessibleLabels = new Set<string>();
+        for (let instr of code) {
+          if (typeof instr.next == "string") {
+            accessibleLabels.add(instr.next);
+          }
+          for (let arg of instr.args) {
+            if (arg.startsWith(":")) {
+              accessibleLabels.add(resolveLabelAlias(arg.substring(1)));
+            }
+          }
+        }
+
+        // 2. Remove unreachable code only considering accessibleLabels
+        for (let i = code.length - 1; i > 0; i--) {
+          let instr = code[i];
+          let prev = code[i - 1];
+          let prevInfo = instructions[prev.op];
+          instr.labels = instr.labels?.filter((l) => accessibleLabels.has(l));
+          if (instr.labels?.length ?? 0 > 0) {
+            continue;
+          }
+          if (instr.op === "label") continue;
+          if (prev.next !== undefined || prevInfo?.terminates) {
+            code.splice(i, 1);
+            codeIsStable = false;
+          }
+        }
       }
 
       const labelMap = new Map<string, number | false>();
