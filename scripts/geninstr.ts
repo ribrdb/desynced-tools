@@ -111,7 +111,7 @@ for (const op in instructions) {
     ]);
   });
   let thisArg = genInfo.inArgs.find((v) => v[2]?.includes("if not self"))?.[0];
-  if (thisArg == undefined) {
+  if (ov.thisArg == undefined) {
     genInfo.autoself = thisArg != undefined;
   }
   if (genInfo.type == "property" || genInfo.type == "method") {

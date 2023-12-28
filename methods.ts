@@ -313,6 +313,7 @@ export const methods: { [key: string]: MethodInfo } = {
   "getfreespace": {
     "id": "getfreespace",
     "thisArg": 2,
+    "autoSelf": true,
     "in": [
       0,
       2
@@ -416,6 +417,7 @@ export const methods: { [key: string]: MethodInfo } = {
   "altitude": {
     "id": "check_altitude",
     "thisArg": 0,
+    "autoSelf": true,
     "exec": {
       "false": "next",
       "Valley": 1,
@@ -428,6 +430,7 @@ export const methods: { [key: string]: MethodInfo } = {
   "inBlight": {
     "id": "check_blightness",
     "thisArg": 0,
+    "autoSelf": true,
     "exec": {
       "true": 1,
       "false": "next"
@@ -439,6 +442,7 @@ export const methods: { [key: string]: MethodInfo } = {
   "fullHealth": {
     "id": "check_health",
     "thisArg": 1,
+    "autoSelf": true,
     "exec": {
       "true": 0,
       "false": "next"
@@ -450,6 +454,7 @@ export const methods: { [key: string]: MethodInfo } = {
   "fullBattery": {
     "id": "check_battery",
     "thisArg": 1,
+    "autoSelf": true,
     "exec": {
       "true": 0,
       "false": "next"
@@ -461,6 +466,7 @@ export const methods: { [key: string]: MethodInfo } = {
   "fullGridEfficiency": {
     "id": "check_grid_effeciency",
     "thisArg": 1,
+    "autoSelf": true,
     "exec": {
       "true": 0,
       "false": "next"
@@ -472,6 +478,7 @@ export const methods: { [key: string]: MethodInfo } = {
   "count": {
     "id": "count_item",
     "thisArg": 2,
+    "autoSelf": true,
     "in": [
       0,
       2
@@ -481,6 +488,7 @@ export const methods: { [key: string]: MethodInfo } = {
   "countReserved": {
     "id": "count_item",
     "thisArg": 2,
+    "autoSelf": true,
     "c": 2,
     "in": [
       0,
@@ -491,6 +499,7 @@ export const methods: { [key: string]: MethodInfo } = {
   "countAllSlots": {
     "id": "count_slots",
     "thisArg": 1,
+    "autoSelf": true,
     "in": [
       1
     ],
@@ -499,6 +508,7 @@ export const methods: { [key: string]: MethodInfo } = {
   "countStorageSlots": {
     "id": "count_slots",
     "thisArg": 1,
+    "autoSelf": true,
     "c": 2,
     "in": [
       1
@@ -508,6 +518,7 @@ export const methods: { [key: string]: MethodInfo } = {
   "countGasSlots": {
     "id": "count_slots",
     "thisArg": 1,
+    "autoSelf": true,
     "c": 3,
     "in": [
       1
@@ -517,6 +528,7 @@ export const methods: { [key: string]: MethodInfo } = {
   "countVirusSlots": {
     "id": "count_slots",
     "thisArg": 1,
+    "autoSelf": true,
     "c": 4,
     "in": [
       1
@@ -526,6 +538,7 @@ export const methods: { [key: string]: MethodInfo } = {
   "countAnomolySlots": {
     "id": "count_slots",
     "thisArg": 1,
+    "autoSelf": true,
     "c": 5,
     "in": [
       1
@@ -709,6 +722,7 @@ export const methods: { [key: string]: MethodInfo } = {
   "getDistance": {
     "id": "get_distance",
     "thisArg": 2,
+    "autoSelf": true,
     "in": [
       0,
       2
@@ -737,6 +751,7 @@ export const methods: { [key: string]: MethodInfo } = {
   "isMoving": {
     "id": "is_moving",
     "thisArg": 3,
+    "autoSelf": true,
     "exec": {
       "Moving": "next",
       "Not Moving": 0,
@@ -792,6 +807,7 @@ export const methods: { [key: string]: MethodInfo } = {
   "unpackageAll": {
     "id": "unpackage_all",
     "thisArg": 0,
+    "autoSelf": true,
     "in": [
       0
     ]
@@ -799,6 +815,7 @@ export const methods: { [key: string]: MethodInfo } = {
   "packageAll": {
     "id": "package_all",
     "thisArg": 0,
+    "autoSelf": true,
     "in": [
       0
     ]

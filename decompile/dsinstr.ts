@@ -420,6 +420,7 @@ export const instructions:{[key:string]:InstrInfo} = {
     "outArgs": [
       1
     ],
+    "autoself": true,
     "thisArg": 2
   },
   "checkfreespace": {
@@ -566,6 +567,7 @@ export const instructions:{[key:string]:InstrInfo} = {
       "Valley": "Valley",
       "Plateau": "Plateau"
     },
+    "autoself": true,
     "thisArg": 0
   },
   "check_blightness": {
@@ -581,6 +583,7 @@ export const instructions:{[key:string]:InstrInfo} = {
       "Blight": true,
       "next": false
     },
+    "autoself": true,
     "thisArg": 0
   },
   "check_health": {
@@ -596,6 +599,7 @@ export const instructions:{[key:string]:InstrInfo} = {
       "Full": true,
       "next": false
     },
+    "autoself": true,
     "thisArg": 1
   },
   "check_battery": {
@@ -611,6 +615,7 @@ export const instructions:{[key:string]:InstrInfo} = {
       "Full": true,
       "next": false
     },
+    "autoself": true,
     "thisArg": 1
   },
   "check_grid_effeciency": {
@@ -626,6 +631,7 @@ export const instructions:{[key:string]:InstrInfo} = {
       "Full": true,
       "next": false
     },
+    "autoself": true,
     "thisArg": 1
   },
   "count_item": {
@@ -644,6 +650,7 @@ export const instructions:{[key:string]:InstrInfo} = {
         "c": 2
       }
     ],
+    "autoself": true,
     "thisArg": 2
   },
   "count_slots": {
@@ -673,6 +680,7 @@ export const instructions:{[key:string]:InstrInfo} = {
         "c": 5
       }
     ],
+    "autoself": true,
     "thisArg": 1
   },
   "get_max_stack": {
@@ -919,6 +927,7 @@ export const instructions:{[key:string]:InstrInfo} = {
     "outArgs": [
       1
     ],
+    "autoself": true,
     "thisArg": 2
   },
   "order_transfer": {
@@ -956,6 +965,7 @@ export const instructions:{[key:string]:InstrInfo} = {
       1,
       2
     ],
+    "autoself": true,
     "thisArg": 3,
     "conditions": {
       "next": "Moving",
@@ -1025,6 +1035,7 @@ export const instructions:{[key:string]:InstrInfo} = {
     "inArgs": [
       0
     ],
+    "autoself": true,
     "thisArg": 0
   },
   "package_all": {
@@ -1033,6 +1044,7 @@ export const instructions:{[key:string]:InstrInfo} = {
     "inArgs": [
       0
     ],
+    "autoself": true,
     "thisArg": 0
   },
   "solve": {
