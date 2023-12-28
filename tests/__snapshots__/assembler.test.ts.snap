@@ -12,3 +12,48 @@ exports[`issue2.asm 1`] = `
   "parameters": [],
 }
 `;
+
+exports[`label.asm 1`] = `
+{
+  "0": {
+    "0": {
+      "id": "v_letter_A",
+      "num": 1,
+    },
+    "1": "A",
+    "op": "set_reg",
+  },
+  "1": {
+    "0": "A",
+    "op": "jump",
+  },
+  "2": {
+    "0": {
+      "id": "v_letter_A",
+    },
+    "op": "label",
+  },
+  "3": {
+    "op": "notify",
+    "txt": "0",
+  },
+  "4": {
+    "op": "exit",
+  },
+  "5": {
+    "0": {
+      "id": "v_letter_A",
+      "num": 1,
+    },
+    "op": "label",
+  },
+  "6": {
+    "op": "notify",
+    "txt": "1",
+  },
+  "7": {
+    "op": "exit",
+  },
+  "parameters": [],
+}
+`;

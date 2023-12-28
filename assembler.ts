@@ -39,9 +39,9 @@ for (const op of Object.values(methods)) {
 
 const numberLiteralPattern = String.raw`-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?`;
 const numberLiteralExactPattern = new RegExp(`^${numberLiteralPattern}$`);
-const itemNumPattern = new RegExp(`^(\w+)@(${numberLiteralPattern})$`);
+const itemNumPattern = new RegExp(`^(\\w+)@(${numberLiteralPattern})$`);
 const coordPattern = new RegExp(
-  `^(${numberLiteralPattern})\s+(${numberLiteralPattern})$`
+  `^(${numberLiteralPattern})\\s+(${numberLiteralPattern})$`
 );
 const ipJumpPattern = /^:(\d+)$/;
 
@@ -271,6 +271,7 @@ class Assembler {
         if (instr.labels?.length ?? 0 > 0) {
           continue;
         }
+        if (instr.op === "label") continue;
         if (prev.op == ".ret" || isPseudoJump(prev) || prevInfo?.terminates) {
           code.splice(i, 1);
         }

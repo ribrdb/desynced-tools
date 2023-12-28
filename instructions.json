@@ -1,0 +1,2457 @@
+{
+  "instructions": {
+    "nop": {
+      "args": [],
+      "name": "Invalid Instruction",
+      "desc": "Instruction has been removed, behavior needs to be updated"
+    },
+    "call": {
+      "category": "Flow"
+    },
+    "last": {
+      "exec_arg": false,
+      "name": "Break",
+      "desc": "Break out of a loop",
+      "category": "Flow"
+    },
+    "exit": {
+      "exec_arg": false,
+      "name": "Exit",
+      "desc": "Stops execution of the behavior",
+      "category": "Flow"
+    },
+    "unlock": {
+      "name": "Unlock",
+      "desc": "Run as many instructions as possible. Use wait instructions to throttle execution.",
+      "category": "Flow"
+    },
+    "lock": {
+      "name": "Lock",
+      "desc": "Run one instruction at a time",
+      "category": "Flow"
+    },
+    "label": {
+      "args": [
+        [
+          "in",
+          "Label",
+          "Label identifier",
+          "any"
+        ]
+      ],
+      "name": "Label",
+      "desc": "Labels can be jumped to from anywhere in a behavior",
+      "category": "Flow"
+    },
+    "jump": {
+      "args": [
+        [
+          "in",
+          "Label",
+          "Label identifier",
+          "any"
+        ]
+      ],
+      "name": "Jump",
+      "desc": "Jumps execution to label with the same label id",
+      "category": "Flow"
+    },
+    "wait": {
+      "args": [
+        [
+          "in",
+          "Time",
+          "Number of ticks to wait",
+          "num"
+        ]
+      ],
+      "name": "Wait Ticks",
+      "desc": "Pauses execution of the behavior until 1 or more ticks later",
+      "category": "Flow"
+    },
+    "compare_item": {
+      "exec_arg": [
+        1,
+        "If Equal",
+        "Where to continue if the types are the same"
+      ],
+      "args": [
+        [
+          "exec",
+          "If Different",
+          "Where to continue if the types differ"
+        ],
+        [
+          "in",
+          "Value 1"
+        ],
+        [
+          "in",
+          "Value 2"
+        ]
+      ],
+      "name": "Compare Item",
+      "desc": "Compares Item or Unit type",
+      "category": "Flow"
+    },
+    "compare_entity": {
+      "exec_arg": [
+        1,
+        "If Equal",
+        "Where to continue if the entities are the same"
+      ],
+      "args": [
+        [
+          "exec",
+          "If Different",
+          "Where to continue if the entities differ"
+        ],
+        [
+          "in",
+          "Entity 1"
+        ],
+        [
+          "in",
+          "Entity 2"
+        ]
+      ],
+      "name": "Compare Entity",
+      "desc": "Compares Entities",
+      "category": "Flow"
+    },
+    "is_a": {
+      "exec_arg": [
+        1,
+        "If Equal",
+        "Where to continue if the entities are the same"
+      ],
+      "args": [
+        [
+          "exec",
+          "If Different",
+          "Where to continue if the entities differ"
+        ],
+        [
+          "in",
+          "Item"
+        ],
+        [
+          "in",
+          "Type"
+        ]
+      ],
+      "name": "Is a",
+      "desc": "Compares if an item of entity is of a specific type",
+      "category": "Flow"
+    },
+    "get_type": {
+      "args": [
+        [
+          "in",
+          "Item/Entity"
+        ],
+        [
+          "out",
+          "Type"
+        ]
+      ],
+      "name": "Get Type",
+      "desc": "Gets the type from an item or entity",
+      "category": "Global"
+    },
+    "value_type": {
+      "exec_arg": [
+        1,
+        "No Match",
+        "Where to continue if there is no match"
+      ],
+      "args": [
+        [
+          "in",
+          "Data",
+          "Data to test"
+        ],
+        [
+          "exec",
+          "Item",
+          "Item Type"
+        ],
+        [
+          "exec",
+          "Entity",
+          "Entity Type"
+        ],
+        [
+          "exec",
+          "Component",
+          "Component Type"
+        ],
+        [
+          "exec",
+          "Tech",
+          "Tech Type",
+          null,
+          true
+        ],
+        [
+          "exec",
+          "Value",
+          "Information Value Type",
+          null,
+          true
+        ],
+        [
+          "exec",
+          "Coord",
+          "Coordinate Value Type",
+          null,
+          true
+        ]
+      ],
+      "name": "Data type switch",
+      "desc": "Switch based on type of value",
+      "category": "Flow"
+    },
+    "get_first_locked_0": {
+      "args": [
+        [
+          "out",
+          "Item",
+          "The first locked item id with no item"
+        ]
+      ],
+      "name": "Get First Locked Id",
+      "desc": "Gets the first item where the locked slot exists but there is no item in it",
+      "category": "Unit"
+    },
+    "unit_type": {
+      "exec_arg": [
+        5,
+        "No Unit",
+        "No visible unit passed",
+        null,
+        true
+      ],
+      "args": [
+        [
+          "in",
+          "Unit",
+          "The unit to check",
+          "entity"
+        ],
+        [
+          "exec",
+          "Building",
+          "Where to continue if the entity is a building"
+        ],
+        [
+          "exec",
+          "Bot",
+          "Where to continue if the entity is a bot"
+        ],
+        [
+          "exec",
+          "Construction",
+          "Where to continue if the entity is a construction site",
+          null,
+          true
+        ]
+      ],
+      "name": "Unit Type",
+      "desc": "Divert program depending on unit type",
+      "category": "Flow"
+    },
+    "select_nearest": {
+      "args": [
+        [
+          "exec",
+          "A",
+          "A is nearer (or equal)"
+        ],
+        [
+          "exec",
+          "B",
+          "B is nearer"
+        ],
+        [
+          "in",
+          "Unit A",
+          null,
+          "entity"
+        ],
+        [
+          "in",
+          "Unit B",
+          null,
+          "entity"
+        ],
+        [
+          "out",
+          "Closest",
+          "Closest unit",
+          null,
+          true
+        ]
+      ],
+      "name": "Select Nearest",
+      "desc": "Branches based on which unit is closer, optional branches for closer unit",
+      "category": "Flow"
+    },
+    "for_entities_in_range": {
+      "args": [
+        [
+          "in",
+          "Range",
+          "Range (up to units visibility range)",
+          "number"
+        ],
+        [
+          "in",
+          "Filter",
+          "Filter to check",
+          "radar"
+        ],
+        [
+          "in",
+          "Filter",
+          "Second Filter",
+          "radar",
+          true
+        ],
+        [
+          "in",
+          "Filter",
+          "Third Filter",
+          "radar",
+          true
+        ],
+        [
+          "out",
+          "Entity",
+          "Current Entity"
+        ],
+        [
+          "exec",
+          "Done",
+          "Finished looping through all entities in range"
+        ]
+      ],
+      "name": "Loop Entities (Range)",
+      "desc": "Performs code for all entities in visibility range of the unit",
+      "category": "Flow"
+    },
+    "for_research": {
+      "args": [
+        [
+          "out",
+          "Tech",
+          "Researchable Tech"
+        ],
+        [
+          "exec",
+          "Done",
+          "Finished looping through all researchable tech"
+        ]
+      ],
+      "name": "Loop Research",
+      "desc": "Performs code for all researchable tech",
+      "category": "Flow"
+    },
+    "get_research": {
+      "args": [
+        [
+          "out",
+          "Tech",
+          "First active research"
+        ]
+      ],
+      "name": "Get Research",
+      "desc": "Returns the first active research tech",
+      "category": "Flow"
+    },
+    "set_research": {
+      "args": [
+        [
+          "in",
+          "Tech",
+          "First active research",
+          "tech"
+        ]
+      ],
+      "name": "Set Research",
+      "desc": "Returns the first active research tech",
+      "category": "Flow"
+    },
+    "clear_research": {
+      "args": [
+        [
+          "in",
+          "Tech",
+          "Tech to remove from research queue"
+        ]
+      ],
+      "name": "Clear Research",
+      "desc": "Clears a research from queue, or entire queue if no tech passed",
+      "category": "Flow"
+    },
+    "check_number": {
+      "exec_arg": [
+        1,
+        "If Equal",
+        "Where to continue if the numerical values are the same"
+      ],
+      "args": [
+        [
+          "exec",
+          "If Larger",
+          "Where to continue if Value is larger than Compare"
+        ],
+        [
+          "exec",
+          "If Smaller",
+          "Where to continue if Value is smaller than Compare"
+        ],
+        [
+          "in",
+          "Value",
+          "The value to check with",
+          "num"
+        ],
+        [
+          "in",
+          "Compare",
+          "The number to check against",
+          "num"
+        ]
+      ],
+      "name": "Compare Number",
+      "desc": "Divert program depending on number of Value and Compare",
+      "category": "Math"
+    },
+    "set_reg": {
+      "args": [
+        [
+          "in",
+          "Value",
+          null,
+          "any"
+        ],
+        [
+          "out",
+          "Target"
+        ]
+      ],
+      "name": "Copy",
+      "desc": "Copy a value to a frame register, parameter or variable",
+      "category": "Math"
+    },
+    "set_comp_reg": {
+      "args": [
+        [
+          "in",
+          "Value",
+          null,
+          "any"
+        ],
+        [
+          "in",
+          "Component/Index",
+          "Component and register number to set",
+          "comp_num"
+        ],
+        [
+          "in",
+          "Group/Index",
+          "Component group index if multiple are equipped",
+          "num",
+          true
+        ]
+      ],
+      "name": "Set to Component",
+      "desc": "Writes a value into a component register",
+      "category": "Math"
+    },
+    "get_comp_reg": {
+      "args": [
+        [
+          "in",
+          "Component/Index",
+          "Component and register number to set",
+          "comp_num"
+        ],
+        [
+          "out",
+          "Value"
+        ],
+        [
+          "in",
+          "Group/Index",
+          "Component group index if multiple are equipped",
+          "num",
+          true
+        ]
+      ],
+      "name": "Get from Component",
+      "desc": "Reads a value from a component register",
+      "category": "Math"
+    },
+    "set_number": {
+      "args": [
+        [
+          "in",
+          "Value"
+        ],
+        [
+          "in",
+          "Num/Coord",
+          null,
+          "coord_num"
+        ],
+        [
+          "out",
+          "To"
+        ]
+      ],
+      "name": "Set Number",
+      "desc": "Sets the numerical/coordinate part of a value",
+      "category": "Math"
+    },
+    "combine_coordinate": {
+      "args": [
+        [
+          "in",
+          "x",
+          null,
+          "any"
+        ],
+        [
+          "in",
+          "y",
+          null,
+          "any"
+        ],
+        [
+          "out",
+          "Result"
+        ]
+      ],
+      "name": "Combine Coordinate",
+      "desc": "Returns a coordinate made from x and y values",
+      "category": "Math"
+    },
+    "separate_coordinate": {
+      "args": [
+        [
+          "in",
+          "Coordinate",
+          null,
+          "coord_num"
+        ],
+        [
+          "out",
+          "x"
+        ],
+        [
+          "out",
+          "y"
+        ]
+      ],
+      "name": "Separate Coordinate",
+      "desc": "Split a coordinate into x and y values",
+      "category": "Math"
+    },
+    "combine_register": {
+      "args": [
+        [
+          "in",
+          "Num"
+        ],
+        [
+          "in",
+          "Entity"
+        ],
+        [
+          "out",
+          "Register",
+          null,
+          "entity"
+        ],
+        [
+          "in",
+          "x",
+          null,
+          null,
+          true
+        ],
+        [
+          "in",
+          "y",
+          null,
+          null,
+          true
+        ]
+      ],
+      "name": "Combine Register",
+      "desc": "Combine to make a register from separate parameters",
+      "category": "Math"
+    },
+    "separate_register": {
+      "args": [
+        [
+          "in",
+          "Register",
+          null,
+          "entity"
+        ],
+        [
+          "out",
+          "Num"
+        ],
+        [
+          "out",
+          "Entity",
+          null,
+          null,
+          true
+        ],
+        [
+          "out",
+          "ID",
+          null,
+          null,
+          true
+        ],
+        [
+          "out",
+          "x",
+          null,
+          null,
+          true
+        ],
+        [
+          "out",
+          "y",
+          null,
+          null,
+          true
+        ]
+      ],
+      "name": "Separate Register",
+      "desc": "Split a register into separate parameters",
+      "category": "Math"
+    },
+    "add": {
+      "args": [
+        [
+          "in",
+          "To",
+          null,
+          "coord_num"
+        ],
+        [
+          "in",
+          "Num",
+          null,
+          "coord_num"
+        ],
+        [
+          "out",
+          "Result"
+        ]
+      ],
+      "name": "Add",
+      "desc": "Adds a number or coordinate to another number or coordinate",
+      "category": "Math"
+    },
+    "sub": {
+      "args": [
+        [
+          "in",
+          "From",
+          null,
+          "coord_num"
+        ],
+        [
+          "in",
+          "Num",
+          null,
+          "coord_num"
+        ],
+        [
+          "out",
+          "Result"
+        ]
+      ],
+      "name": "Subtract",
+      "desc": "Subtracts a number or coordinate from another number or coordinate",
+      "category": "Math"
+    },
+    "mul": {
+      "args": [
+        [
+          "in",
+          "To",
+          null,
+          "coord_num"
+        ],
+        [
+          "in",
+          "Num",
+          null,
+          "coord_num"
+        ],
+        [
+          "out",
+          "Result"
+        ]
+      ],
+      "name": "Multiply",
+      "desc": "Multiplies a number or coordinate from another number or coordinate",
+      "category": "Math"
+    },
+    "div": {
+      "args": [
+        [
+          "in",
+          "From",
+          null,
+          "coord_num"
+        ],
+        [
+          "in",
+          "Num",
+          null,
+          "coord_num"
+        ],
+        [
+          "out",
+          "Result"
+        ]
+      ],
+      "name": "Divide",
+      "desc": "Divides a number or coordinate from another number or coordinate",
+      "category": "Math"
+    },
+    "modulo": {
+      "args": [
+        [
+          "in",
+          "Num",
+          null,
+          "coord_num"
+        ],
+        [
+          "in",
+          "By",
+          null,
+          "coord_num"
+        ],
+        [
+          "out",
+          "Result"
+        ]
+      ],
+      "name": "Modulo",
+      "desc": "Get the remainder of a division",
+      "category": "Math"
+    },
+    "getfreespace": {
+      "args": [
+        [
+          "in",
+          "Item",
+          "Item to check can fit",
+          "item"
+        ],
+        [
+          "out",
+          "Result",
+          "Number of a specific item that can fit on a unit"
+        ],
+        [
+          "in",
+          "Unit",
+          "The unit to check (if not self)",
+          "entity",
+          true
+        ]
+      ],
+      "name": "Get space for item",
+      "desc": "Returns how many of the input item can fit in the inventory",
+      "category": "Math"
+    },
+    "checkfreespace": {
+      "args": [
+        [
+          "exec",
+          "Can't Fit",
+          "Execution if it can't fit the item"
+        ],
+        [
+          "in",
+          "Item",
+          "Item and amount to check can fit",
+          "item_num"
+        ]
+      ],
+      "name": "Check space for item",
+      "desc": "Checks if free space is available for an item and amount",
+      "category": "Math"
+    },
+    "lock_slots": {
+      "args": [
+        [
+          "in",
+          "Item",
+          "Item type to try fixing to the slots",
+          "item_num"
+        ],
+        [
+          "in",
+          "Slot index",
+          "Individual slot to fix",
+          "num",
+          true
+        ]
+      ],
+      "name": "Fix Item Slots",
+      "desc": "Fix all storage slots or a specific item slot index",
+      "category": "Unit"
+    },
+    "unlock_slots": {
+      "args": [
+        [
+          "in",
+          "Slot index",
+          "Individual slot to unfix",
+          "num",
+          true
+        ]
+      ],
+      "name": "Unfix Item Slots",
+      "desc": "Unfix all inventory slots or a specific item slot index",
+      "category": "Unit"
+    },
+    "get_health": {
+      "args": [
+        [
+          "in",
+          "Entity",
+          "Entity to check",
+          "entity"
+        ],
+        [
+          "out",
+          "Percent",
+          "Percentage of health remaining"
+        ],
+        [
+          "out",
+          "Current",
+          "Value of health remaining",
+          null,
+          true
+        ],
+        [
+          "out",
+          "Max",
+          "Value of maximum health",
+          null,
+          true
+        ]
+      ],
+      "name": "Get Health",
+      "desc": "Gets a units health as a percentage, current and max",
+      "category": "Math"
+    },
+    "get_entity_at": {
+      "args": [
+        [
+          "in",
+          "Coordinate",
+          "Coordinate to get Entity from",
+          "coord_num"
+        ],
+        [
+          "out",
+          "Result"
+        ]
+      ],
+      "name": "Get Entity At",
+      "desc": "Gets the best matching entity at a coordinate",
+      "category": "Math"
+    },
+    "get_grid_effeciency": {
+      "args": [
+        [
+          "out",
+          "Result"
+        ]
+      ],
+      "name": "Get Grid Efficiency",
+      "desc": "Gets the value of the Grid Efficiency as a percent",
+      "category": "Math"
+    },
+    "get_battery": {
+      "args": [
+        [
+          "out",
+          "Result"
+        ]
+      ],
+      "name": "Get Battery",
+      "desc": "Gets the value of the Battery level as a percent",
+      "category": "Math"
+    },
+    "get_self": {
+      "args": [
+        [
+          "out",
+          "Result"
+        ]
+      ],
+      "name": "Get Self",
+      "desc": "Gets the value of the Unit executing the behavior",
+      "category": "Math"
+    },
+    "read_signal": {
+      "args": [
+        [
+          "in",
+          "Unit",
+          "The owned unit to check for",
+          "entity"
+        ],
+        [
+          "out",
+          "Result",
+          "Value of units Signal register"
+        ]
+      ],
+      "name": "Read Signal",
+      "desc": "Reads the Signal register of another unit",
+      "category": "Unit"
+    },
+    "read_radio": {
+      "args": [
+        [
+          "in",
+          "Band",
+          "The band to check for"
+        ],
+        [
+          "out",
+          "Result",
+          "Value of the radio signal"
+        ]
+      ],
+      "name": "Read Radio",
+      "desc": "Reads the Radio signal on a specified band",
+      "category": "Unit"
+    },
+    "for_signal": {
+      "args": [
+        [
+          "in",
+          "Signal",
+          "Signal"
+        ],
+        [
+          "out",
+          "Entity",
+          "Entity with signal"
+        ],
+        [
+          "exec",
+          "Done",
+          "Finished looping through all entities with signal"
+        ]
+      ],
+      "name": "*Loop Signal*",
+      "desc": "*DEPRECATED* Use Loop Signal (Match) instead",
+      "category": "Flow"
+    },
+    "for_signal_match": {
+      "args": [
+        [
+          "in",
+          "Signal",
+          "Signal"
+        ],
+        [
+          "out",
+          "Entity",
+          "Entity with signal"
+        ],
+        [
+          "out",
+          "Signal",
+          "Found signal",
+          "entity",
+          true
+        ],
+        [
+          "exec",
+          "Done",
+          "Finished looping through all entities with signal"
+        ]
+      ],
+      "name": "Loop Signal (Match)",
+      "desc": "Loops through all units with a signal of similar type",
+      "category": "Flow"
+    },
+    "check_altitude": {
+      "exec_arg": [
+        4,
+        "No Unit",
+        "No visible unit passed",
+        null,
+        true
+      ],
+      "args": [
+        [
+          "in",
+          "Unit",
+          "The unit to check for (if not self)",
+          "entity",
+          true
+        ],
+        [
+          "exec",
+          "Valley",
+          "Where to continue if the unit is in a valley"
+        ],
+        [
+          "exec",
+          "Plateau",
+          "Where to continue if the unit is on a plateau"
+        ]
+      ],
+      "name": "Check Altitude",
+      "desc": "Divert program depending on location of a unit",
+      "category": "Unit"
+    },
+    "check_blightness": {
+      "args": [
+        [
+          "in",
+          "Unit",
+          "The unit to check for (if not self)",
+          "entity",
+          true
+        ],
+        [
+          "exec",
+          "Blight",
+          "Where to continue if the unit is in the blight"
+        ]
+      ],
+      "name": "Check Blightness",
+      "desc": "Divert program depending on location of a unit",
+      "category": "Unit"
+    },
+    "check_health": {
+      "args": [
+        [
+          "exec",
+          "Full",
+          "Where to continue if at full health"
+        ],
+        [
+          "in",
+          "Unit",
+          "The unit to check for (if not self)",
+          "entity",
+          true
+        ]
+      ],
+      "name": "Check Health",
+      "desc": "Check a units health",
+      "category": "Unit"
+    },
+    "check_battery": {
+      "args": [
+        [
+          "exec",
+          "Full",
+          "Where to continue if battery power is fully recharged"
+        ],
+        [
+          "in",
+          "Unit",
+          "The unit to check for (if not self)",
+          "entity",
+          true
+        ]
+      ],
+      "name": "Check Battery",
+      "desc": "Checks the Battery level of a unit",
+      "category": "Unit"
+    },
+    "check_grid_effeciency": {
+      "args": [
+        [
+          "exec",
+          "Full",
+          "Where to continue if at full efficiency"
+        ],
+        [
+          "in",
+          "Unit",
+          "The unit to check for (if not self)",
+          "entity",
+          true
+        ]
+      ],
+      "name": "Check Grid Efficiency",
+      "desc": "Checks the Efficiency of the power grid the unit is on",
+      "category": "Unit"
+    },
+    "count_item": {
+      "args": [
+        [
+          "in",
+          "Item",
+          "Item to count",
+          "item"
+        ],
+        [
+          "out",
+          "Result",
+          "Number of this item in inventory or empty if none exist"
+        ],
+        [
+          "in",
+          "Unit",
+          "The unit to check for (if not self)",
+          "entity",
+          true
+        ]
+      ],
+      "name": "Count Items",
+      "desc": "Counts the number of the passed item in its inventory",
+      "category": "Unit"
+    },
+    "count_slots": {
+      "args": [
+        [
+          "out",
+          "Result",
+          "Number of slots of this type"
+        ],
+        [
+          "in",
+          "Unit",
+          "The unit to check for (if not self)",
+          "entity",
+          true
+        ]
+      ],
+      "name": "Count Slots",
+      "desc": "Returns the number of slots in this unit of the given type",
+      "category": "Unit"
+    },
+    "get_max_stack": {
+      "args": [
+        [
+          "in",
+          "Item",
+          "Item to count",
+          "item_num"
+        ],
+        [
+          "out",
+          "Max Stack",
+          "Max Stack"
+        ]
+      ],
+      "name": "Get Max Stack",
+      "desc": "Returns the amount an item can stack to",
+      "category": "Flow"
+    },
+    "have_item": {
+      "args": [
+        [
+          "in",
+          "Item",
+          "Item to count",
+          "item_num"
+        ],
+        [
+          "exec",
+          "Have Item",
+          "have the specified item"
+        ],
+        [
+          "in",
+          "Unit",
+          "The unit to check for (if not self)",
+          "entity",
+          true
+        ]
+      ],
+      "name": "Have Item",
+      "desc": "Checks if you have at least a specified amount of an item",
+      "category": "Flow"
+    },
+    "equip_component": {
+      "args": [
+        [
+          "exec",
+          "No Component",
+          "If you don't current hold the requested component"
+        ],
+        [
+          "in",
+          "Component",
+          "Component to equip",
+          "comp"
+        ],
+        [
+          "in",
+          "Slot index",
+          "Individual slot to equip component from",
+          "num",
+          true
+        ]
+      ],
+      "name": "Equip Component",
+      "desc": "Equips a component if it exists",
+      "category": "Unit"
+    },
+    "unequip_component": {
+      "args": [
+        [
+          "exec",
+          "No Component",
+          "If you don't current hold the requested component or slot was empty"
+        ],
+        [
+          "in",
+          "Component",
+          "Component to unequip",
+          "comp"
+        ],
+        [
+          "in",
+          "Slot index",
+          "Individual slot to try to unequip component from",
+          "num",
+          true
+        ]
+      ],
+      "name": "Unequip Component",
+      "desc": "Unequips a component if it exists",
+      "category": "Unit"
+    },
+    "get_closest_entity": {
+      "args": [
+        [
+          "in",
+          "Filter",
+          "Filter to check",
+          "radar"
+        ],
+        [
+          "in",
+          "Filter",
+          "Second Filter",
+          "radar",
+          true
+        ],
+        [
+          "in",
+          "Filter",
+          "Third Filter",
+          "radar",
+          true
+        ],
+        [
+          "out",
+          "Output",
+          "Entity"
+        ]
+      ],
+      "name": "Get Closest Entity",
+      "desc": "Gets the closest visible entity matching a filter",
+      "category": "Unit"
+    },
+    "match": {
+      "args": [
+        [
+          "in",
+          "Unit",
+          "Unit to Filter, defaults to Self",
+          "entity"
+        ],
+        [
+          "in",
+          "Filter",
+          "Filter to check",
+          "radar"
+        ],
+        [
+          "in",
+          "Filter",
+          "Second Filter",
+          "radar",
+          true
+        ],
+        [
+          "in",
+          "Filter",
+          "Third Filter",
+          "radar",
+          true
+        ],
+        [
+          "exec",
+          "Failed",
+          "Did not match filter"
+        ]
+      ],
+      "name": "Match",
+      "desc": "Filters the passed entity",
+      "category": "Unit"
+    },
+    "switch": {
+      "exec_arg": [
+        1,
+        "Default",
+        "Did not match filter"
+      ],
+      "args": [
+        [
+          "in",
+          "Unit",
+          "Unit to Filter, defaults to Self",
+          "entity"
+        ],
+        [
+          "in",
+          "Case 1",
+          "Case 1",
+          "radar"
+        ],
+        [
+          "exec",
+          "1",
+          "Case 1"
+        ],
+        [
+          "in",
+          "Case 2",
+          "Case 2",
+          "radar",
+          true
+        ],
+        [
+          "exec",
+          "2",
+          "Case 2",
+          null,
+          true
+        ],
+        [
+          "in",
+          "Case 3",
+          "Case 3",
+          "radar",
+          true
+        ],
+        [
+          "exec",
+          "3",
+          "Case 3",
+          null,
+          true
+        ],
+        [
+          "in",
+          "Case 4",
+          "Case 4",
+          "radar",
+          true
+        ],
+        [
+          "exec",
+          "4",
+          "Case 4",
+          null,
+          true
+        ],
+        [
+          "in",
+          "Case 5",
+          "Case 5",
+          "radar",
+          true
+        ],
+        [
+          "exec",
+          "5",
+          "Case 5",
+          null,
+          true
+        ]
+      ],
+      "name": "Switch",
+      "desc": "Filters the passed entity",
+      "category": "Unit"
+    },
+    "dodrop": {
+      "args": [
+        [
+          "in",
+          "Destination",
+          "Unit or destination to bring items to",
+          "entity"
+        ],
+        [
+          "in",
+          "Item / Amount",
+          "Item and amount to drop off",
+          "item_num",
+          true
+        ]
+      ],
+      "name": "Drop Off Items",
+      "desc": "Drop off items at a unit or destination\n\nIf a number is set it will drop off an amount to fill the target unit up to that amount\nIf unset it will try to drop off everything.",
+      "category": "Unit"
+    },
+    "dopickup": {
+      "args": [
+        [
+          "in",
+          "Source",
+          "Unit to take items from",
+          "entity"
+        ],
+        [
+          "in",
+          "Item / Amount",
+          "Item and amount to pick up",
+          "item_num",
+          true
+        ]
+      ],
+      "name": "Pick Up Items",
+      "desc": "Picks up a specific number of items from an entity\n\nWill try to pick up the specified amount, if no amount\nis specified it will try to pick up everything.",
+      "category": "Unit"
+    },
+    "request_item": {
+      "args": [
+        [
+          "in",
+          "Item",
+          "Item and amount to order",
+          "item_num"
+        ]
+      ],
+      "name": "Request Item",
+      "desc": "Requests an item if it doesn't exist in the inventory",
+      "category": "Unit"
+    },
+    "order_to_shared_storage": {
+      "name": "Order to Shared Storage",
+      "desc": "Request Inventory to be sent to nearest shared storage with corresponding locked slots",
+      "category": "Unit"
+    },
+    "request_wait": {
+      "args": [
+        [
+          "in",
+          "Item",
+          "Item and amount to order",
+          "item_num"
+        ]
+      ],
+      "name": "Request Wait",
+      "desc": "Requests an item and waits until it exists in inventory",
+      "category": "Unit"
+    },
+    "get_resource_num": {
+      "args": [
+        [
+          "in",
+          "Resource",
+          "Resource Node to check",
+          "entity"
+        ],
+        [
+          "out",
+          "Result"
+        ]
+      ],
+      "name": "Get Resource Num",
+      "desc": "Gets the amount of resource",
+      "category": "Math"
+    },
+    "get_inventory_item": {
+      "args": [
+        [
+          "out",
+          "Item"
+        ],
+        [
+          "exec",
+          "No Items",
+          "No items in inventory"
+        ]
+      ],
+      "name": "First Item",
+      "desc": "Reads the first item in your inventory",
+      "category": "Unit"
+    },
+    "get_inventory_item_index": {
+      "args": [
+        [
+          "in",
+          "Index",
+          "Slot index",
+          "num"
+        ],
+        [
+          "out",
+          "Item"
+        ],
+        [
+          "exec",
+          "No Item",
+          "Item not found"
+        ]
+      ],
+      "name": "Get Inventory Item",
+      "desc": "Reads the item contained in the specified slot index",
+      "category": "Unit"
+    },
+    "for_inventory_item": {
+      "args": [
+        [
+          "out",
+          "Inventory",
+          "Item Inventory"
+        ],
+        [
+          "exec",
+          "Done",
+          "Finished loop"
+        ],
+        [
+          "out",
+          "Reserved Stack",
+          "Items reserved for outgoing order or recipe",
+          "num",
+          true
+        ],
+        [
+          "out",
+          "Unreserved Stack",
+          "Items available",
+          "num",
+          true
+        ],
+        [
+          "out",
+          "Reserved Space",
+          "Space reserved for an incoming order",
+          "num",
+          true
+        ],
+        [
+          "out",
+          "Unreserved Space",
+          "Remaining space",
+          "num",
+          true
+        ]
+      ],
+      "name": "Loop Inventory Slots",
+      "desc": "Loops through Inventory",
+      "category": "Flow"
+    },
+    "for_recipe_ingredients": {
+      "args": [
+        [
+          "in",
+          "Recipe",
+          null,
+          "item"
+        ],
+        [
+          "out",
+          "Ingredient",
+          "Recipe Ingredient"
+        ],
+        [
+          "exec",
+          "Done",
+          "Finished loop"
+        ]
+      ],
+      "name": "Loop Recipe Ingredients",
+      "desc": "Loops through Ingredients",
+      "category": "Flow"
+    },
+    "get_distance": {
+      "args": [
+        [
+          "in",
+          "Target",
+          "Target unit",
+          "entity"
+        ],
+        [
+          "out",
+          "Distance",
+          "Unit and its distance in the numerical part of the value"
+        ],
+        [
+          "in",
+          "Unit",
+          "The unit to measure from (if not self)",
+          "entity",
+          true
+        ]
+      ],
+      "name": "Distance",
+      "desc": "Returns distance to a unit",
+      "category": "Global"
+    },
+    "order_transfer": {
+      "args": [
+        [
+          "in",
+          "Target",
+          "Target unit",
+          "entity"
+        ],
+        [
+          "in",
+          "Item",
+          "Item and amount to transfer",
+          "item_num"
+        ]
+      ],
+      "name": "Order Transfer To",
+      "desc": "Transfers an Item to another Unit",
+      "category": "Unit"
+    },
+    "is_same_grid": {
+      "exec_arg": [
+        1,
+        "Same Grid",
+        "Where to continue if both entities are in the same power grid"
+      ],
+      "args": [
+        [
+          "in",
+          "Entity",
+          "First Entity",
+          "entity"
+        ],
+        [
+          "in",
+          "Entity",
+          "Second Entity",
+          "entity"
+        ],
+        [
+          "exec",
+          "Different",
+          "Different power grids"
+        ]
+      ],
+      "name": "Is Same Grid",
+      "desc": "Checks if two entities are in the same power grid",
+      "category": "Unit"
+    },
+    "is_moving": {
+      "exec_arg": [
+        1,
+        "Moving",
+        "Where to continue if entity is moving"
+      ],
+      "args": [
+        [
+          "exec",
+          "Not Moving",
+          "Where to continue if entity is not moving"
+        ],
+        [
+          "exec",
+          "Path Blocked",
+          "Where to continue if entity is path blocked"
+        ],
+        [
+          "exec",
+          "No Result",
+          "Where to continue if entity is out of visual range"
+        ],
+        [
+          "in",
+          "Unit",
+          "The unit to check (if not self)",
+          "entity",
+          true
+        ]
+      ],
+      "name": "Is Moving",
+      "desc": "Checks the movement state of an entity",
+      "category": "Unit"
+    },
+    "is_fixed": {
+      "args": [
+        [
+          "in",
+          "Slot index",
+          "Individual slot to check",
+          "num"
+        ],
+        [
+          "exec",
+          "Is Fixed",
+          "Where to continue if inventory slot is fixed"
+        ]
+      ],
+      "name": "Is Fixed",
+      "desc": "Check if a specific item slot index is fixed",
+      "category": "Unit"
+    },
+    "is_equipped": {
+      "args": [
+        [
+          "in",
+          "Component",
+          "Component to check",
+          "comp"
+        ],
+        [
+          "exec",
+          "Component Equipped",
+          "Where to continue if component is equipped"
+        ],
+        [
+          "out",
+          "Result",
+          "Returns how many instances of a component equipped on this Unit",
+          null,
+          true
+        ]
+      ],
+      "name": "Is Equipped",
+      "desc": "Check if a specific component has been equipped",
+      "category": "Unit"
+    },
+    "shutdown": {
+      "name": "Turn Off",
+      "desc": "Shuts down the power of the Unit",
+      "category": "Unit"
+    },
+    "turnon": {
+      "name": "Turn On",
+      "desc": "Turns on the power of the Unit",
+      "category": "Unit"
+    },
+    "connect": {
+      "name": "Connect",
+      "desc": "Connects Units from Logistics Network",
+      "category": "Unit"
+    },
+    "disconnect": {
+      "name": "Disconnect",
+      "desc": "Disconnects Units from Logistics Network",
+      "category": "Unit"
+    },
+    "enable_transport_route": {
+      "name": "Enable Transport Route",
+      "desc": "Enable Unit to deliver on transport route",
+      "category": "Unit"
+    },
+    "disable_transport_route": {
+      "name": "Disable Transport Route",
+      "desc": "Disable Unit to deliver on transport route",
+      "category": "Unit"
+    },
+    "sort_storage": {
+      "name": "Sort Storage",
+      "desc": "Sorts Storage Containers on Unit",
+      "category": "Unit"
+    },
+    "unpackage_all": {
+      "args": [
+        [
+          "in",
+          "Unit",
+          "The destination to try and unpack (if not self)",
+          "entity",
+          true
+        ]
+      ],
+      "name": "Unpackage All",
+      "desc": "Tries to unpack all packaged items",
+      "category": "Unit"
+    },
+    "package_all": {
+      "args": [
+        [
+          "in",
+          "Unit",
+          "The destination to try and pack (if not self)",
+          "entity",
+          true
+        ]
+      ],
+      "name": "Package All",
+      "desc": "Tries to pack all packable units into items",
+      "category": "Unit"
+    },
+    "solve": {
+      "args": [
+        [
+          "in",
+          "Target",
+          "Explorable to solve",
+          "entity"
+        ],
+        [
+          "out",
+          "Missing",
+          "Missing repair item, scanner component or Unpowered"
+        ],
+        [
+          "exec",
+          "Failed",
+          "Missing item, component or power to scan"
+        ]
+      ],
+      "name": "Solve Explorable",
+      "desc": "Attempt to solve explorable with inventory items",
+      "category": "Unit"
+    },
+    "stop": {
+      "name": "Stop Unit",
+      "desc": "Stop movement and abort what is currently controlling the entities movement",
+      "category": "Move"
+    },
+    "get_location": {
+      "args": [
+        [
+          "in",
+          "Entity",
+          "Entity to get coordinates of",
+          "entity"
+        ],
+        [
+          "out",
+          "Coord",
+          "Coordinate of entity"
+        ]
+      ],
+      "name": "Get Location",
+      "desc": "Gets location of a a seen entity",
+      "category": "Global"
+    },
+    "move_east": {
+      "args": [
+        [
+          "in",
+          "Number",
+          "Number of tiles to move East",
+          "num"
+        ]
+      ],
+      "name": "Move East",
+      "desc": "Moves towards a tile East of the current location at the specified distance",
+      "category": "Move"
+    },
+    "move_west": {
+      "args": [
+        [
+          "in",
+          "Number",
+          "Number of tiles to move West",
+          "num"
+        ]
+      ],
+      "name": "Move West",
+      "desc": "Moves towards a tile West of the current location at the specified distance",
+      "category": "Move"
+    },
+    "move_north": {
+      "args": [
+        [
+          "in",
+          "Number",
+          "Number of tiles to move North",
+          "num"
+        ]
+      ],
+      "name": "Move North",
+      "desc": "Moves towards a tile North of the current location at the specified distance",
+      "category": "Move"
+    },
+    "move_south": {
+      "args": [
+        [
+          "in",
+          "Number",
+          "Number of tiles to move South",
+          "num"
+        ]
+      ],
+      "name": "Move South",
+      "desc": "Moves towards a tile South of the current location at the specified distance",
+      "category": "Move"
+    },
+    "domove_async": {
+      "args": [
+        [
+          "in",
+          "Target",
+          "Unit to move to",
+          "entity"
+        ]
+      ],
+      "name": "Move Unit (Async)",
+      "desc": "Move to another unit while continuing the program",
+      "category": "Move"
+    },
+    "domove": {
+      "args": [
+        [
+          "in",
+          "Target",
+          "Unit to move to, the number specifies the range in which to be in",
+          "entity"
+        ]
+      ],
+      "name": "Move Unit",
+      "desc": "Moves to another unit or within a range of another unit",
+      "category": "Move"
+    },
+    "domove_range": {
+      "args": [
+        [
+          "in",
+          "Target",
+          "Unit to move to, the number specifies the range in which to be in",
+          "entity"
+        ]
+      ],
+      "name": "*Move Unit (Range)*",
+      "desc": "*DEPRECATED* Use Move Unit",
+      "category": "Move"
+    },
+    "moveaway_range": {
+      "args": [
+        [
+          "in",
+          "Target",
+          "Unit to move away from",
+          "entity"
+        ]
+      ],
+      "name": "Move Away (Range)",
+      "desc": "Moves out of range of another unit",
+      "category": "Move"
+    },
+    "scout": {
+      "name": "Scout",
+      "desc": "Moves in a scouting pattern around the factions home location",
+      "category": "Move"
+    },
+    "scan": {
+      "args": [
+        [
+          "in",
+          "Filter 1",
+          "First filter",
+          "radar"
+        ],
+        [
+          "in",
+          "Filter 2",
+          "Second filter",
+          "radar"
+        ],
+        [
+          "in",
+          "Filter 3",
+          "Third filter",
+          "radar"
+        ],
+        [
+          "out",
+          "Result"
+        ],
+        [
+          "exec",
+          "No Result",
+          "Execution path if no results are found"
+        ]
+      ],
+      "name": "Radar",
+      "desc": "Scan for the closest unit that matches the filters",
+      "category": "Component"
+    },
+    "mine": {
+      "args": [
+        [
+          "in",
+          "Resource",
+          "Resource to Mine",
+          "resource_num"
+        ],
+        [
+          "exec",
+          "Cannot Mine",
+          "Execution path if mining was unable to be performed"
+        ],
+        [
+          "exec",
+          "Full",
+          "Execution path if can't fit resource into inventory"
+        ]
+      ],
+      "name": "Mine",
+      "desc": "Mines a single resource",
+      "category": "Component"
+    },
+    "get_stability": {
+      "args": [
+        [
+          "out",
+          "Number",
+          "Stability"
+        ]
+      ],
+      "name": "Get Stability",
+      "desc": "Gets the current world stability",
+      "category": "Global"
+    },
+    "percent_value": {
+      "args": [
+        [
+          "in",
+          "Value",
+          "Value to check"
+        ],
+        [
+          "in",
+          "Max Value",
+          "Max Value to get percentage of"
+        ],
+        [
+          "out",
+          "Number",
+          "Percent"
+        ]
+      ],
+      "name": "Percent",
+      "desc": "Gives you the percent that value is of Max Value",
+      "category": "Global"
+    },
+    "remap_value": {
+      "args": [
+        [
+          "in",
+          "Value",
+          "Value to Remap"
+        ],
+        [
+          "in",
+          "Input Low",
+          "Low value for input"
+        ],
+        [
+          "in",
+          "Input High",
+          "High value for input"
+        ],
+        [
+          "in",
+          "Target Low",
+          "Low value for target"
+        ],
+        [
+          "in",
+          "Target high",
+          "High value for target"
+        ],
+        [
+          "out",
+          "Result",
+          "Remapped value"
+        ]
+      ],
+      "name": "Remap",
+      "desc": "Remaps a value between two ranges",
+      "category": "Global"
+    },
+    "is_daynight": {
+      "exec_arg": false,
+      "args": [
+        [
+          "exec",
+          "Day",
+          "Where to continue if it is nighttime"
+        ],
+        [
+          "exec",
+          "Night",
+          "Where to continue if it is daytime"
+        ]
+      ],
+      "name": "Is Day/Night",
+      "desc": "Divert program depending time of day",
+      "category": "Global"
+    },
+    "faction_item_amount": {
+      "args": [
+        [
+          "in",
+          "Item",
+          "Item to count",
+          "item"
+        ],
+        [
+          "out",
+          "Result",
+          "Number of this item in your faction"
+        ],
+        [
+          "exec",
+          "None",
+          "Execution path when none of this item exists in your faction"
+        ]
+      ],
+      "name": "Faction Item Amount",
+      "desc": "Counts the number of the passed item in your logistics network",
+      "category": "Global"
+    },
+    "readkey": {
+      "args": [
+        [
+          "in",
+          "Frame",
+          "Structure to read the key for",
+          "entity"
+        ],
+        [
+          "out",
+          "Key",
+          "Number key of structure"
+        ]
+      ],
+      "name": "Read Key",
+      "desc": "Attempts to reads the internal key of the unit",
+      "category": "Global"
+    },
+    "can_produce": {
+      "name": "Can Produce",
+      "desc": "Returns if a unit can produce an item",
+      "exec_arg": [
+        1,
+        "Cannot Produce",
+        "Where to continue if the item cannot be produced"
+      ],
+      "args": [
+        [
+          "exec",
+          "Can Produce",
+          "Where to continue if the item can be produced"
+        ],
+        [
+          "in",
+          "Item",
+          "Production Item",
+          "item"
+        ]
+      ],
+      "category": "Global"
+    },
+    "get_ingredients": {
+      "args": [
+        [
+          "in",
+          "Product",
+          null,
+          "item"
+        ],
+        [
+          "out",
+          "Out 1",
+          "First Ingredient"
+        ],
+        [
+          "out",
+          "Out 2",
+          "Second Ingredient"
+        ],
+        [
+          "out",
+          "Out 3",
+          "Third Ingredient"
+        ]
+      ],
+      "name": "Get Ingredients",
+      "desc": "Returns the ingredients required to produce an item",
+      "category": "Global"
+    },
+    "notify": {
+      "args": [
+        [
+          "in",
+          "Notify Value",
+          "Notification Value"
+        ]
+      ],
+      "name": "Notify",
+      "desc": "Triggers a faction notification",
+      "category": "Global"
+    },
+    "get_resource_item": {
+      "args": [
+        [
+          "in",
+          "Resource Node",
+          "Resource Node",
+          "entity"
+        ],
+        [
+          "out",
+          "Resource",
+          "Resource Type"
+        ],
+        [
+          "exec",
+          "Not Resource",
+          "Continue here if it wasn't a resource node"
+        ]
+      ],
+      "name": "Resource Type",
+      "desc": "Gets the resource type from an resource node",
+      "category": "Global"
+    },
+    "gettrust": {
+      "exec_arg": [
+        1,
+        "No Unit",
+        "No Unit Passed"
+      ],
+      "args": [
+        [
+          "exec",
+          "Ally",
+          "Target unit considers you an ally"
+        ],
+        [
+          "exec",
+          "Neutral",
+          "Target unit considers you neutral"
+        ],
+        [
+          "exec",
+          "Enemy",
+          "Target unit considers you an enemy"
+        ],
+        [
+          "in",
+          "Unit",
+          "Target Unit",
+          "entity"
+        ]
+      ],
+      "name": "Get Trust",
+      "desc": "Gets the trust level of the unit towards you",
+      "category": "Global"
+    },
+    "gethome": {
+      "args": [
+        [
+          "out",
+          "Result",
+          "Factions home unit"
+        ]
+      ],
+      "name": "Get Home",
+      "desc": "Gets the factions home unit",
+      "category": "Global"
+    },
+    "ping": {
+      "args": [
+        [
+          "in",
+          "Target",
+          "Target unit",
+          "entity"
+        ]
+      ],
+      "name": "Pings a Unit",
+      "desc": "Plays the Ping effect and notifies other players",
+      "category": "Global"
+    },
+    "build": {
+      "args": [
+        [
+          "in",
+          "Coordinate",
+          "Target location, or at currently location if not specified",
+          "coord_num",
+          true
+        ],
+        [
+          "in",
+          "Rotation",
+          "Building Rotation (0 to 3) (default 0)",
+          "num",
+          true
+        ],
+        [
+          "exec",
+          "Construction Failed",
+          "Where to continue if construction failed"
+        ]
+      ],
+      "name": "Place Construction",
+      "desc": "Places a construction site for a specific structure",
+      "category": "Global"
+    },
+    "produce": {
+      "name": "Produce Unit",
+      "desc": "Sets a production component to produce a blueprint",
+      "category": "Global"
+    },
+    "set_signpost": {
+      "name": "Set Signpost",
+      "desc": "Set the signpost to specific text",
+      "category": "Component"
+    },
+    "launch": {
+      "name": "Launch",
+      "desc": "Launches a satellite if equipped on an AMAC",
+      "category": "Global"
+    },
+    "land": {
+      "name": "Land",
+      "desc": "Tells a satellite that has been launched to land",
+      "category": "Global"
+    },
+    "gather_information": {
+      "args": [
+        [
+          "in",
+          "Range",
+          "Range of operation",
+          "num"
+        ]
+      ],
+      "name": "Gather Information",
+      "desc": "Collect information for running the auto base controller",
+      "category": "AutoBase"
+    },
+    "make_carrier": {
+      "args": [
+        [
+          "in",
+          "Carriers",
+          "Type and count of carriers to make",
+          "frame_num"
+        ],
+        [
+          "exec",
+          "If Working",
+          "Where to continue if the unit started working"
+        ]
+      ],
+      "name": "Make Carriers",
+      "desc": "Construct carrier bots for delivering orders or to use for other tasks",
+      "category": "AutoBase"
+    },
+    "make_miner": {
+      "args": [
+        [
+          "in",
+          "Resource/Count",
+          "Resource type and number of miners to maintain",
+          "item_num"
+        ],
+        [
+          "exec",
+          "If Working",
+          "Where to continue if the unit started working"
+        ]
+      ],
+      "name": "Make Miners",
+      "desc": "Construct and equip miner components on available carrier bots",
+      "category": "AutoBase"
+    },
+    "serve_construction": {
+      "args": [
+        [
+          "exec",
+          "If Working",
+          "Where to continue if the unit started working"
+        ]
+      ],
+      "name": "Serve Construction",
+      "desc": "Produce materials needed in construction sites",
+      "category": "AutoBase"
+    },
+    "make_producer": {
+      "args": [
+        [
+          "in",
+          "Item/Count",
+          "Item type and number of producers to maintain",
+          "item_num"
+        ],
+        [
+          "in",
+          "Component",
+          "Production component",
+          "comp"
+        ],
+        [
+          "in",
+          "Building",
+          "Building type to use as producer",
+          "frame"
+        ],
+        [
+          "in",
+          "Location",
+          "Location offset from self",
+          "coord"
+        ],
+        [
+          "exec",
+          "If Working",
+          "Where to continue if the unit started working"
+        ]
+      ],
+      "name": "Make Producer",
+      "desc": "Build and maintain dedicated production buildings",
+      "category": "AutoBase"
+    },
+    "make_turret_bots": {
+      "args": [
+        [
+          "in",
+          "Number",
+          "Number of turret bots to maintain",
+          "num"
+        ],
+        [
+          "exec",
+          "If Working",
+          "Where to continue if the unit started working"
+        ]
+      ],
+      "name": "Make Turret Bots",
+      "desc": "Construct and equip turret components on available carrier bots",
+      "category": "AutoBase"
+    }
+  }
+}
