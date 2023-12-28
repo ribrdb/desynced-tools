@@ -140,7 +140,9 @@ export function DesyncedStringToObject(str, info)
           else
           {
             if (buf[p] == MP_DESYNCED_DEADKEY) { p++; GetIntPacked(); continue; } // used for Lua table memory layout
-            t[Parse(true)] = val;
+            let key = Parse(true);
+            if (typeof key === 'number') key--;
+            t[key] = val;
             GetIntPacked(); // used for Lua table memory layout
           }
         }
