@@ -460,6 +460,16 @@ class Compiler {
     );
   }
 
+  isNullOrUndefined(e: ts.Expression): boolean {
+    if (ts.isIdentifier(e)) {
+      return e.text == "undefined";
+    }
+    if (ts.isLiteralTypeLiteral(e)) {
+      return e.kind == ts.SyntaxKind.NullKeyword;
+    }
+    return false;
+  }
+
   compileExpr(e: ts.Expression, dest?: Variable): Variable {
     if (ts.isBinaryExpression(e)) {
       switch (e.operatorToken.kind) {
@@ -535,6 +545,17 @@ class Compiler {
           );
         }
       }
+    } else if (this.isNullOrUndefined(e)) {
+      if (dest) {
+        this.#emit(methods.setReg, "nil", this.ref(dest, 1, "w"));
+      } else {
+        return {
+          refs: [],
+          name: "",
+          reg: "nil",
+        };
+      }
+      return dest;
     } else if (ts.isIdentifier(e)) {
       if (e.text == "self" && !this.currentScope.scope.has(e.text)) {
         const v = this.variable(e);
