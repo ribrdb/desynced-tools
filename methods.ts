@@ -471,6 +471,7 @@ export const methods: { [key: string]: MethodInfo } = {
   },
   "count": {
     "id": "count_item",
+    "autoSelf": true,
     "thisArg": 2,
     "in": [
       0,
