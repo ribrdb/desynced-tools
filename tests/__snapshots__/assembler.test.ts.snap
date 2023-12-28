@@ -58,3 +58,16 @@ exports[`label.asm 1`] = `
   "parameters": [],
 }
 `;
+
+exports[`dead_code_deletion.asm 1`] = `
+{
+  "0": {
+    "op": "set_reg",
+  },
+  "1": {
+    "next": 1,
+    "op": "set_reg",
+  },
+  "parameters": [],
+}
+`;

@@ -468,7 +468,7 @@ class Assembler {
       const accessibleLabels = new Set<string>();
       for (let instr of code) {
         if (typeof instr.next == "string") {
-          accessibleLabels.add(instr.next);
+          accessibleLabels.add(labelInfo.resolve(instr.next));
         }
         for (let arg of instr.args) {
           if (arg.startsWith(":")) {
