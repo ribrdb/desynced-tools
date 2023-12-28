@@ -113,8 +113,10 @@ export class Dissasembler {
       if (def?.execArgs) {
         for (const arg of def.execArgs) {
           const target = inst[arg] ?? i + 2;
-          if (target && typeof target == "number" && !labels.has(target) && obj[`${target-1}`]) {
-            labels.set(target, `:label${this.nextLabel++}`);
+          if (target && typeof target == "number" && obj[`${target-1}`]) {
+            if (!labels.has(target)) {
+              labels.set(target, `:label${this.nextLabel++}`);
+            }
             inst[arg] = labels.get(target)!;
           }
         }
