@@ -154,7 +154,7 @@ label6:
           try {
           const text = await navigator.clipboard.readText();
           const obj = ds.DesyncedStringToObject(text);
-          const asm = new ds.Dissasembler(obj).code();
+          const asm = new ds.Disassembler(obj).code();
           const model = monaco.editor.createModel(
             asm, "dsbehavior", `ts:paste${++pasteCount}.asm`
           )

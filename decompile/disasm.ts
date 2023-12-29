@@ -9,7 +9,7 @@ interface Work<T> {
   done: boolean;
 }
 
-export class Dissasembler {
+export class Disassembler {
   output: string[] = [];
   extraBehaviors: Work<RawBehavior>[] = [];
   subs: Work<RawBehavior>[] = [];
