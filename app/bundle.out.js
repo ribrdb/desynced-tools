@@ -8,8 +8,7 @@ var __require = /* @__PURE__ */ ((x) => typeof require !== "undefined" ? require
 
 // behavior_dts.ts
 var behavior_dts = `
-declare class Value {
-  num: number;
+type Value = number & {
   /**
    * Switch based on type of value
    */
