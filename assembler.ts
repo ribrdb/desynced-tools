@@ -370,6 +370,10 @@ class Assembler {
   }
 
   #removeNopInstructions(code: AsmInstr[], labelInfo: LabelInfo) {
+    if (code.length == 0) {
+      return;
+    }
+
     // Makes last instruction a jump to end
     let lastInstr = code[code.length - 1];
     if (lastInstr.next === undefined) {
