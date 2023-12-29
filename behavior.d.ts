@@ -1,6 +1,5 @@
 
-declare class Value {
-  num: number;
+type Value = number & {
   /**
    * Switch based on type of value
    */

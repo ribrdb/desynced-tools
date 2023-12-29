@@ -389,8 +389,7 @@ ${g.message}`),g}return n?f.map(g=>this.mapCodeFixAction(g)):f}getCombinedCodeFi
   jump	${Es.next}`:"";return`  ${Es.name}	${Es.args.join(", ")}${rt}${ze}`}var q7e={lib:["lib.es2023.d.ts"],target:Gn.ScriptTarget.ES2022};function gft(Es){Gn.getPreEmitDiagnostics(Es).forEach(rt=>{if(rt.file){let{line:ze,character:ir}=Gn.getLineAndCharacterOfPosition(rt.file,rt.start),Jn=Gn.flattenDiagnosticMessageText(rt.messageText,`
 `);console.log(`${rt.file.fileName} (${ze+1},${ir+1}): ${Jn}`)}else console.log(Gn.flattenDiagnosticMessageText(rt.messageText,`
 `))});for(let rt of Es.getSourceFiles())if(!rt.fileName.endsWith(".d.ts")){let ze=rt.fileName.substring(0,rt.fileName.length-3);try{return pft(rt,Es.getTypeChecker())}catch(ir){console.error(ir)}}throw new Error("No source file found")}function The(Es){return Gn.isNumericLiteral(Es)||Gn.isPropertyAccessExpression(Es)&&Gn.isIdentifier(Es.name)&&Es.name.text==="num"}function OI(Es){return Gn.isPropertyAccessExpression(Es)&&The(Es)?Es.expression:Es}var H7e=`
-declare class Value {
-  num: number;
+type Value = number & {
   /**
    * Switch based on type of value
    */

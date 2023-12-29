@@ -395,8 +395,7 @@ export const methods: { [key: string]: MethodInfo } = ${JSON.stringify(
 );
 
 const dtsContents = `
-declare class Value {
-  num: number;
+type Value = number & {
 ${dtsProps.join("\n")}
 
 ${dtsMethods.join("\n")}
