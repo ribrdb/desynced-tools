@@ -91,7 +91,6 @@ class FunctionScope {
     this.rawEmit(".pname", reg);
     this.rawEmit(".out", reg);
     this.outputs.push({
-      name: `out${outIndex}`,
       reg,
       refs: [],
     });
@@ -178,7 +177,6 @@ class Compiler {
         continue;
       }
       const l: Liveness = {
-        name: v.name,
         start: 0,
         end: 0,
         refs: [...v.refs],
@@ -210,7 +208,7 @@ class Compiler {
           this.#rawEmit(
             ".pname",
             available[0],
-            JSON.stringify(`temp (${v.name})`)
+            JSON.stringify(`temp`)
           );
         }
         v.reg = available.shift()!;
@@ -516,7 +514,6 @@ class Compiler {
       } else {
         return {
           refs: [],
-          name: "",
           reg: "nil",
         };
       }
@@ -537,7 +534,6 @@ class Compiler {
       } else {
         return {
           refs: [],
-          name: "",
           reg: `${value}`,
         };
       }
@@ -545,7 +541,6 @@ class Compiler {
     } else if (ts.isStringLiteral(e)) {
       return {
         refs: [],
-        name: "",
         reg: JSON.stringify(e.text),
       };
     } else if (ts.isParenthesizedExpression(e)) {
@@ -1170,7 +1165,6 @@ class Compiler {
     }
     if (!this.currentScope.scope.has(name)) {
       this.currentScope.scope.set(name, {
-        name,
         reg: reg ?? `r${this.currentScope.regCounter++}`,
         refs: [],
       });
@@ -1270,7 +1264,6 @@ interface ArgRef {
   dir: "r" | "w" | "rw";
 }
 interface Variable {
-  name: string;
   reg: string;
   refs: ArgRef[];
   exec?: Map<string | boolean, ArgRef>;
@@ -1279,7 +1272,6 @@ interface Variable {
 interface Liveness {
   start: number;
   end: number;
-  name: string;
   reg: string;
   refs: ArgRef[];
 }
