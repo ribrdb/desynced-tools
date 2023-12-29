@@ -125,3 +125,12 @@ exports[`assign_to_undefined.ts 1`] = `
   set_reg	nil, p2
   .ret	"
 `
+
+exports[`call_with_computation.ts 1`] = `
+"foo:
+  .name	"foo"
+  .pname	p1, v
+  sub	p1, 1, A
+  set_number	p1, A, nil
+  .ret	"
+`
