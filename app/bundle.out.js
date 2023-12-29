@@ -3568,7 +3568,7 @@ var instructions = {
 };
 
 // decompile/disasm.ts
-var Dissasembler = class {
+var Disassembler = class {
   constructor(obj) {
     this.output = [];
     this.extraBehaviors = [];
@@ -5394,7 +5394,7 @@ function isPseudoJump(inst) {
 }
 export {
   DesyncedStringToObject,
-  Dissasembler,
+  Disassembler,
   ObjectToDesyncedString,
   asmSyntax,
   assemble,
