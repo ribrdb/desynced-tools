@@ -18,6 +18,7 @@ interface AsmInstr {
 type NamedInstrs = Map<string, AsmInstr[]>;
 
 interface Program {
+  mainLabel?: string;
   main: AsmInstr[];
   subs: NamedInstrs;
   others: NamedInstrs; // Other behavriors for use in blueprints
@@ -139,7 +140,9 @@ export async function assemble(
   code: string
 ): Promise<RawBehavior | RawBlueprint> {
   let instructions = parseAssembly(code);
+  const mainLabel = instructions[0]?.labels[0];
   const program: Program = {
+    mainLabel,
     main: instructions,
     subs: new Map(),
     others: new Map(),
@@ -189,7 +192,7 @@ class Assembler {
   params: boolean[] = []; // true if parameter is modified, false if read only
 
   constructor(public program: Program) {
-    this.subs = findReferencedSubs(program.main, program.subs);
+    this.subs = findReferencedSubs(program);
   }
 
   assembleBlueprint(): RawBlueprint {
@@ -613,8 +616,12 @@ class Assembler {
     } else if (a == "nil") {
       return undefined;
     } else if (key == "sub") {
+      let subName = a.substring(1);
+      if (subName === this.program.mainLabel) {
+        return 0;
+      }
       return (
-        this.subs.find((v) => v.name == a.substring(1))?.label ?? undefined
+        this.subs.find((v) => v.name == subName)?.label ?? undefined
       );
     } else if (key == "txt") {
       return a;
@@ -661,14 +668,18 @@ class Assembler {
   }
 }
 
-function findReferencedSubs(code: AsmInstr[], subs: NamedInstrs): SubInfo[] {
+function findReferencedSubs(program: Program): SubInfo[] {
   const result = new Map<string, SubInfo>();
-  code.forEach((i) => {
+  program.main.forEach((i) => {
     if (i.op == "call") {
       const subArg = i.args.find((a) => a.startsWith("$sub="))?.substring(5);
       if (!subArg) return;
       const subName = subArg.substring(1);
-      const sub = subs.get(subName);
+      if (subName === program.mainLabel) {
+        // This is a recursive call to the initial function.
+        return;
+      }
+      const sub = program.subs.get(subName);
       if (!sub || !subArg.startsWith(":")) {
         throw new Error(`Sub ${subArg} not found at line ${i.lineno}`);
       }
