@@ -115,3 +115,13 @@ l10:
 l11:
   .ret	"
 `;
+
+exports[`assign_to_undefined.ts 1`] = `
+"foo:
+  .name	"foo"
+  .pname	p1, u
+  .pname	p2, v
+  set_reg	nil, p1
+  set_reg	nil, p2
+  .ret	"
+`
