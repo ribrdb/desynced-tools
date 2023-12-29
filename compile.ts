@@ -73,12 +73,78 @@ interface LoopInfo {
   needLabel?: boolean;
 }
 
+class VariableScope {
+  parent?: VariableScope;
+  children: VariableScope[] = []
+  namedVariables = new Map<string, Variable>();
+  anonymousVariables: Variable[] = [];
+
+  newScope(): VariableScope {
+    let result = new VariableScope();
+    result.parent = this;
+    this.children.push(result);
+    return result;
+  }
+
+  has(name: string): boolean {
+    return this.namedVariables.has(name) || (this.parent?.has(name) ?? false);
+  }
+
+  new(name: string): Variable {
+    if (!this.namedVariables.has(name)) {
+      this.namedVariables.set(name, new Variable());
+    }
+    return this.get(name);
+  }
+
+  get(name: string, reg?: string): Variable {
+    if (!this.has(name)) {
+      this.namedVariables.set(name, new Variable(reg));
+    }
+    return this.namedVariables.get(name) || this.parent!.get(name);
+  }
+
+  newAnonymousVariable(): Variable {
+    let variable = new Variable();
+    this.anonymousVariables.push(variable);
+    return variable;
+  }
+
+  allocate(availables: string[],
+           paramCounter: number): number {
+    const currentAvailables = [...availables];
+    let newParametersCount = 0;
+    const assignVariable = (variable: Variable) => {
+      if (variable.reg !== undefined) {
+        return;
+      }
+      if (variable.operations != VariableOperations.All) {
+        variable.reg = "nil";
+        return;
+      }
+      if (currentAvailables.length > 0) {
+        variable.reg = currentAvailables.shift()!;
+        return;
+      }
+      // A new parameter is introduced
+      variable.reg = `p${paramCounter + ++newParametersCount}`;
+    }
+    this.namedVariables.forEach(assignVariable);
+    this.anonymousVariables.forEach(assignVariable);
+    let chidrenNewParametersCount = 0;
+    this.children.forEach((scope) => {
+      chidrenNewParametersCount = Math.max(
+          chidrenNewParametersCount,
+          scope.allocate(currentAvailables, paramCounter + newParametersCount));
+    });
+    return newParametersCount + chidrenNewParametersCount;
+  }
+}
+
 class FunctionScope {
-  regCounter = 0;
-  tempCounter = 0;
   paramCounter = 0;
   instructions: Instruction[] = [];
-  scope = new Map<string, Variable>();
+  scope = new VariableScope();
   outputs: Variable[] = [];
   haveBehavior = false;
   loops: LoopInfo[] = [];
@@ -90,10 +156,17 @@ class FunctionScope {
     const reg = `p${i}`;
     this.rawEmit(".pname", reg);
     this.rawEmit(".out", reg);
-    this.outputs.push({
-      reg,
-      refs: [],
-    });
+    this.outputs.push(new Variable(reg));
+  }
+
+  withNewVariableScope(f: () => undefined) {
+    let scope = this.scope;
+    this.scope = this.scope.newScope();
+    try {
+      f();
+    } finally {
+      this.scope = scope;
+    }
   }
 
   rawEmit(name: string, ...args: string[]) {
@@ -170,57 +243,17 @@ class Compiler {
 
   #regAlloc() {
     // TODO: could probably do better dataflow analysis if we used SSA.
-    const available = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-    const vars: Liveness[] = [];
-    for (const v of this.currentScope.scope.values()) {
-      if (/^(p\d+|signal|visual|store|goto)$/.test(v.reg)) {
-        continue;
-      }
-      const l: Liveness = {
-        start: 0,
-        end: 0,
-        refs: [...v.refs],
-        reg: "",
-      };
-      l.refs.sort((a, b) => a.instruction - b.instruction);
-      while (l.refs[l.refs.length - 1]?.dir == "w") {
-        const ref = l.refs.pop()!;
-        this.#rewrite(ref, "nil");
-      }
-      if (l.refs.length == 0) {
-        continue;
-      }
-      if (l.refs.length == 1 && l.refs[0].dir != "rw") {
-        continue;
-      }
-
-      l.start = l.refs[0].instruction;
-      l.end = l.refs[l.refs.length - 1].instruction;
-      vars.push(l);
-    }
-    vars.sort((a, b) => a.start - b.start);
-    let live: Liveness[] = [];
-    for (let i = 0; i < this.currentScope.instructions.length; i++) {
-      while (vars[0]?.start == i) {
-        const v = vars.shift()!;
-        if (available.length == 0) {
-          available.push(`p${++this.currentScope.paramCounter}`);
-          this.#rawEmit(
+    const availables = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+    let newParameters =
+        this.currentScope.scope.allocate(availables,
+                                         this.currentScope.paramCounter);
+    for (let i = 0; i < newParameters; ++i) {
+      let reg = `p${++this.currentScope.paramCounter}`;
+      this.#rawEmit(
             ".pname",
-            available[0],
+            reg,
             JSON.stringify(`temp`)
           );
-        }
-        v.reg = available.shift()!;
-        v.refs.forEach((ref) => this.#rewrite(ref, v.reg));
-        live.push(v!);
-      }
-      live = live.filter(
-        (v) => v.end >= i || (available.unshift(v.reg), false)
-      );
-      if (live.length + vars.length == 0) {
-        break;
-      }
     }
   }
 
@@ -236,7 +269,9 @@ class Compiler {
     } else if (ts.isVariableStatement(n)) {
       this.compileVarDecl(n.declarationList);
     } else if (ts.isIfStatement(n)) {
-      this.compileIf(n);
+      this.currentScope.withNewVariableScope(() => {
+        this.compileIf(n);
+      });
     } else if (ts.isReturnStatement(n)) {
       let values: ts.Expression[] = [];
       if (n.expression) {
@@ -256,34 +291,38 @@ class Compiler {
       }
       this.#rawEmit(".ret");
     } else if (ts.isBlock(n)) {
-      n.statements.forEach(this.compileStatement.bind(this));
+      this.currentScope.withNewVariableScope(() => {
+        n.statements.forEach(this.compileStatement.bind(this));
+      });
     } else if (ts.isSwitchStatement(n)) {
       this.compileSwitch(n);
     } else if (ts.isLabeledStatement(n)) {
-      if (ts.isSwitchStatement(n.statement)) {
-        this.compileSwitch(n.statement, n.label.text);
-      } else if (ts.isForOfStatement(n.statement)) {
-        this.compileForOf(n.statement, n.label.text);
-      } else if (
-        ts.isForStatement(n.statement) ||
-        ts.isWhileStatement(n.statement) ||
-        ts.isDoStatement(n.statement)
-      ) {
-        this.compileLoop(n.statement, n.label.text);
-      } else {
-        const theEnd = this.#label();
-        this.#withLoop(
-          {
-            label: n.label.text,
-            brk: theEnd,
-            needLabel: true,
-          },
-          () => {
-            this.compileStatement(n.statement);
-            this.#emitLabel(theEnd);
-          }
-        );
-      }
+      this.currentScope.withNewVariableScope(() => {
+        if (ts.isSwitchStatement(n.statement)) {
+          this.compileSwitch(n.statement, n.label.text);
+        } else if (ts.isForOfStatement(n.statement)) {
+          this.compileForOf(n.statement, n.label.text);
+        } else if (
+          ts.isForStatement(n.statement) ||
+          ts.isWhileStatement(n.statement) ||
+          ts.isDoStatement(n.statement)
+        ) {
+          this.compileLoop(n.statement, n.label.text);
+        } else {
+          const theEnd = this.#label();
+          this.#withLoop(
+            {
+              label: n.label.text,
+              brk: theEnd,
+              needLabel: true,
+            },
+            () => {
+              this.compileStatement(n.statement);
+              this.#emitLabel(theEnd);
+            }
+          );
+        }
+      });
     } else if (ts.isBreakOrContinueStatement(n)) {
       let isContinue = n.kind == ts.SyntaxKind.ContinueStatement;
       let info: LoopInfo | undefined;
@@ -323,13 +362,17 @@ class Compiler {
         }
       }
     } else if (ts.isForOfStatement(n)) {
-      this.compileForOf(n);
+      this.currentScope.withNewVariableScope(() => {
+        this.compileForOf(n);
+      });
     } else if (
       ts.isForStatement(n) ||
       ts.isWhileStatement(n) ||
       ts.isDoStatement(n)
     ) {
-      this.compileLoop(n);
+      this.currentScope.withNewVariableScope(() => {
+        this.compileLoop(n);
+      });
     } else {
       this.#error(
         `unsupported statement ${n.kind} ${ts.SyntaxKind[n.kind]}`,
@@ -496,26 +539,19 @@ class Compiler {
       return this.compileCall(e, [dest]);
     } else if (ts.isPropertyAccessExpression(e)) {
       if (ts.isIdentifier(e.name)) {
-        if (e.name.text === "num") {
-          return this.compileExpr(e.expression, dest);
-        } else {
-          return this.compileResolvedCall(
-            e,
-            e.name.text,
-            e.expression,
-            [],
-            [dest]
-          );
-        }
+        return this.compileResolvedCall(
+          e,
+          e.name.text,
+          e.expression,
+          [],
+          [dest]
+        );
       }
     } else if (this.isNullOrUndefined(e)) {
       if (dest) {
-        this.#emit(methods.setReg, "nil", this.ref(dest, 1, "w"));
+        this.#emit(methods.setReg, "nil", this.ref(dest, VariableOperations.Write));
       } else {
-        return {
-          refs: [],
-          reg: "nil",
-        };
+        return new Variable("nil");
       }
       return dest;
     } else if (ts.isIdentifier(e)) {
@@ -524,25 +560,19 @@ class Compiler {
         this.#emit(methods.getSelf, v);
       }
       if (dest) {
-        this.#emit(methods.setReg, this.variable(e), this.ref(dest, 1, "w"));
+        this.#emit(methods.setReg, this.variable(e), this.ref(dest, VariableOperations.Write));
       }
       return this.variable(e);
     } else if (ts.isNumericLiteral(e)) {
       const value = Number(e.text);
       if (dest) {
-        this.#emit(methods.setReg, `${value}`, this.ref(dest, 1, "w"));
+        this.#emit(methods.setReg, `${value}`, this.ref(dest, VariableOperations.Write));
       } else {
-        return {
-          refs: [],
-          reg: `${value}`,
-        };
+        return new Variable(`${value}`);
       }
       return dest;
     } else if (ts.isStringLiteral(e)) {
-      return {
-        refs: [],
-        reg: JSON.stringify(e.text),
-      };
+      return new Variable(JSON.stringify(e.text));
     } else if (ts.isParenthesizedExpression(e)) {
       return this.compileExpr(e.expression, dest);
     }
@@ -571,7 +601,6 @@ class Compiler {
         this.#error(`unsupported compound assignment ${e.operatorToken.kind} ${ts.SyntaxKind[e.operatorToken.kind]}`, e);
     }
     return this.compileAssignment(ts.factory.createAssignment(e.left, ts.factory.createBinaryExpression(e.left, op, e.right)), dest);
-    
   }
 
   compileAssignment(e: ts.AssignmentExpression<ts.AssignmentOperatorToken>, dest?: Variable): Variable {
@@ -580,11 +609,6 @@ class Compiler {
       this.compileExpr(e.right, lvar);
       if (dest) {
         this.#emit(methods.setReg, lvar, dest);
-        dest.refs.push({
-          instruction: this.currentScope.instructions.length,
-          arg: 0,
-          dir: "w",
-        });
       } else {
         dest = lvar;
       }
@@ -729,7 +753,6 @@ class Compiler {
         dest.exec.set(e.match(/^(true|false)$/) ? e == "true" : e, {
           instruction: this.currentScope.instructions.length,
           arg: i,
-          dir: "w",
         });
       }
     }
@@ -828,14 +851,14 @@ class Compiler {
     this.#emit(
       methods.setNumber,
       labelType,
-      this.ref(this.compileExpr(s.expression), 1, "r"),
-      this.ref(cond, 2, "w")
+      this.ref(this.compileExpr(s.expression), VariableOperations.Read),
+      this.ref(cond, VariableOperations.Write)
     );
 
     const defaultClause = s.caseBlock.clauses.find((clause) =>
       ts.isDefaultClause(clause)
     );
-    this.#emit(methods.jump, this.ref(cond, 0, "r"));
+    this.#emit(methods.jump, this.ref(cond, VariableOperations.Read));
     let defaultLabel = defaultClause && this.#label();
     this.#jump(defaultLabel || end);
 
@@ -1120,21 +1143,21 @@ class Compiler {
   }
 
   #temp() {
-    return this.variable(`t${this.currentScope.tempCounter++}`);
+    return this.currentScope.scope.newAnonymousVariable();
   }
 
   compileVarDecl(s: ts.VariableDeclarationList) {
     s.declarations.forEach((decl: ts.VariableDeclaration) => {
       if (decl.initializer) {
         if (ts.isIdentifier(decl.name)) {
-          this.compileExpr(decl.initializer, this.variable(decl.name));
+          this.compileExpr(decl.initializer, this.newVariable(decl.name));
         } else if (ts.isArrayBindingPattern(decl.name)) {
           if (ts.isCallExpression(decl.initializer)) {
             const outs = decl.name.elements.map((el) => {
               if (ts.isOmittedExpression(el)) {
                 return undefined;
               } else if (ts.isIdentifier(el.name)) {
-                return this.variable(el.name);
+                return this.newVariable(el.name);
               } else {
                 this.#error(
                   `unsupported array element ${el.kind} ${
@@ -1161,28 +1184,21 @@ class Compiler {
   variable(id: ts.Identifier | string, reg?: string): Variable {
     const name = typeof id === "string" ? id : id.text;
     if (name.match(/^(goto|store|visual|signal)$/)) {
-      reg = name;
+      return new Variable(name);
     }
-    if (!this.currentScope.scope.has(name)) {
-      this.currentScope.scope.set(name, {
-        reg: reg ?? `r${this.currentScope.regCounter++}`,
-        refs: [],
-      });
-    }
-    return this.currentScope.scope.get(name)!;
+    return this.currentScope.scope.get(name, reg);
+  }
+
+  newVariable(id: ts.Identifier): Variable {
+    return this.currentScope.scope.new(id.text);
   }
 
   ref(
     varname: string | ts.Identifier | Variable,
-    argNum: number,
-    dir: "r" | "w" | "rw" = "rw"
+    operation: VariableOperations
   ): Variable {
     const v = isVar(varname) ? varname : this.variable(varname);
-    v.refs.push({
-      instruction: this.currentScope.instructions.length,
-      arg: argNum,
-      dir,
-    });
+    v.operations |= operation;
     return v;
   }
 
@@ -1202,14 +1218,14 @@ class Compiler {
         return v;
       }
       if (name == "call") {
-        return this.ref(v, i, "rw").reg;
+        return this.ref(v, VariableOperations.All);
       } else if (
         info?.out == i ||
         (Array.isArray(info?.out) && info.out.includes(i))
       ) {
-        return this.ref(v, i, "w").reg;
+        return this.ref(v, VariableOperations.Write);
       } else {
-        return this.ref(v, i, "r").reg;
+        return this.ref(v, VariableOperations.Read);
       }
     });
     while (strArgs[strArgs.length - 1] == "nil") {
@@ -1225,7 +1241,7 @@ class Compiler {
   #rewrite(ref: ArgRef, value: string | null, skipIfSet = false) {
     if (ref.extraArg) {
       this.#rewrite(
-        { instruction: ref.instruction, arg: ref.extraArg, dir: ref.dir },
+        { instruction: ref.instruction, arg: ref.extraArg },
         value,
         skipIfSet
       );
@@ -1253,7 +1269,7 @@ class Compiler {
 }
 interface Instruction {
   name: string;
-  args: (string | null)[];
+  args: (null | string | Variable)[];
   next?: string | null;
   comment?: string;
 }
@@ -1261,12 +1277,24 @@ interface ArgRef {
   instruction: number;
   arg: number | "next";
   extraArg?: number | "next"; // For <= and >=
-  dir: "r" | "w" | "rw";
 }
-interface Variable {
-  reg: string;
-  refs: ArgRef[];
+enum VariableOperations {
+  None = 0,
+  Read = 1 << 0,
+  Write = 1 << 1,
+  All = ~(~0 << 2),
+}
+const VariableSymbol = Symbol();
+class Variable {
+  type = VariableSymbol;
+  operations = VariableOperations.None;
+  reg?: string;
   exec?: Map<string | boolean, ArgRef>;
+
+  constructor(reg?: string) {
+    this.reg = reg;
+  }
+
 }
 
 interface Liveness {
@@ -1277,13 +1305,25 @@ interface Liveness {
 }
 
 function isVar(t: unknown): t is Variable {
-  return typeof (t as Variable).reg === "string";
+  return (t as Variable).type === VariableSymbol;
+}
+function formatArgument(arg: null | string | Variable): string {
+  if (arg === null) {
+    return "nil";
+  }
+  if (typeof arg == "string") {
+    return arg;
+  }
+  if (!arg.reg) {
+    throw new Error("Variable is used and has not been assigned");
+  }
+  return arg.reg;
 }
 function formatInstruction(i: Instruction) {
   if (i.name.endsWith(":")) return i.name;
   const comment = i.comment ? "\t; " + i.comment : "";
   const next = i.next ? `\n  jump\t${i.next}` : "";
-  return `  ${i.name}\t${i.args.join(", ")}${comment}${next}`;
+  return `  ${i.name}\t${i.args.map(formatArgument).join(", ")}${comment}${next}`;
 }
 
 export const CompilerOptions = {

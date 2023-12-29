@@ -1,5 +1,24 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`assign_to_undefined.ts 1`] = `
+"foo:
+  .name	"foo"
+  .pname	p1, u
+  .pname	p2, v
+  set_reg	nil, p1
+  set_reg	nil, p2
+  .ret	"
+`;
+
+exports[`call_with_computation.ts 1`] = `
+"foo:
+  .name	"foo"
+  .pname	p1, v
+  sub	p1, 1, A
+  set_number	p1, A, nil
+  .ret	"
+`;
+
 exports[`if_unit_type.ts 1`] = `
 "test:
   .name	"test"
@@ -27,18 +46,18 @@ exports[`numeric_compare.ts 1`] = `
   check_number	:l0, :l1, A, 20
   jump	:l0
 l1:
-  gethome	A
-  domove	A
+  gethome	D
+  domove	D
   .ret	
   jump	:l0
 l0:
-  get_self	A
-  get_health	A, B
+  get_self	C
+  get_health	C, B
   check_number	:l4, :l3, B, 50
   jump	:l3
 l3:
-  gethome	B
-  domove	B
+  gethome	D
+  domove	D
   jump	:l2
 l4:
   notify	nil, $txt="ok"
@@ -54,22 +73,22 @@ exports[`rng.ts 1`] = `
   .pname	p2, min
   .pname	p3, state
   unlock	
-  sub	p1, p2, A
-  add	A, 1, B
+  sub	p1, p2, B
+  add	B, 1, A
   check_number	:l0, :l1, p3, 0
   jump	:l1
 l1:
-  faction_item_amount	"metalore", p3, 
+  faction_item_amount	"metalore", p3, nil
   jump	:l0
 l0:
-  mul	17364, p3, A
-  add	A, 1, C
+  mul	17364, p3, D
+  add	D, 1, C
   modulo	C, 65521, p3
   .pname	p4
   .out	p4
-  mul	B, p3, C
-  div	C, 65521, A
-  add	A, p2, p4
+  mul	A, p3, F
+  div	F, 65521, E
+  add	E, p2, p4
   .ret	
   .ret	"
 `;
@@ -107,30 +126,43 @@ l8:
 l9:
   set_reg	4, nil
 l5:
-  for_entities_in_range	20, "v_construction", nil, nil, A, :l11
+  for_entities_in_range	20, "v_construction", nil, nil, B, :l11
   jump	:l10
 l10:
-  get_distance	A, nil
+  get_distance	B, nil
   .ret	
 l11:
   .ret	"
 `;
 
-exports[`assign_to_undefined.ts 1`] = `
+exports[`variable_blocks.ts 1`] = `
 "foo:
   .name	"foo"
-  .pname	p1, u
-  .pname	p2, v
-  set_reg	nil, p1
-  set_reg	nil, p2
+  .pname	p1, p
+  set_reg	1, nil
+  set_reg	2, A
+  set_reg	A, p1
+  set_reg	3, A
+  set_reg	A, p1
   .ret	"
-`
+`;
 
-exports[`call_with_computation.ts 1`] = `
+exports[`variable_scope.ts 1`] = `
 "foo:
   .name	"foo"
   .pname	p1, v
-  sub	p1, 1, A
-  set_number	p1, A, nil
+  set_reg	p1, A
+l0:
+l1:
+  compare_entity	:l5, A, p1
+  jump	:l4
+l5:
+  notify	A
+  set_reg	p1, A
+  jump	:l4
+l4:
+l2:
+  jump	:l0
+l3:
   .ret	"
-`
+`;
