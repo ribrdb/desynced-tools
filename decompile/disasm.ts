@@ -4,16 +4,11 @@ import { RawInstruction } from "./RawInstruction";
 import { instructions } from "./dsinstr";
 import { DesyncedStringToObject } from "../dsconvert";
 
-interface Work<T> {
-  t: T;
-  done: boolean;
-}
-
 export class Disassembler {
   output: string[] = [];
-  extraBehaviors: Work<RawBehavior>[] = [];
-  subs: Work<RawBehavior>[] = [];
-  bps: Work<RawBlueprint>[] = [];
+  mainBehavior?: RawBehavior;
+  extraBehaviors: RawBehavior[] = [];
+  bps: RawBlueprint[] = [];
   nextLabel = 0;
 
   constructor(obj: Record<string, unknown>) {
@@ -21,7 +16,7 @@ export class Disassembler {
     if ("frame" in obj) {
       this.blueprint(obj as unknown as RawBlueprint);
     } else {
-      this.disasemble(obj as unknown as RawBehavior);
+      this.mainBehavior = obj as unknown as RawBehavior;
     }
     this.#doExtras();
   }
@@ -62,7 +57,7 @@ export class Disassembler {
     if (obj.components) {
       for (const [v, k, code] of obj.components) {
         if (code) {
-          this.extraBehaviors.push({ t: code, done: false });
+          this.extraBehaviors.push(code);
           this.#emit(
             `.component`,
             k,
@@ -76,7 +71,7 @@ export class Disassembler {
     }
   }
 
-  disasemble(obj: RawBehavior, main = "main") {
+  disasemble(obj: RawBehavior, main = "main", subOffset = 0) {
     if (obj.name) {
       this.#emit(".name", obj.name);
     }
@@ -90,12 +85,6 @@ export class Disassembler {
         this.#emit(".out", reg);
       }
     });
-    const subOffset = this.subs.length;
-    if (obj.subs) {
-      for (const sub of obj.subs) {
-        this.subs.push({ t: sub, done: false });
-      }
-    }
     const labels = this.#buildLabels(obj);
     for (let i = 0; `${i}` in obj; i++) {
       this.#emitInstr(obj[`${i}`], i, labels, subOffset, main);
@@ -158,7 +147,7 @@ export class Disassembler {
       if (typeof inst.bp == "string") {
         inst.bp = DesyncedStringToObject("DSB" + inst.bp) as RawBlueprint;
       }
-      this.bps.push({ t: inst.bp, done: false });
+      this.bps.push(inst.bp);
       args.push({ id: `$bp=:bp${this.bps.length}` });
     }
     if (inst.nx != null && inst.ny != null) {
@@ -199,39 +188,39 @@ export class Disassembler {
   }
 
   #doExtras() {
-    let count = 0;
-    do {
-      count = 0;
-      this.extraBehaviors.forEach((w, i) => {
-        if (!w.done) {
-          this.#nl(2);
-          this.#label(`behavior${i + 1}`);
-          this.#emit(".behavior");
-          this.disasemble(w.t, `behavior${i + 1}`);
-          w.done = true;
-          count++;
-        }
+    if (this.mainBehavior) {
+      this.disasemble(this.mainBehavior);
+      this.mainBehavior.subs?.forEach((sub, i) => {
+        this.#nl(2);
+        this.#label(`sub${i + 1}`);
+        this.#emit(".sub");
+        this.disasemble(sub);
       });
-      this.subs.forEach((w, i) => {
-        if (!w.done) {
-          this.#nl(2);
-          this.#label(`sub${i + 1}`);
-          this.#emit(".sub");
-          this.disasemble(w.t);
-          w.done = true;
-          count++;
-        }
+    }
+
+    let subOffset = 0;
+    this.extraBehaviors.forEach((behavior, i) => {
+      let mainName = `behavior${i + 1}`;
+
+      this.#nl(2);
+      this.#label(mainName);
+      this.#emit(".behavior");
+      this.disasemble(behavior, mainName, subOffset);
+
+      behavior.subs?.forEach((sub, i) => {
+        this.#nl(2);
+        this.#label(`sub${i + subOffset + 1}`);
+        this.#emit(".sub");
+        this.disasemble(sub, mainName, subOffset);
       });
-      this.bps.forEach((w, i) => {
-        if (!w.done) {
-          this.#nl(2);
-          this.#label(`bp${i + 1}`);
-          this.blueprint(w.t);
-          w.done = true;
-          count++;
-        }
-      });
-    } while (count);
+      subOffset += behavior.subs?.length || 0;
+    });
+
+    this.bps.forEach((bp, i) => {
+      this.#nl(2);
+      this.#label(`bp${i + 1}`);
+      this.blueprint(bp);
+    });
   }
 
   #nl(count = 1) {

@@ -1,9 +1,52 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`bp_multi_behavior.txt 1`] = `
+"main:
+  .blueprint	"f_building1x1d"
+  .component	2, c_behavior, :behavior1
+  .component	3, c_behavior, :behavior2
+
+
+behavior1:
+  .behavior	
+  .name	"Call sub1"
+  call	$sub=:sub1
+
+
+sub1:
+  .sub	
+  .name	"sub1"
+
+
+behavior2:
+  .behavior	
+  .name	"Call sub2"
+  call	$sub=:sub2
+
+
+sub2:
+  .sub	
+  .name	"sub2""
+`;
+
 exports[`issue2.txt 1`] = `
 "main:
   .name	"foo"
 label0:
   set_reg	goto, goto
   jump	:label0"
+`;
+
+exports[`recurse.txt 1`] = `
+"main:
+  .name	"foo"
+  call	$sub=:sub1
+  .ret	
+
+
+sub1:
+  .sub	
+  .name	"bar"
+  call	$sub=:sub1
+  .ret	"
 `;
