@@ -1,5 +1,25 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`dead_code_deletion.asm 1`] = `
+{
+  "0": {
+    "op": "set_reg",
+  },
+  "1": {
+    "next": 1,
+    "op": "set_reg",
+  },
+  "parameters": [],
+}
+`;
+
+exports[`empty.asm 1`] = `
+{
+  "name": "foo",
+  "parameters": [],
+}
+`;
+
 exports[`issue2.asm 1`] = `
 {
   "0": {
@@ -58,26 +78,6 @@ exports[`label.asm 1`] = `
   "parameters": [],
 }
 `;
-
-exports[`dead_code_deletion.asm 1`] = `
-{
-  "0": {
-    "op": "set_reg",
-  },
-  "1": {
-    "next": 1,
-    "op": "set_reg",
-  },
-  "parameters": [],
-}
-`;
-
-exports[`empty.asm 1`] = `
-{
-  "name": "foo",
-  "parameters": [],
-}
-`
 
 exports[`recurse_main.asm 1`] = `
 {
