@@ -78,3 +78,15 @@ exports[`empty.asm 1`] = `
   "parameters": [],
 }
 `
+
+exports[`recurse_main.asm 1`] = `
+{
+  "0": {
+    "next": false,
+    "op": "call",
+    "sub": 0,
+  },
+  "name": "foo",
+  "parameters": [],
+}
+`;
