@@ -100,11 +100,12 @@ class FunctionScope {
   rawEmit(name: string, ...args: string[]) {
     this.instructions.push({ name, args: args });
   }
-
 }
 
 function isMainFunction(f: ts.FunctionDeclaration): boolean {
-  return f.modifiers?.some((m) => m.kind === ts.SyntaxKind.ExportKeyword) || false;
+  return (
+    f.modifiers?.some((m) => m.kind === ts.SyntaxKind.ExportKeyword) || false
+  );
 }
 
 class Compiler {
@@ -168,7 +169,6 @@ class Compiler {
     this.#regAlloc();
   }
 
-
   #regAlloc() {
     // TODO: could probably do better dataflow analysis if we used SSA.
     const available = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
@@ -227,7 +227,9 @@ class Compiler {
   }
 
   comment(txt: string) {
-    this.currentScope.instructions[this.currentScope.instructions.length - 1].comment = txt;
+    this.currentScope.instructions[
+      this.currentScope.instructions.length - 1
+    ].comment = txt;
   }
 
   compileStatement(n: ts.Statement) {
@@ -470,48 +472,11 @@ class Compiler {
         case ts.SyntaxKind.PercentToken:
           return this.compileNumOp(e, dest);
         case ts.SyntaxKind.EqualsToken:
-          if (ts.isIdentifier(e.left)) {
-            const lvar = this.variable(e.left);
-            this.compileExpr(e.right, lvar);
-            if (dest) {
-              this.#emit(methods.setReg, lvar, dest);
-              dest.refs.push({
-                instruction: this.currentScope.instructions.length,
-                arg: 0,
-                dir: "w",
-              });
-            } else {
-              dest = lvar;
-            }
-            return dest;
-          } else if (ts.isArrayLiteralExpression(e.left)) {
-            if (!ts.isCallExpression(e.right)) {
-              this.#error("expected function call", e.right);
-            }
-            const outs = e.left.elements.map((el) => {
-              if (ts.isOmittedExpression(el)) {
-                return undefined;
-              } else if (ts.isIdentifier(el)) {
-                return this.variable(el);
-              } else {
-                this.#error(
-                  `unsupported array element ${el.kind} ${
-                    ts.SyntaxKind[el.kind]
-                  }`,
-                  e
-                );
-              }
-            });
-            return this.compileCall(e.right as ts.CallExpression, outs);
-          } else {
-            this.#error(
-              `unsupported assignment to ${e.left.kind} ${
-                ts.SyntaxKind[e.left.kind]
-              }`,
-              e
-            );
-          }
+          return this.compileAssignment(e as any, dest);
         default:
+          if (e.operatorToken.kind > ts.SyntaxKind.FirstAssignment && e.operatorToken.kind < ts.SyntaxKind.PercentEqualsToken) {
+            return this.compileCompoundAssignment(e, dest);
+          }
           this.#error(
             `unsupported binary expression ${e.operatorToken.kind} ${
               ts.SyntaxKind[e.operatorToken.kind]
@@ -562,8 +527,80 @@ class Compiler {
         name: "",
         reg: JSON.stringify(e.text),
       };
+    } else if (ts.isParenthesizedExpression(e)) {
+      return this.compileExpr(e.expression, dest);
     }
     this.#error(`unsupported expression ${e.kind} ${ts.SyntaxKind[e.kind]}`, e);
+  }
+
+  compileCompoundAssignment(e: ts.BinaryExpression, dest?: Variable):Variable {
+    let op:ts.SyntaxKind;
+    switch (e.operatorToken.kind) {
+      case ts.SyntaxKind.PlusEqualsToken:
+        op = ts.SyntaxKind.PlusToken;
+        break;
+      case ts.SyntaxKind.MinusEqualsToken:
+        op = ts.SyntaxKind.MinusToken;
+        break;
+      case ts.SyntaxKind.AsteriskEqualsToken:
+        op = ts.SyntaxKind.AsteriskToken;
+        break;
+      case ts.SyntaxKind.SlashEqualsToken:
+        op = ts.SyntaxKind.SlashToken;
+        break;
+      case ts.SyntaxKind.PercentEqualsToken:
+        op = ts.SyntaxKind.PercentToken;
+        break;
+      default:
+        this.#error(`unsupported compound assignment ${e.operatorToken.kind} ${ts.SyntaxKind[e.operatorToken.kind]}`, e);
+    }
+    return this.compileAssignment(ts.factory.createAssignment(e.left, ts.factory.createBinaryExpression(e.left, op, e.right)), dest);
+    
+  }
+
+  compileAssignment(e: ts.AssignmentExpression<ts.AssignmentOperatorToken>, dest?: Variable): Variable {
+    if (ts.isIdentifier(e.left)) {
+      const lvar = this.variable(e.left);
+      this.compileExpr(e.right, lvar);
+      if (dest) {
+        this.#emit(methods.setReg, lvar, dest);
+        dest.refs.push({
+          instruction: this.currentScope.instructions.length,
+          arg: 0,
+          dir: "w",
+        });
+      } else {
+        dest = lvar;
+      }
+      return dest;
+    } else if (ts.isArrayLiteralExpression(e.left)) {
+      if (!ts.isCallExpression(e.right)) {
+        this.#error("expected function call", e.right);
+      }
+      const outs = e.left.elements.map((el) => {
+        if (ts.isOmittedExpression(el)) {
+          return undefined;
+        } else if (ts.isIdentifier(el)) {
+          return this.variable(el);
+        } else {
+          this.#error(
+            `unsupported array element ${el.kind} ${ts.SyntaxKind[el.kind]}`,
+            e
+          );
+        }
+      });
+      return this.compileCall(e.right as ts.CallExpression, outs);
+    } else if (ts.isPropertyAccessExpression(e.left)) {
+      if (ts.isIdentifier(e.left.name) && e.left.name.text == "num"/* || e.left.name == "coord"*/) {
+        return this.compileAssignment(ts.factory.createAssignment(e.left.expression, e.right), dest);
+      }
+    }
+    this.#error(
+      `unsupported assignment to ${e.left.kind} ${
+        ts.SyntaxKind[e.left.kind]
+      }`,
+      e
+    );
   }
 
   compileNumOp(e: ts.BinaryExpression, dest?: Variable) {
@@ -620,7 +657,7 @@ class Compiler {
     rawArgs: Array<ts.Expression> = [],
     outs: (Variable | undefined)[] = []
   ): Variable {
-    let dest = outs[0] || this.#temp();
+    let dest = outs[0] || (outs[0]=this.#temp());
     const args: (string | Variable)[] = [];
     let info = methods[name];
     if (!info && this.subs.has(name)) {
@@ -638,7 +675,7 @@ class Compiler {
         in: ins,
         out,
         sub: name,
-      }
+      };
     }
     if (!info) {
       this.#error(`unknown method ${name}`, refNode);
@@ -803,14 +840,10 @@ class Compiler {
   }
 
   compileIf(s: ts.IfStatement, dest?: Variable, parentEnd?: string) {
-    if (
-      s.expression.kind === ts.SyntaxKind.TrueKeyword
-    ) {
+    if (s.expression.kind === ts.SyntaxKind.TrueKeyword) {
       this.compileStatement(s.thenStatement);
       return;
-    } else if (
-      s.expression.kind === ts.SyntaxKind.FalseKeyword
-    ) {
+    } else if (s.expression.kind === ts.SyntaxKind.FalseKeyword) {
       if (s.elseStatement) {
         this.compileStatement(s.elseStatement);
       }
@@ -1097,7 +1130,10 @@ class Compiler {
             });
             return this.compileCall(decl.initializer, outs);
           } else {
-            this.#error("only call expression are valid for array initializer", decl);
+            this.#error(
+              "only call expression are valid for array initializer",
+              decl
+            );
           }
         } else {
           this.#error("Unable to bind object", decl);
@@ -1127,7 +1163,11 @@ class Compiler {
     dir: "r" | "w" | "rw" = "rw"
   ): Variable {
     const v = isVar(varname) ? varname : this.variable(varname);
-    v.refs.push({ instruction: this.currentScope.instructions.length, arg: argNum, dir });
+    v.refs.push({
+      instruction: this.currentScope.instructions.length,
+      arg: argNum,
+      dir,
+    });
     return v;
   }
 
@@ -1141,7 +1181,7 @@ class Compiler {
 
   #emit(info: MethodInfo, ...args: (string | Variable)[]) {
     const name = info.id;
-    if (name == 'get_distance') debugger;
+    if (name == "get_distance") debugger;
     const strArgs = args.map((v, i) => {
       if (typeof v === "string") {
         return v;
@@ -1190,13 +1230,16 @@ class Compiler {
   }
 
   asm() {
-    return this.functionScopes.flatMap((scope) => scope.instructions).map(formatInstruction).join("\n");
+    return this.functionScopes
+      .flatMap((scope) => scope.instructions)
+      .map(formatInstruction)
+      .join("\n");
   }
 }
 interface Instruction {
   name: string;
   args: (string | null)[];
-  next?: (string | null);
+  next?: string | null;
   comment?: string;
 }
 interface ArgRef {
@@ -1235,8 +1278,7 @@ export const CompilerOptions = {
   target: ts.ScriptTarget.ES2022,
 };
 
-
-export function compileProgram(program: ts.Program):string {
+export function compileProgram(program: ts.Program): string {
   // TODO: ended up not using the typechecker. Should probably just parse
   // to reduce bundle size.
   ts.getPreEmitDiagnostics(program).forEach((diagnostic) => {
@@ -1245,12 +1287,17 @@ export function compileProgram(program: ts.Program):string {
         diagnostic.file,
         diagnostic.start!
       );
-      let message = ts.flattenDiagnosticMessageText(diagnostic.messageText, "\n");
+      let message = ts.flattenDiagnosticMessageText(
+        diagnostic.messageText,
+        "\n"
+      );
       console.log(
         `${diagnostic.file.fileName} (${line + 1},${character + 1}): ${message}`
       );
     } else {
-      console.log(ts.flattenDiagnosticMessageText(diagnostic.messageText, "\n"));
+      console.log(
+        ts.flattenDiagnosticMessageText(diagnostic.messageText, "\n")
+      );
     }
   });
   for (const f of program.getSourceFiles()) {
@@ -1265,7 +1312,6 @@ export function compileProgram(program: ts.Program):string {
   }
   throw new Error("No source file found");
 }
-
 
 function isNumeric(e: ts.Expression) {
   return (

@@ -27,8 +27,8 @@ exports[`numeric_compare.ts 1`] = `
   check_number	:l0, :l1, A, 20
   jump	:l0
 l1:
-  gethome	
-  domove	r3
+  gethome	A
+  domove	A
   .ret	
   jump	:l0
 l0:
@@ -37,13 +37,40 @@ l0:
   check_number	:l4, :l3, B, 50
   jump	:l3
 l3:
-  gethome	
-  domove	r8
+  gethome	B
+  domove	B
   jump	:l2
 l4:
   notify	nil, $txt="ok"
   jump	:l2
 l2:
+  .ret	"
+`;
+
+exports[`rng.ts 1`] = `
+"rng:
+  .name	"rng"
+  .pname	p1, max
+  .pname	p2, min
+  .pname	p3, state
+  unlock	
+  sub	p1, p2, A
+  add	A, 1, B
+  check_number	:l0, :l1, p3, 0
+  jump	:l1
+l1:
+  faction_item_amount	"metalore", p3, 
+  jump	:l0
+l0:
+  mul	17364, p3, A
+  add	A, 1, C
+  modulo	C, 65521, p3
+  .pname	p4
+  .out	p4
+  mul	B, p3, C
+  div	C, 65521, A
+  add	A, p2, p4
+  .ret	
   .ret	"
 `;
 
