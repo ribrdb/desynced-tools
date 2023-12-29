@@ -71,3 +71,10 @@ exports[`dead_code_deletion.asm 1`] = `
   "parameters": [],
 }
 `;
+
+exports[`empty.asm 1`] = `
+{
+  "name": "foo",
+  "parameters": [],
+}
+`
