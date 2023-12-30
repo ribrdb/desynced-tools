@@ -1,2 +1,2 @@
 main:
-  .name "foo"
+  .name foo

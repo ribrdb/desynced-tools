@@ -3,13 +3,37 @@ import { RawBlueprint } from "./RawBlueprint";
 import { RawInstruction } from "./RawInstruction";
 import { instructions } from "./dsinstr";
 import { DesyncedStringToObject } from "../dsconvert";
+import { Pass, Program } from "../ir/program";
+import {
+  Arg,
+  Instruction,
+  RegRef,
+  isLabel,
+  isLiteralValue,
+  isNodeRef,
+  isRegRef,
+  isStop,
+  isSimpleLiteral,
+  LiteralValue,
+  Stop,
+  NodeRef,
+} from "../ir/instruction";
+
+interface RawValue {
+  id?: string;
+  num?: number;
+  coord?: { x: number; y: number };
+}
 
 export class Disassembler {
+  program = new Program();
   output: string[] = [];
   mainBehavior?: RawBehavior;
   extraBehaviors: RawBehavior[] = [];
   bps: RawBlueprint[] = [];
   nextLabel = 0;
+
+  pendingLabels: string[] = [];
 
   constructor(obj: Record<string, unknown>) {
     this.#label("main");
@@ -22,6 +46,10 @@ export class Disassembler {
   }
 
   code() {
+    if (this.output.length == 0) {
+      buildLabels(this.program);
+      this.program.apply(RenderAssembly(this.output));
+    }
     return this.output.join("\n");
   }
 
@@ -38,20 +66,21 @@ export class Disassembler {
     }
     if (obj.logistics) {
       for (const [k, v] of Object.entries(obj.logistics)) {
-        this.#emit(`.logistics`, k, v);
+        this.#emit(`.logistics`, k, { literal: v });
       }
     }
     if (obj.regs) {
       for (const [k, v] of Object.entries(obj.regs)) {
-        this.#emit(`.reg`, Number(k), v);
+        this.#emit(`.reg`, { num: Number(k) }, v);
       }
     }
     obj.locks?.forEach?.(
-      (v, i) => typeof v === "string" && this.#emit(`.lock`, i, { id: v })
+      (v, i) =>
+        typeof v === "string" && this.#emit(`.lock`, { num: i }, { id: v })
     );
     if (obj.links) {
       for (const [k, v] of obj.links) {
-        this.#emit(`.link`, k, v);
+        this.#emit(`.link`, { num: k }, { num: v });
       }
     }
     if (obj.components) {
@@ -60,12 +89,12 @@ export class Disassembler {
           this.extraBehaviors.push(code);
           this.#emit(
             `.component`,
-            k,
+            { num: k },
             { id: v },
-            `:behavior${this.extraBehaviors.length}`
+            { label: `behavior${this.extraBehaviors.length}` }
           );
         } else {
-          this.#emit(`.component`, k, { id: v });
+          this.#emit(`.component`, { num: k }, { id: v });
         }
       }
     }
@@ -77,7 +106,7 @@ export class Disassembler {
     }
     obj.parameters?.forEach((v, i) => {
       let name = obj.pnames?.[i];
-      const reg = { id: `p${i + 1}` };
+      const reg = new RegRef(i + 1);
       if (name) {
         this.#emit(".pname", reg, name);
       }
@@ -85,113 +114,88 @@ export class Disassembler {
         this.#emit(".out", reg);
       }
     });
-    const labels = this.#buildLabels(obj);
+    const nodeOffset = this.program.code.length;
     for (let i = 0; `${i}` in obj; i++) {
-      this.#emitInstr(obj[`${i}`], i, labels, subOffset, main);
+      this.#emitInstr(obj[`${i}`], i, nodeOffset, subOffset, main);
     }
-  }
-
-  #buildLabels(obj: RawBehavior) {
-    const labels = new Map<number, string>();
-    for (let i = 0; `${i}` in obj; i++) {
-      const inst = obj[`${i}`];
-      if (inst.next && !labels.has(inst.next)) {
-        labels.set(inst.next, `:label${this.nextLabel++}`);
-      }
-      const def = instructions[inst.op];
-      if (def?.execArgs) {
-        for (const arg of def.execArgs) {
-          const target = inst[arg] ?? i + 2;
-          if (target && typeof target == "number" && obj[`${target-1}`]) {
-            if (!labels.has(target)) {
-              labels.set(target, `:label${this.nextLabel++}`);
-            }
-            inst[arg] = labels.get(target)!;
-          }
-        }
-      }
-    }
-    return labels;
+    this.program.code[this.program.code.length - 1].next ??= { stop: true };
   }
 
   #emitInstr(
-    inst: RawInstruction,
+    raw: RawInstruction,
     ip: number,
-    labels: Map<number, string>,
+    nodeOffset,
     subOffset: number,
     main: string
   ) {
-    const label = labels.get(ip + 1);
-    if (label) this.#label(label.substring(1));
-    if (inst.cmt) {
-      this.#nl();
-      this.#emit(`; ${inst.cmt}`);
-    }
-    const args: any[] = [];
+    const args: Arg[] = [];
+    const def = instructions[raw.op];
 
-    for (const [k, v] of Object.entries(inst)) {
-      if (k == `${Number(k)}`) {
-        args[Number(k)] = this.#convertOp(v);
+    for (const [k, v] of Object.entries(raw)) {
+      const kn = Number(k);
+      if (k == `${kn}`) {
+        args[kn] = this.#convertOp(v, nodeOffset, def.execArgs?.includes(kn));
       }
     }
-    if (inst.op == "call") {
-      const sub = inst.sub;
-      const subLabel = sub ? `:sub${subOffset + sub}` : `:${main}`;
-      args.push({id:`$sub=${subLabel}`});
+    const inst = this.#emit(raw.op, ...args);
+
+    if (raw.cmt) {
+      inst.comment = raw.cmt;
     }
-    if (inst.txt) {
-      args.push({ id: `$txt=${JSON.stringify(inst.txt)}` });
-    } else if (inst.c != null) {
-      args.push({ id: `$c=${inst.c}` });
-    } else if (inst.bp) {
-      if (typeof inst.bp == "string") {
-        inst.bp = DesyncedStringToObject("DSB" + inst.bp) as RawBlueprint;
+    if (raw.op == "call") {
+      const sub = raw.sub;
+      const subLabel = sub ? `sub${subOffset + sub}` : `${main}`;
+      inst.sub = { label: subLabel };
+    }
+    if (raw.txt) {
+      inst.text = raw.txt;
+    } else if (raw.c != null) {
+      inst.c = raw.c;
+    } else if (raw.bp) {
+      inst.bp = { label: `bp${this.bps.length}` };
+      if (typeof raw.bp == "string") {
+        raw.bp = DesyncedStringToObject("DSB" + raw.bp) as RawBlueprint;
       }
-      this.bps.push(inst.bp);
-      args.push({ id: `$bp=:bp${this.bps.length}` });
+      this.bps.push(raw.bp);
     }
-    if (inst.nx != null && inst.ny != null) {
-      args.push({id:`$nx=${inst.nx}`});
-      args.push({id:`$ny=${inst.ny}`});
+    if (raw.next != null) {
+      inst.next = this.#convertOp(raw.next, nodeOffset, true) as Stop | NodeRef;
     }
-    this.#emit(inst.op, ...args);
-    if (inst.next == false) {
-      this.#emit(".ret");
-    } else if (inst.next) {
-      this.#emit("jump", labels.get(inst.next)!);
+    if (raw.nx != null && raw.ny != null) {
+      inst.nx = raw.nx;
+      inst.ny = raw.ny;
     }
   }
 
-  #convertOp(op: unknown): any {
+  #convertOp(op: unknown, nodeOffset: number, isExec?: boolean): Arg {
     if (typeof op == "string") {
       if (op.match(/^[A-Z]$/)) {
-        return { id: op };
+        return new RegRef(op);
       }
-      return op;
     } else if (typeof op == "number") {
-      if (op > 0) {
-        return { id: `p${op}` };
+      if (isExec) {
+        return { nodeIndex: op - 1 +nodeOffset };
       } else {
-        switch (-op) {
-          case 1:
-            return { id: "goto" };
-          case 2:
-            return { id: "store" };
-          case 3:
-            return { id: "visual" };
-          case 4:
-            return { id: "signal" };
-        }
+        return new RegRef(op);
       }
+    } else if (op == false) {
+      return { stop: true };
     }
-    return op;
+    const rv = op as RawValue;
+    const v: LiteralValue = {
+      id: rv.id,
+      num: rv.num,
+    };
+    if (rv.coord) {
+      v.coord = [rv.coord.x, rv.coord.y];
+    }
+    return v;
   }
 
   #doExtras() {
     if (this.mainBehavior) {
       this.disasemble(this.mainBehavior);
       this.mainBehavior.subs?.forEach((sub, i) => {
-        this.#nl(2);
         this.#label(`sub${i + 1}`);
         this.#emit(".sub");
         this.disasemble(sub);
@@ -202,13 +206,11 @@ export class Disassembler {
     this.extraBehaviors.forEach((behavior, i) => {
       let mainName = `behavior${i + 1}`;
 
-      this.#nl(2);
       this.#label(mainName);
       this.#emit(".behavior");
       this.disasemble(behavior, mainName, subOffset);
 
       behavior.subs?.forEach((sub, i) => {
-        this.#nl(2);
         this.#label(`sub${i + subOffset + 1}`);
         this.#emit(".sub");
         this.disasemble(sub, mainName, subOffset);
@@ -217,61 +219,140 @@ export class Disassembler {
     });
 
     this.bps.forEach((bp, i) => {
-      this.#nl(2);
       this.#label(`bp${i + 1}`);
       this.blueprint(bp);
     });
   }
 
-  #nl(count = 1) {
-    for (let i = 0; i < count; i++) {
-      this.output.push("");
-    }
-  }
-
   #label(label: string) {
-    this.output.push(`${label}:`);
+    this.pendingLabels.push(label);
   }
 
-  #emit(op: string, ...args: unknown[]) {
-    this.output.push(
-      `  ${op}\t${args.map((x) => this.#convert(x)).join(", ")}`
-    );
+  #emit(op: string, ...args: (Arg | string)[]) {
+    const convertedArgs = args.map((x) => this.#convert(x));
+    const instr = new Instruction(op, convertedArgs);
+    if (this.pendingLabels.length > 0) {
+      instr.labels = this.pendingLabels;
+      this.pendingLabels = [];
+    }
+    this.program.add(instr);
+    return instr;
   }
 
-  #convert(x: unknown): string {
+  #convert(x: Arg | string): Arg {
     if (typeof x === "string") {
-      if (x[0] == ":") {
-        return x;
-      }
-      return JSON.stringify(x);
-    } else if (typeof x === "number") {
-      return x.toString();
-    } else if (typeof x === "boolean") {
-      return x ? "true" : "false";
-    } else if (x == null) {
-      return "nil";
-    } else if (typeof x != "object") {
-      throw new Error(`Unrecognized type: ${typeof x}`);
-    }
-    const keys = new Set(Object.keys(x));
-    for (const k of keys) {
-      if (x[k] == undefined) {
-        keys.delete(k);
+      if (x.match(/^[a-zA-Z_]\w*$/)) {
+        return { id: x };
+      } else {
+        return { literal: x };
       }
     }
-    if (keys.size == 1) {
-      switch (Object.keys(x)[0]) {
-        case "id":
-          return (x as any).id;
-        case "num":
-          return (x as any).num.toString();
-        case "coord":
-          return `${(x as any).coord.x} ${(x as any).coord.y}`;
-      }
-    } else if (keys.size == 2 && keys.has("id") && keys.has("num")) {
-      return `${(x as any).id}@${(x as any).num}`;
-    }
-    throw new Error(`Unrecognized argument: ${JSON.stringify(x)}`);
+    return x;
   }
+}
+
+export function RenderAssembly(output: string[]): Pass {
+  return (instr, ip) => {
+    if (ip != 0 && [".behavior", ".sub", ".blueprint"].includes(instr.op)) {
+      output.push("");
+      output.push("");
+    }
+    if (instr.comment) {
+      output.push("");
+      output.push(`; ${instr.comment}`);
+    }
+    instr.labels?.forEach((label) => {
+      output.push(`${label}:`);
+    });
+    const args = instr.args.map((arg) => renderArg(arg));
+    if (isLabel(instr.bp)) {
+      args.push(`$bp=:${instr.bp.label}`);
+    }
+    if (instr.text) {
+      args.push(`$txt=${JSON.stringify(instr.text)}`);
+    }
+    if (isLabel(instr.sub)) {
+      args.push(`$sub=:${instr.sub.label}`);
+    }
+    if (instr.c != null) {
+      args.push(`$c=${instr.c}`);
+    }
+    if (instr.nx != null && instr.ny != null) {
+      args.push(`$nx=${instr.nx}`);
+      args.push(`$ny=${instr.ny}`);
+    }
+    output.push(`  ${instr.op}\t${args.join(", ")}`);
+    if (isLabel(instr.next)) {
+      output.push(`  jump\t:${instr.next.label}`);
+    } else if (isStop(instr.next)) {
+      output.push(`  .ret`);
+    } else if (instr.next) {
+      throw new Error(`Unexpected next: ${instr.next}`);
+    }
+  };
+}
+
+function renderArg(arg: Arg | undefined): string {
+  if (!arg) {
+    return "nil";
+  } else if (isLiteralValue(arg)) {
+    if (arg.id) {
+      if (arg.coord) {
+        throw new Error(`Unexpected coord: ${JSON.stringify(arg)}`);
+      }
+      if (arg.num) {
+        return `${arg.id}@${arg.num}`;
+      } else {
+        return `${arg.id}`;
+      }
+    } else if (arg.coord) {
+      if (arg.num) {
+        throw new Error(`Unexpected num: ${JSON.stringify(arg)}`);
+      }
+      return `${arg.coord[0]} ${arg.coord[1]}`;
+    }
+    return arg.num!.toString();
+  } else if (isLabel(arg)) {
+    return `:${arg.label}`;
+  } else if (isNodeRef(arg)) {
+    return `:${arg.nodeIndex}`;
+  } else if (isStop(arg)) {
+    return `false`;
+  } else if (isRegRef(arg)) {
+    return arg.name();
+  } else if (isSimpleLiteral(arg)) {
+    return JSON.stringify(arg.literal);
+  }
+  throw new Error(`Unrecognized arg: ${JSON.stringify(arg)}`);
+}
+
+function buildLabels(prog: Program) {
+  const labels = new Map<number, string>();
+  prog.apply((inst, i) => {
+    if (isNodeRef(inst.next)) {
+      if (inst.next.nodeIndex === i + 1) {
+        inst.next = undefined;
+      } else {
+        if (!labels.has(inst.next.nodeIndex)) {
+          labels.set(inst.next.nodeIndex, `label${labels.size}`);
+        }
+        inst.next = { label: labels.get(inst.next.nodeIndex)! };
+      }
+    }
+    const def = instructions[inst.op];
+    inst.forArgs(def?.execArgs, (arg, index) => {
+      arg ??= { nodeIndex: i + 1 }; // TODO: should we really emit labels for the next instruction?
+      if (isNodeRef(arg)) {
+        if (!labels.has(arg.nodeIndex)) {
+          labels.set(arg.nodeIndex, `label${labels.size}`);
+        }
+        inst[index] = labels.get(arg.nodeIndex)!;
+      }
+    });
+  });
+  prog.apply((inst, i) => {
+    if (labels.has(i)) {
+      inst.labels.push(labels.get(i)!);
+    }
+  });
 }
