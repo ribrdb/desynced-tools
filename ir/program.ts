@@ -2,17 +2,13 @@ import { Instruction } from "./instruction";
 
 export interface Pass {
     reverse?: boolean;
-    (instr: Instruction, i: number): void;
+    (instr: Instruction, ip: number, program:Program): void;
 }
 
 export class Program {
     code: Instruction[] = [];
 
     add(instr: Instruction) {
-        if (this.code.length > 0) {
-            const last = this.code[this.code.length - 1];
-            last.next ??= {nodeIndex: this.code.length};
-        }
         this.code.push(instr);
     }
 
@@ -23,16 +19,21 @@ export class Program {
         }
         for (let i = 0; i < this.code.length; i++) {
             const instr = this.code[i];
-            pass(instr, i);
+            pass(instr, i, this);
         }
     }
 
     #applyReverse(pass: Pass) {
         for (let i = this.code.length - 1; i >= 0; i--) {
             const instr = this.code[i];
-            pass(instr, i);
+            pass(instr, i, this);
         }
     }
 
     // TODO: moveInstruction
+}
+
+export function reversePass(pass: Pass): Pass {
+    pass.reverse = true;
+    return pass;
 }

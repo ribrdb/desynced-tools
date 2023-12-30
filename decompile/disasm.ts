@@ -185,10 +185,8 @@ export class Disassembler {
     const v: LiteralValue = {
       id: rv.id,
       num: rv.num,
+      coord: rv.coord,
     };
-    if (rv.coord) {
-      v.coord = [rv.coord.x, rv.coord.y];
-    }
     return v;
   }
 
