@@ -8,15 +8,14 @@ import {
   Arg,
   Instruction,
   RegRef,
-  isLabel,
-  isLiteralValue,
-  isNodeRef,
-  isRegRef,
-  isStop,
-  isSimpleLiteral,
-  LiteralValue,
   Stop,
   NodeRef,
+  TRUE,
+  FALSE,
+  LiteralValue,
+  Label,
+  STOP,
+  StringLiteral,
 } from "../ir/instruction";
 
 interface RawValue {
@@ -66,21 +65,34 @@ export class Disassembler {
     }
     if (obj.logistics) {
       for (const [k, v] of Object.entries(obj.logistics)) {
-        this.#emit(`.logistics`, k, { literal: v });
+        this.#emit(`.logistics`, k, v ? TRUE : FALSE);
       }
     }
     if (obj.regs) {
       for (const [k, v] of Object.entries(obj.regs)) {
-        this.#emit(`.reg`, { num: Number(k) }, v);
+        this.#emit(
+          `.reg`,
+          new LiteralValue({ num: Number(k) }),
+          new LiteralValue(v)
+        );
       }
     }
     obj.locks?.forEach?.(
       (v, i) =>
-        typeof v === "string" && this.#emit(`.lock`, { num: i }, { id: v })
+        typeof v === "string" &&
+        this.#emit(
+          `.lock`,
+          new LiteralValue({ num: i }),
+          new LiteralValue({ id: v })
+        )
     );
     if (obj.links) {
       for (const [k, v] of obj.links) {
-        this.#emit(`.link`, { num: k }, { num: v });
+        this.#emit(
+          `.link`,
+          new LiteralValue({ num: k }),
+          new LiteralValue({ num: v })
+        );
       }
     }
     if (obj.components) {
@@ -89,12 +101,16 @@ export class Disassembler {
           this.extraBehaviors.push(code);
           this.#emit(
             `.component`,
-            { num: k },
-            { id: v },
-            { label: `behavior${this.extraBehaviors.length}` }
+            new LiteralValue({ num: k }),
+            new LiteralValue({ id: v }),
+            new Label(`behavior${this.extraBehaviors.length}`)
           );
         } else {
-          this.#emit(`.component`, { num: k }, { id: v });
+          this.#emit(
+            `.component`,
+            new LiteralValue({ num: k }),
+            new LiteralValue({ id: v })
+          );
         }
       }
     }
@@ -118,13 +134,13 @@ export class Disassembler {
     for (let i = 0; `${i}` in obj; i++) {
       this.#emitInstr(obj[`${i}`], i, nodeOffset, subOffset, main);
     }
-    this.program.code[this.program.code.length - 1].next ??= { stop: true };
+    this.program.code[this.program.code.length - 1].next ??= STOP;
   }
 
   #emitInstr(
     raw: RawInstruction,
     ip: number,
-    nodeOffset,
+    nodeOffset: number,
     subOffset: number,
     main: string
   ) {
@@ -145,14 +161,14 @@ export class Disassembler {
     if (raw.op == "call") {
       const sub = raw.sub;
       const subLabel = sub ? `sub${subOffset + sub}` : `${main}`;
-      inst.sub = { label: subLabel };
+      inst.sub = new Label(subLabel);
     }
     if (raw.txt) {
       inst.text = raw.txt;
     } else if (raw.c != null) {
       inst.c = raw.c;
     } else if (raw.bp) {
-      inst.bp = { label: `bp${this.bps.length}` };
+      inst.bp = new Label(`bp${this.bps.length}`);
       if (typeof raw.bp == "string") {
         raw.bp = DesyncedStringToObject("DSB" + raw.bp) as RawBlueprint;
       }
@@ -174,19 +190,19 @@ export class Disassembler {
       }
     } else if (typeof op == "number") {
       if (isExec) {
-        return { nodeIndex: op - 1 +nodeOffset };
+        return new NodeRef(op - 1 + nodeOffset);
       } else {
         return new RegRef(op);
       }
     } else if (op == false) {
-      return { stop: true };
+      return STOP;
     }
     const rv = op as RawValue;
-    const v: LiteralValue = {
+    const v = new LiteralValue({
       id: rv.id,
       num: rv.num,
       coord: rv.coord,
-    };
+    });
     return v;
   }
 
@@ -240,9 +256,9 @@ export class Disassembler {
   #convert(x: Arg | string): Arg {
     if (typeof x === "string") {
       if (x.match(/^[a-zA-Z_]\w*$/)) {
-        return { id: x };
+        return new LiteralValue({ id: x });
       } else {
-        return { literal: x };
+        return new StringLiteral(x);
       }
     }
     return x;
@@ -263,13 +279,13 @@ export function RenderAssembly(output: string[]): Pass {
       output.push(`${label}:`);
     });
     const args = instr.args.map((arg) => renderArg(arg));
-    if (isLabel(instr.bp)) {
+    if (instr.bp?.type === "label") {
       args.push(`$bp=:${instr.bp.label}`);
     }
     if (instr.text) {
       args.push(`$txt=${JSON.stringify(instr.text)}`);
     }
-    if (isLabel(instr.sub)) {
+    if (instr.sub?.type === "label") {
       args.push(`$sub=:${instr.sub.label}`);
     }
     if (instr.c != null) {
@@ -280,9 +296,9 @@ export function RenderAssembly(output: string[]): Pass {
       args.push(`$ny=${instr.ny}`);
     }
     output.push(`  ${instr.op}\t${args.join(", ")}`);
-    if (isLabel(instr.next)) {
+    if (instr.next?.type === "label") {
       output.push(`  jump\t:${instr.next.label}`);
-    } else if (isStop(instr.next)) {
+    } else if (instr.next?.type === "stop") {
       output.push(`  .ret`);
     } else if (instr.next) {
       throw new Error(`Unexpected next: ${instr.next}`);
@@ -293,54 +309,59 @@ export function RenderAssembly(output: string[]): Pass {
 function renderArg(arg: Arg | undefined): string {
   if (!arg) {
     return "nil";
-  } else if (isLiteralValue(arg)) {
-    if (arg.id) {
-      if (arg.coord) {
-        throw new Error(`Unexpected coord: ${JSON.stringify(arg)}`);
-      }
-      if (arg.num) {
-        return `${arg.id}@${arg.num}`;
-      } else {
-        return `${arg.id}`;
-      }
-    } else if (arg.coord) {
-      if (arg.num) {
-        throw new Error(`Unexpected num: ${JSON.stringify(arg)}`);
-      }
-      return `${arg.coord[0]} ${arg.coord[1]}`;
-    }
-    return arg.num!.toString();
-  } else if (isLabel(arg)) {
-    return `:${arg.label}`;
-  } else if (isNodeRef(arg)) {
-    return `:${arg.nodeIndex}`;
-  } else if (isStop(arg)) {
-    return `false`;
-  } else if (isRegRef(arg)) {
-    return arg.name();
-  } else if (isSimpleLiteral(arg)) {
-    return JSON.stringify(arg.literal);
   }
+  switch (arg.type) {
+    case "value":
+      if (arg.value.id) {
+        if (arg.value.coord) {
+          throw new Error(`Unexpected coord: ${JSON.stringify(arg)}`);
+        }
+        if (arg.value.num) {
+          return `${arg.value.id}@${arg.value.num}`;
+        } else {
+          return `${arg.value.id}`;
+        }
+      } else if (arg.value.coord) {
+        if (arg.value.num) {
+          throw new Error(`Unexpected num: ${JSON.stringify(arg.value)}`);
+        }
+        return `${arg.value.coord.x} ${arg.value.coord.y}`;
+      }
+      return arg.value.num!.toString();
+    case "label":
+      return `:${arg.label}`;
+    case "nodeRef":
+      return `:${arg.nodeIndex}`;
+    case "stop":
+      return "false";
+    case "regRef":
+      return arg.name();
+    case "boolean":
+      return arg.value ? "true" : "false";
+    case "string":
+      return JSON.stringify(arg.value);
+  }
+
   throw new Error(`Unrecognized arg: ${JSON.stringify(arg)}`);
 }
 
 function buildLabels(prog: Program) {
   const labels = new Map<number, string>();
   prog.apply((inst, i) => {
-    if (isNodeRef(inst.next)) {
+    if (inst.next?.type === "nodeRef") {
       if (inst.next.nodeIndex === i + 1) {
         inst.next = undefined;
       } else {
         if (!labels.has(inst.next.nodeIndex)) {
           labels.set(inst.next.nodeIndex, `label${labels.size}`);
         }
-        inst.next = { label: labels.get(inst.next.nodeIndex)! };
+        inst.next = new Label(labels.get(inst.next.nodeIndex)!);
       }
     }
     const def = instructions[inst.op];
     inst.forArgs(def?.execArgs, (arg, index) => {
-      arg ??= { nodeIndex: i + 1 }; // TODO: should we really emit labels for the next instruction?
-      if (isNodeRef(arg)) {
+      arg ??= new NodeRef(i + 1); // TODO: should we really emit labels for the next instruction?
+      if (arg?.type === "nodeRef") {
         if (!labels.has(arg.nodeIndex)) {
           labels.set(arg.nodeIndex, `label${labels.size}`);
         }

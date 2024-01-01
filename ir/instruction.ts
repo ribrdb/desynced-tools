@@ -1,68 +1,33 @@
-export interface LiteralValue {
-  num?: number;
-  id?: string;
-  coord?: { x: number; y: number };
-}
+export class LiteralValue {
+  readonly type = "value";
+  constructor(
+    public value: {
+      num?: number;
+      id?: string;
+      coord?: { x: number; y: number };
+    }
+  ) {}
 
-export function isLiteralValue(x: unknown): x is LiteralValue {
-  return (
-    typeof x === "object" &&
-    x != null &&
-    ((x as LiteralValue).num !== undefined ||
-      (x as LiteralValue).id !== undefined ||
-      (x as LiteralValue).coord !== undefined)
-  );
-}
-
-export interface Label {
-  label: string;
-}
-
-export function parseLabel(x: string): Label {
-  if (x.startsWith(":")) {
-    return { label: x.substring(1) };
-  } else if (x.endsWith(":")) {
-    return { label: x.substring(0, x.length - 1) };
+  stringValue() {
+    return this.value.id;
   }
-  throw new Error(`Invalid label: ${x}`);
 }
 
-export function isLabel(x: unknown): x is Label {
-  return (
-    typeof x === "object" && x != null && typeof (x as Label).label === "string"
-  );
+export class Label {
+  readonly type = "label";
+  constructor(public label: string) {}
 }
 
-export interface Stop {
-  stop: true;
+export class Stop {
+  readonly type = "stop";
+  constructor() {}
 }
 
-export function isStop(x: unknown): x is Stop {
-  return typeof x === "object" && x != null && (x as Stop).stop === true;
-}
+export const STOP = new Stop();
 
-export interface NodeRef {
-  nodeIndex: number;
-}
-
-export function isNodeRef(x: unknown): x is NodeRef {
-  return (
-    typeof x === "object" &&
-    x != null &&
-    typeof (x as NodeRef).nodeIndex === "number"
-  );
-}
-
-export interface VarRef {
-  varname: string;
-}
-
-export function isVarRef(x: unknown): x is VarRef {
-  return (
-    typeof x === "object" &&
-    x != null &&
-    typeof (x as VarRef).varname === "string"
-  );
+export class NodeRef {
+  readonly type = "nodeRef";
+  constructor(public nodeIndex: number) {}
 }
 
 const regNums = {
@@ -74,6 +39,8 @@ const regNums = {
 const regNames = [, "goto", "store", "visual", "signal"];
 
 export class RegRef {
+  readonly type = "regRef";
+
   constructor(readonly reg: number | string) {
     if (typeof reg === "number") {
       if (reg == 0 || reg < -4) {
@@ -107,32 +74,48 @@ export class RegRef {
   }
 }
 
-export function isRegRef(x: unknown): x is RegRef {
-  return typeof x === "object" && x != null && (x as RegRef).reg != null;
+export class Boolean {
+  readonly type = "boolean";
+  constructor(public value: boolean) {}
 }
 
-export interface SimpleLiteral {
-  literal: string | boolean | number;
+export const TRUE = new Boolean(true);
+export const FALSE = new Boolean(false);
+
+export class StringLiteral {
+  readonly type = "string";
+  constructor(public value: string) {}
+
+  stringValue() {
+    return this.value;
+  }
 }
 
-export function isSimpleLiteral(x: unknown): x is SimpleLiteral {
-  return typeof x === "object" && x != null && "literal" in x;
+export class ResolvedSub {
+  readonly type = "resolvedSub";
+  constructor(public index: number) {}
 }
 
 export type Arg =
   | LiteralValue
   | Label
   | NodeRef
-  | VarRef
   | RegRef
   | Stop
-  | SimpleLiteral;
+  | Boolean
+  | StringLiteral;
+
+export function isId(
+  value: Arg | undefined
+): value is LiteralValue & { value: { id: string } } {
+  return value?.type == "value" && typeof value.value.id === "string";
+}
 
 export function parseLuaNodeRef(x: number | false): NodeRef | Stop {
   if (x == false) {
-    return { stop: true };
+    return STOP;
   } else {
-    return { nodeIndex: x - 1 };
+    return new NodeRef(x - 1);
   }
 }
 
@@ -140,8 +123,8 @@ export class Instruction {
   next?: Label | NodeRef | Stop;
   text?: string;
   c?: number;
-  sub?: Label | number;
-  bp?: unknown;
+  sub?: Label | ResolvedSub;
+  bp?: Label;
   comment?: string;
   labels: string[] = [];
   lineno?: number;
