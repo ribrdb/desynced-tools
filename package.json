@@ -21,7 +21,7 @@
     "ts-node": "^10.9.1"
   },
   "scripts": {
-    "esbuild": "esbuild bundle.ts --outfile=website/bundle.out.js --bundle --format=esm --target=safari15 --external:util --external:node:* && esbuild compiler_bundle.ts --bundle --format=esm --target=safari15 --minify --outfile=website/compiler.js --external:path --external:fs",
+    "esbuild": "esbuild bundle.ts --outfile=website/bundle.out.js --bundle --format=esm --target=safari15 --external:util --external:node:* && esbuild compiler_bundle.ts --bundle --format=esm --target=safari15 --minify --outfile=website/compiler.js --external:path --external:fs --external:util",
     "build": "tsc -p tsconfig.json",
     "test": "jest"
   },
