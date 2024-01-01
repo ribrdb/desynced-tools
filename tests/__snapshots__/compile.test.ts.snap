@@ -26,13 +26,13 @@ exports[`if_unit_type.ts 1`] = `
   unit_type	p1, :l2, :l1, :l3
   jump	:l3
 l1:
-  notify	nil, $txt="Bot"
+  notify	$txt="Bot"
   jump	:l0
 l2:
-  notify	nil, $txt="Building"
+  notify	$txt="Building"
   jump	:l0
 l3:
-  notify	nil, $txt="Other"
+  notify	$txt="Other"
   jump	:l0
 l0:
   .ret	"
@@ -60,7 +60,7 @@ l3:
   domove	D
   jump	:l2
 l4:
-  notify	nil, $txt="ok"
+  notify	$txt="ok"
   jump	:l2
 l2:
   .ret	"
@@ -78,7 +78,8 @@ exports[`rng.ts 1`] = `
   check_number	:l0, :l1, p3, 0
   jump	:l1
 l1:
-  faction_item_amount	"metalore", p3, nil
+  faction_item_amount	metalore, p3, nil
+label0:
   jump	:l0
 l0:
   mul	17364, p3, D
@@ -106,10 +107,10 @@ l0:
   solve	p1, A, :l3
   jump	:l4
 l3:
-  notify	nil, $txt="no solution"
+  notify	$txt="no solution"
   jump	:l2
 l4:
-  notify	nil, $txt="solved"
+  notify	$txt="solved"
   jump	:l2
 l2:
   value_type	A, :l6, :l7, :l8, :l9, :l9, :l9
@@ -126,7 +127,7 @@ l8:
 l9:
   set_reg	4, nil
 l5:
-  for_entities_in_range	20, "v_construction", nil, nil, B, :l11
+  for_entities_in_range	20, v_construction, nil, nil, B, :l11
   jump	:l10
 l10:
   get_distance	B, nil

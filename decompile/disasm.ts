@@ -46,8 +46,7 @@ export class Disassembler {
 
   code() {
     if (this.output.length == 0) {
-      buildLabels(this.program);
-      this.program.apply(RenderAssembly(this.output));
+      this.output = generateAsm(this.program);
     }
     return this.output.join("\n");
   }
@@ -374,4 +373,11 @@ function buildLabels(prog: Program) {
       inst.labels.push(labels.get(i)!);
     }
   });
+}
+
+export function generateAsm(prog: Program): string[] {
+  buildLabels(prog);
+  const output: string[] = [];
+  prog.apply(RenderAssembly(output));
+  return output;
 }

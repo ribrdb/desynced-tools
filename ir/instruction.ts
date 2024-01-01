@@ -31,19 +31,20 @@ export class NodeRef {
 }
 
 const regNums = {
+  nil: 0,
   goto: -1,
   store: -2,
   visual: -3,
   signal: -4,
 };
-const regNames = [, "goto", "store", "visual", "signal"];
+const regNames = ["nil", "goto", "store", "visual", "signal"];
 
 export class RegRef {
   readonly type = "regRef";
 
   constructor(readonly reg: number | string) {
     if (typeof reg === "number") {
-      if (reg == 0 || reg < -4) {
+      if (reg < -4) {
         throw new Error(`Invalid register: ${reg}`);
       }
     } else {
@@ -56,7 +57,7 @@ export class RegRef {
   name(): string {
     if (typeof this.reg == "string") {
       return this.reg;
-    } else if (this.reg < 0) {
+    } else if (this.reg <= 0) {
       return regNames[-this.reg]!;
     } else {
       return `p${this.reg}`;
@@ -96,6 +97,11 @@ export class ResolvedSub {
   constructor(public index: number) {}
 }
 
+export class VariableRef<T=unknown> {
+  readonly type = "variableRef";
+  constructor(public variable: T) {}
+}
+
 export type Arg =
   | LiteralValue
   | Label
@@ -103,7 +109,8 @@ export type Arg =
   | RegRef
   | Stop
   | Boolean
-  | StringLiteral;
+  | StringLiteral
+  | VariableRef;
 
 export function isId(
   value: Arg | undefined
