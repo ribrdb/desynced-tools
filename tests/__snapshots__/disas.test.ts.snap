@@ -2,7 +2,7 @@
 
 exports[`bp_multi_behavior.txt 1`] = `
 "main:
-  .blueprint	"f_building1x1d"
+  .blueprint	f_building1x1d
   .component	2, c_behavior, :behavior1
   .component	3, c_behavior, :behavior2
 
@@ -11,27 +11,31 @@ behavior1:
   .behavior	
   .name	"Call sub1"
   call	$sub=:sub1
+  .ret
 
 
 sub1:
   .sub	
-  .name	"sub1"
+  .name	sub1
+  .ret
 
 
 behavior2:
   .behavior	
   .name	"Call sub2"
   call	$sub=:sub2
+  .ret
 
 
 sub2:
   .sub	
-  .name	"sub2""
+  .name	sub2
+  .ret"
 `;
 
 exports[`issue2.txt 1`] = `
 "main:
-  .name	"foo"
+  .name	foo
 label0:
   set_reg	goto, goto
   jump	:label0"
@@ -39,14 +43,14 @@ label0:
 
 exports[`recurse.txt 1`] = `
 "main:
-  .name	"foo"
+  .name	foo
   call	$sub=:sub1
-  .ret	
+  .ret
 
 
 sub1:
   .sub	
-  .name	"bar"
+  .name	bar
   call	$sub=:sub1
-  .ret	"
+  .ret"
 `;
