@@ -2,6 +2,18 @@
 
 import * as ts from "typescript";
 import { MethodInfo, methods } from "./methods";
+import { Program } from "./ir/program";
+import {
+  Arg,
+  Instruction,
+  Label,
+  LiteralValue,
+  RegRef,
+  Stop,
+  StringLiteral,
+  VariableRef,
+} from "./ir/instruction";
+import { generateAsm } from "./decompile/disasm";
 
 // Some arbitrary things to use for dynamic jump labels
 const dynamicLabels = [
@@ -75,7 +87,7 @@ interface LoopInfo {
 
 class VariableScope {
   parent?: VariableScope;
-  children: VariableScope[] = []
+  children: VariableScope[] = [];
   namedVariables = new Map<string, Variable>();
   anonymousVariables: Variable[] = [];
 
@@ -97,7 +109,7 @@ class VariableScope {
     return this.get(name);
   }
 
-  get(name: string, reg?: string): Variable {
+  get(name: string, reg?: RegRef): Variable {
     if (!this.has(name)) {
       this.namedVariables.set(name, new Variable(reg));
     }
@@ -110,8 +122,7 @@ class VariableScope {
     return variable;
   }
 
-  allocate(availables: string[],
-           paramCounter: number): number {
+  allocate(availables: RegRef[], paramCounter: number): number {
     const currentAvailables = [...availables];
     let newParametersCount = 0;
     const assignVariable = (variable: Variable) => {
@@ -119,7 +130,7 @@ class VariableScope {
         return;
       }
       if (variable.operations != VariableOperations.All) {
-        variable.reg = "nil";
+        variable.reg = nilReg;
         return;
       }
       if (currentAvailables.length > 0) {
@@ -127,15 +138,16 @@ class VariableScope {
         return;
       }
       // A new parameter is introduced
-      variable.reg = `p${paramCounter + ++newParametersCount}`;
-    }
+      variable.reg = new RegRef(paramCounter + ++newParametersCount);
+    };
     this.namedVariables.forEach(assignVariable);
     this.anonymousVariables.forEach(assignVariable);
     let chidrenNewParametersCount = 0;
     this.children.forEach((scope) => {
       chidrenNewParametersCount = Math.max(
-          chidrenNewParametersCount,
-          scope.allocate(currentAvailables, paramCounter + newParametersCount));
+        chidrenNewParametersCount,
+        scope.allocate(currentAvailables, paramCounter + newParametersCount)
+      );
     });
     return newParametersCount + chidrenNewParametersCount;
   }
@@ -143,19 +155,21 @@ class VariableScope {
 
 class FunctionScope {
   paramCounter = 0;
-  instructions: Instruction[] = [];
+  program = new Program();
   scope = new VariableScope();
   outputs: Variable[] = [];
   haveBehavior = false;
   loops: LoopInfo[] = [];
 
+  pendingLabels: string[] = [];
+
   addOutputParameter() {
     let outIndex = this.outputs.length;
     let i = this.paramCounter + 1;
     this.paramCounter++;
-    const reg = `p${i}`;
-    this.rawEmit(".pname", reg);
-    this.rawEmit(".out", reg);
+    const reg = new RegRef(i);
+    this.emit(".pname", reg);
+    this.emit(".out", reg);
     this.outputs.push(new Variable(reg));
   }
 
@@ -169,8 +183,22 @@ class FunctionScope {
     }
   }
 
-  rawEmit(name: string, ...args: string[]) {
-    this.instructions.push({ name, args: args });
+  emitLabel(label: string) {
+    this.pendingLabels.push(label);
+  }
+
+  emit(name: string, ...args: Arg[]): Instruction {
+    const instr = new Instruction(name, args);
+    this.rawEmit(instr);
+    return instr;
+  }
+
+  rawEmit(i: Instruction) {
+    if (this.pendingLabels.length > 0) {
+      i.labels.push(...this.pendingLabels);
+      this.pendingLabels = [];
+    }
+    this.program.add(i);
   }
 }
 
@@ -207,7 +235,7 @@ class Compiler {
     if (!isMain) {
       this.#rawEmit(".sub");
     }
-    this.#rawEmit(".name", JSON.stringify(subName));
+    this.#rawEmit(".name", new StringLiteral(subName));
     this.compileInstructions(f);
   }
 
@@ -227,9 +255,9 @@ class Compiler {
   compileInstructions(f: ts.FunctionDeclaration) {
     f.parameters.forEach((param, i) => {
       const name = param.name.getText();
-      const reg = `p${i + 1}`;
+      const reg = new RegRef(i+1);
       this.currentScope.paramCounter = i + 1;
-      this.#rawEmit(".pname", reg, name);
+      this.#rawEmit(".pname", reg, new LiteralValue({id:name}));
       this.variable(param.name as ts.Identifier, reg);
     });
     let outsCount = this.countOutputs(f);
@@ -243,23 +271,22 @@ class Compiler {
 
   #regAlloc() {
     // TODO: could probably do better dataflow analysis if we used SSA.
-    const availables = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
-    let newParameters =
-        this.currentScope.scope.allocate(availables,
-                                         this.currentScope.paramCounter);
+    const availables = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+      .split("")
+      .map((c) => new RegRef(c));
+    let newParameters = this.currentScope.scope.allocate(
+      availables,
+      this.currentScope.paramCounter
+    );
     for (let i = 0; i < newParameters; ++i) {
-      let reg = `p${++this.currentScope.paramCounter}`;
-      this.#rawEmit(
-            ".pname",
-            reg,
-            JSON.stringify(`temp`)
-          );
+      let reg = new RegRef(++this.currentScope.paramCounter);
+      this.#rawEmit(".pname", reg, new LiteralValue({id:`temp`}));
     }
   }
 
   comment(txt: string) {
-    this.currentScope.instructions[
-      this.currentScope.instructions.length - 1
+    this.currentScope.program.code[
+      this.currentScope.program.code.length - 1
     ].comment = txt;
   }
 
@@ -525,7 +552,10 @@ class Compiler {
         case ts.SyntaxKind.EqualsToken:
           return this.compileAssignment(e as any, dest);
         default:
-          if (e.operatorToken.kind > ts.SyntaxKind.FirstAssignment && e.operatorToken.kind < ts.SyntaxKind.PercentEqualsToken) {
+          if (
+            e.operatorToken.kind > ts.SyntaxKind.FirstAssignment &&
+            e.operatorToken.kind < ts.SyntaxKind.PercentEqualsToken
+          ) {
             return this.compileCompoundAssignment(e, dest);
           }
           this.#error(
@@ -549,9 +579,13 @@ class Compiler {
       }
     } else if (this.isNullOrUndefined(e)) {
       if (dest) {
-        this.#emit(methods.setReg, "nil", this.ref(dest, VariableOperations.Write));
+        this.#emit(
+          methods.setReg,
+          nilReg,
+          this.ref(dest, VariableOperations.Write)
+        );
       } else {
-        return new Variable("nil");
+        return new Variable(nilReg);
       }
       return dest;
     } else if (ts.isIdentifier(e)) {
@@ -560,27 +594,35 @@ class Compiler {
         this.#emit(methods.getSelf, v);
       }
       if (dest) {
-        this.#emit(methods.setReg, this.variable(e), this.ref(dest, VariableOperations.Write));
+        this.#emit(
+          methods.setReg,
+          this.variable(e),
+          this.ref(dest, VariableOperations.Write)
+        );
       }
       return this.variable(e);
     } else if (ts.isNumericLiteral(e)) {
-      const value = Number(e.text);
+      const value = new LiteralValue({ num: Number(e.text) });
       if (dest) {
-        this.#emit(methods.setReg, `${value}`, this.ref(dest, VariableOperations.Write));
+        this.#emit(
+          methods.setReg,
+          value,
+          this.ref(dest, VariableOperations.Write)
+        );
       } else {
-        return new Variable(`${value}`);
+        return new Variable(value);
       }
       return dest;
     } else if (ts.isStringLiteral(e)) {
-      return new Variable(JSON.stringify(e.text));
+      return new Variable(new LiteralValue({ id: e.text }));
     } else if (ts.isParenthesizedExpression(e)) {
       return this.compileExpr(e.expression, dest);
     }
     this.#error(`unsupported expression ${e.kind} ${ts.SyntaxKind[e.kind]}`, e);
   }
 
-  compileCompoundAssignment(e: ts.BinaryExpression, dest?: Variable):Variable {
-    let op:ts.SyntaxKind;
+  compileCompoundAssignment(e: ts.BinaryExpression, dest?: Variable): Variable {
+    let op: ts.SyntaxKind;
     switch (e.operatorToken.kind) {
       case ts.SyntaxKind.PlusEqualsToken:
         op = ts.SyntaxKind.PlusToken;
@@ -598,12 +640,26 @@ class Compiler {
         op = ts.SyntaxKind.PercentToken;
         break;
       default:
-        this.#error(`unsupported compound assignment ${e.operatorToken.kind} ${ts.SyntaxKind[e.operatorToken.kind]}`, e);
+        this.#error(
+          `unsupported compound assignment ${e.operatorToken.kind} ${
+            ts.SyntaxKind[e.operatorToken.kind]
+          }`,
+          e
+        );
     }
-    return this.compileAssignment(ts.factory.createAssignment(e.left, ts.factory.createBinaryExpression(e.left, op, e.right)), dest);
+    return this.compileAssignment(
+      ts.factory.createAssignment(
+        e.left,
+        ts.factory.createBinaryExpression(e.left, op, e.right)
+      ),
+      dest
+    );
   }
 
-  compileAssignment(e: ts.AssignmentExpression<ts.AssignmentOperatorToken>, dest?: Variable): Variable {
+  compileAssignment(
+    e: ts.AssignmentExpression<ts.AssignmentOperatorToken>,
+    dest?: Variable
+  ): Variable {
     if (ts.isIdentifier(e.left)) {
       const lvar = this.variable(e.left);
       this.compileExpr(e.right, lvar);
@@ -631,14 +687,18 @@ class Compiler {
       });
       return this.compileCall(e.right as ts.CallExpression, outs);
     } else if (ts.isPropertyAccessExpression(e.left)) {
-      if (ts.isIdentifier(e.left.name) && e.left.name.text == "num"/* || e.left.name == "coord"*/) {
-        return this.compileAssignment(ts.factory.createAssignment(e.left.expression, e.right), dest);
+      if (
+        ts.isIdentifier(e.left.name) &&
+        e.left.name.text == "num" /* || e.left.name == "coord"*/
+      ) {
+        return this.compileAssignment(
+          ts.factory.createAssignment(e.left.expression, e.right),
+          dest
+        );
       }
     }
     this.#error(
-      `unsupported assignment to ${e.left.kind} ${
-        ts.SyntaxKind[e.left.kind]
-      }`,
+      `unsupported assignment to ${e.left.kind} ${ts.SyntaxKind[e.left.kind]}`,
       e
     );
   }
@@ -697,8 +757,8 @@ class Compiler {
     rawArgs: Array<ts.Expression> = [],
     outs: (Variable | undefined)[] = []
   ): Variable {
-    let dest = outs[0] || (outs[0]=this.#temp());
-    const args: (string | Variable)[] = [];
+    let dest = outs[0] || (outs[0] = this.#temp());
+    const args: (Arg | Variable)[] = [];
     let info = methods[name];
     if (!info && this.subs.has(name)) {
       let f = this.subs.get(name)!;
@@ -721,12 +781,14 @@ class Compiler {
       this.#error(`unknown method ${name}`, refNode);
     }
 
+    const inst = new Instruction(info.id, []);
+
     const hasTxt =
       info.special == "txt" && rawArgs[0] && ts.isStringLiteral(rawArgs[0]);
     const txtArg = hasTxt && (rawArgs.shift() as ts.StringLiteral).text;
 
     info.in?.forEach((v, i) => {
-      let value = rawArgs[i] ? this.compileExpr(rawArgs[i]) : "nil";
+      let value = rawArgs[i] ? this.compileExpr(rawArgs[i]) : nilReg;
       args[v] = value;
     });
     if (info.thisArg != null) {
@@ -736,14 +798,14 @@ class Compiler {
         ts.isIdentifier(thisArg) &&
         thisArg.text == "self"
       ) {
-        args[info.thisArg] = "nil";
+        args[info.thisArg] = nilReg;
       } else {
-        args[info.thisArg] = thisArg ? this.compileExpr(thisArg) : "nil";
+        args[info.thisArg] = thisArg ? this.compileExpr(thisArg) : nilReg;
       }
     }
     let outDefs = typeof info.out === "number" ? [info.out] : info.out;
     outDefs?.forEach((v, i) => {
-      let value = outs[i] || "nil";
+      let value = outs[i] || nilReg;
       args[v] = value;
     });
 
@@ -751,28 +813,28 @@ class Compiler {
       dest.exec = new Map();
       for (const [e, i] of Object.entries(info.exec)) {
         dest.exec.set(e.match(/^(true|false)$/) ? e == "true" : e, {
-          instruction: this.currentScope.instructions.length,
+          instruction: this.currentScope.program.code.length,
           arg: i,
         });
       }
     }
     for (let i = 0; i < args.length; i++) {
       if (!args[i]) {
-        args[i] = "nil";
+        args[i] = nilReg;
       }
     }
     if (txtArg) {
-      args.push(`$txt=${JSON.stringify(txtArg)}`);
+      inst.text = txtArg;
     }
     if (info.c != null) {
-      args.push(`$c=${info.c}`);
+      inst.c = info.c;
     }
     if (info.sub) {
-      args.push(`$sub=:${info.sub}`);
+      inst.sub = new Label(info.sub);
     }
-    this.#emit(info, ...args);
+    this.#emitInstr(inst, outDefs ?? [], args);
     dest.exec?.forEach((ref) => {
-      this.#rewrite(ref, null);
+      this.#rewrite(ref, undefined);
     });
     return dest;
   }
@@ -850,7 +912,7 @@ class Compiler {
     }
     this.#emit(
       methods.setNumber,
-      labelType,
+      new LiteralValue({ id: labelType }),
       this.ref(this.compileExpr(s.expression), VariableOperations.Read),
       this.ref(cond, VariableOperations.Write)
     );
@@ -870,7 +932,13 @@ class Compiler {
             s
           );
         }
-        this.#emit(methods.label, `${labelType}@${clause.expression.text}`);
+        this.#emit(
+          methods.label,
+          new LiteralValue({
+            id: labelType,
+            num: Number(clause.expression.text),
+          })
+        );
       } else {
         this.#emitLabel(defaultLabel!);
       }
@@ -917,11 +985,11 @@ class Compiler {
   }
 
   #jump(label: string) {
-    this.#rawEmit("jump", ":" + label);
+    this.#rawEmit("jump", new Label(label));
   }
 
   #emitLabel(label: string) {
-    this.#rawEmit(label + ":");
+    this.currentScope.emitLabel(label);
   }
 
   compileCondition(
@@ -1181,10 +1249,10 @@ class Compiler {
     });
   }
 
-  variable(id: ts.Identifier | string, reg?: string): Variable {
+  variable(id: ts.Identifier | string, reg?: RegRef): Variable {
     const name = typeof id === "string" ? id : id.text;
     if (name.match(/^(goto|store|visual|signal)$/)) {
-      return new Variable(name);
+      return new Variable(RegRef.parse(name));
     }
     return this.currentScope.scope.get(name, reg);
   }
@@ -1206,39 +1274,43 @@ class Compiler {
     return `l${this.labelCounter++}`;
   }
 
-  #rawEmit(name: string, ...args: string[]) {
-    this.currentScope.rawEmit(name, ...args);
+  #rawEmit(name: string, ...args: Arg[]) {
+    this.currentScope.emit(name, ...args);
   }
 
-  #emit(info: MethodInfo, ...args: (string | Variable)[]) {
+  #emit(info: MethodInfo, ...args: (Arg | Variable)[]) {
     const name = info.id;
-    if (name == "get_distance") debugger;
-    const strArgs = args.map((v, i) => {
-      if (typeof v === "string") {
+    const inst = new Instruction(name, []);
+    const outArgs = typeof info.out == "number" ? [info.out] : info.out;
+    return this.#emitInstr(inst, outArgs ?? [], args);
+  }
+
+  #emitInstr(inst: Instruction, outArgs: number[], args: (Arg | Variable)[]) {
+    const instArgs: Arg[] = args.map((v, i) => {
+      if (!(v instanceof Variable)) {
         return v;
       }
-      if (name == "call") {
-        return this.ref(v, VariableOperations.All);
-      } else if (
-        info?.out == i ||
-        (Array.isArray(info?.out) && info.out.includes(i))
-      ) {
-        return this.ref(v, VariableOperations.Write);
+      if (inst.op == "call") {
+        v = this.ref(v, VariableOperations.All);
+      } else if (outArgs.includes(i)) {
+        v = this.ref(v, VariableOperations.Write);
       } else {
-        return this.ref(v, VariableOperations.Read);
+        v = this.ref(v, VariableOperations.Read);
       }
+      return v.reg ?? new VariableRef(v);
     });
-    while (strArgs[strArgs.length - 1] == "nil") {
-      strArgs.pop();
+    while (instArgs[instArgs.length - 1] == nilReg) {
+      instArgs.pop();
     }
-    this.currentScope.instructions.push({ name, args: strArgs });
+    inst.args = instArgs;
+    this.currentScope.rawEmit(inst);
   }
 
   #rewriteLabel(ref: ArgRef, label: string, skipIfSet = false) {
-    return this.#rewrite(ref, ":" + label, skipIfSet);
+    return this.#rewrite(ref, new Label(label), skipIfSet);
   }
 
-  #rewrite(ref: ArgRef, value: string | null, skipIfSet = false) {
+  #rewrite(ref: ArgRef, value: Label | Stop | undefined, skipIfSet = false) {
     if (ref.extraArg) {
       this.#rewrite(
         { instruction: ref.instruction, arg: ref.extraArg },
@@ -1246,32 +1318,30 @@ class Compiler {
         skipIfSet
       );
     }
-    const instr = this.currentScope.instructions[ref.instruction];
+    const instr = this.currentScope.program.code[ref.instruction];
     if (ref.arg === "next") {
-      if (skipIfSet && instr.next !== null) {
+      if (skipIfSet && instr.next != null) {
         return;
       }
       instr.next = value;
       return;
     }
-    if (skipIfSet && instr.args[ref.arg] !== null) {
+    if (skipIfSet && instr.args[ref.arg] != null) {
       return;
     }
     instr.args[ref.arg] = value;
   }
 
-  asm() {
-    return this.functionScopes
-      .flatMap((scope) => scope.instructions)
-      .map(formatInstruction)
-      .join("\n");
+  program() {
+    const finalProg = new Program();
+    finalProg.code = this.functionScopes.flatMap((scope) => scope.program.code);
+    finalProg.apply(resolveVariables);
+    return finalProg;
   }
-}
-interface Instruction {
-  name: string;
-  args: (null | string | Variable)[];
-  next?: string | null;
-  comment?: string;
+  asm() {
+    const output = generateAsm(this.program());
+    return output.join("\n");
+  }
 }
 interface ArgRef {
   instruction: number;
@@ -1288,13 +1358,12 @@ const VariableSymbol = Symbol();
 class Variable {
   type = VariableSymbol;
   operations = VariableOperations.None;
-  reg?: string;
+  reg?: RegRef | LiteralValue;
   exec?: Map<string | boolean, ArgRef>;
 
-  constructor(reg?: string) {
+  constructor(reg?: RegRef | LiteralValue) {
     this.reg = reg;
   }
-
 }
 
 interface Liveness {
@@ -1307,24 +1376,20 @@ interface Liveness {
 function isVar(t: unknown): t is Variable {
   return (t as Variable).type === VariableSymbol;
 }
-function formatArgument(arg: null | string | Variable): string {
-  if (arg === null) {
-    return "nil";
+
+function resolveVariables(inst:Instruction) {
+  for (let i = 0; i < inst.args.length; i++) {
+    let arg = inst.args[i];
+    if (arg?.type == "variableRef" && arg.variable instanceof Variable) {
+      if (!arg.variable.reg) {
+        throw new Error("Variable is used and has not been assigned");
+      }
+      inst.args[i] = arg.variable.reg;
+    }
   }
-  if (typeof arg == "string") {
-    return arg;
-  }
-  if (!arg.reg) {
-    throw new Error("Variable is used and has not been assigned");
-  }
-  return arg.reg;
 }
-function formatInstruction(i: Instruction) {
-  if (i.name.endsWith(":")) return i.name;
-  const comment = i.comment ? "\t; " + i.comment : "";
-  const next = i.next ? `\n  jump\t${i.next}` : "";
-  return `  ${i.name}\t${i.args.map(formatArgument).join(", ")}${comment}${next}`;
-}
+
+const nilReg = new RegRef(0);
 
 export const CompilerOptions = {
   lib: ["lib.es2023.d.ts"],
@@ -1381,3 +1446,4 @@ function getNumeric(e: ts.Expression): ts.Expression {
   }
   return e;
 }
+
