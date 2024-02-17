@@ -850,7 +850,11 @@ function resolveLabelsPass(
           value = v.value;
           break;
         case "regRef":
-          value = v.reg;
+          if (v.name() === "nil") {
+            value = undefined;
+          } else {
+            value = v.reg;
+          }
           break;
         default:
           throw new Error(`Unrecognized arg: ${JSON.stringify(v)}`);

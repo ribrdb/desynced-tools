@@ -79,6 +79,19 @@ exports[`label.asm 1`] = `
 }
 `;
 
+exports[`nil_dest.asm 1`] = `
+{
+  "0": {
+    "0": {
+      "num": 1,
+    },
+    "next": false,
+    "op": "set_reg",
+  },
+  "parameters": [],
+}
+`;
+
 exports[`recurse_main.asm 1`] = `
 {
   "0": {
