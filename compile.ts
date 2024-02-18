@@ -1,19 +1,10 @@
 // Copyright 2023 Ryan Brown
 
 import * as ts from "typescript";
-import { MethodInfo, methods } from "./methods";
-import { Program } from "./ir/program";
-import {
-  Arg,
-  Instruction,
-  Label,
-  LiteralValue,
-  RegRef,
-  Stop,
-  StringLiteral,
-  VariableRef,
-} from "./ir/instruction";
-import { generateAsm } from "./decompile/disasm";
+import {MethodInfo, methods} from "./methods";
+import {Code} from "./ir/code";
+import {Arg, Instruction, Label, LiteralValue, RegRef, Stop, StringLiteral, VariableRef,} from "./ir/instruction";
+import {generateAsm} from "./decompile/disasm";
 
 // Some arbitrary things to use for dynamic jump labels
 const dynamicLabels = [
@@ -52,8 +43,8 @@ const dynamicLabels = [
   "v_idle",
 ];
 
-function compileFile(f: ts.SourceFile, typeChecker: ts.TypeChecker): string {
-  const c = new Compiler(typeChecker);
+function compileFile(f: ts.SourceFile): string {
+  const c = new Compiler();
   f.statements.forEach((n) => {
     if (ts.isFunctionDeclaration(n)) {
       let subName = (n.name as ts.Identifier).text;
@@ -155,16 +146,14 @@ class VariableScope {
 
 class FunctionScope {
   paramCounter = 0;
-  program = new Program();
+  program = new Code();
   scope = new VariableScope();
   outputs: Variable[] = [];
-  haveBehavior = false;
   loops: LoopInfo[] = [];
 
   pendingLabels: string[] = [];
 
   addOutputParameter() {
-    let outIndex = this.outputs.length;
     let i = this.paramCounter + 1;
     this.paramCounter++;
     const reg = new RegRef(i);
@@ -216,7 +205,7 @@ class Compiler {
   currentScope: FunctionScope = new FunctionScope();
   haveBehavior = false;
 
-  constructor(private typeChecker: ts.TypeChecker) {}
+  constructor() {}
 
   setupNewScope() {
     this.currentScope = new FunctionScope();
@@ -788,8 +777,7 @@ class Compiler {
     const txtArg = hasTxt && (rawArgs.shift() as ts.StringLiteral).text;
 
     info.in?.forEach((v, i) => {
-      let value = rawArgs[i] ? this.compileExpr(rawArgs[i]) : nilReg;
-      args[v] = value;
+      args[v] = rawArgs[i] ? this.compileExpr(rawArgs[i]) : nilReg;
     });
     if (info.thisArg != null) {
       if (
@@ -805,8 +793,7 @@ class Compiler {
     }
     let outDefs = typeof info.out === "number" ? [info.out] : info.out;
     outDefs?.forEach((v, i) => {
-      let value = outs[i] || nilReg;
-      args[v] = value;
+      args[v] = outs[i] || nilReg;
     });
 
     if (info.exec != null) {
@@ -861,7 +848,7 @@ class Compiler {
             []
           );
         } else {
-          this.#compileDynamicJump(s, theEnd, label);
+          this.#compileDynamicJump(s, theEnd);
         }
         if (variable) {
           if (!variable.exec) {
@@ -902,8 +889,7 @@ class Compiler {
 
   #compileDynamicJump(
     s: ts.SwitchStatement,
-    end: string,
-    label: string | undefined
+    end: string
   ) {
     const cond = this.#temp();
     const labelType = dynamicLabels[this.dynamicLabelCounter++];
@@ -1031,6 +1017,7 @@ class Compiler {
           return this.#negate(this.#compileEquality(expression, dest));
         case ts.SyntaxKind.LessThanEqualsToken:
           extraKey = "=";
+          // fallthrough
         case ts.SyntaxKind.LessThanToken:
           key = "<";
           assertNoDest();
@@ -1043,6 +1030,7 @@ class Compiler {
           break;
         case ts.SyntaxKind.GreaterThanEqualsToken:
           extraKey = "=";
+          // fallthrough
         case ts.SyntaxKind.GreaterThanToken:
           key = ">";
           assertNoDest();
@@ -1333,7 +1321,7 @@ class Compiler {
   }
 
   program() {
-    const finalProg = new Program();
+    const finalProg = new Code();
     finalProg.code = this.functionScopes.flatMap((scope) => scope.program.code);
     finalProg.apply(resolveVariables);
     return finalProg;
@@ -1365,14 +1353,6 @@ class Variable {
     this.reg = reg;
   }
 }
-
-interface Liveness {
-  start: number;
-  end: number;
-  reg: string;
-  refs: ArgRef[];
-}
-
 function isVar(t: unknown): t is Variable {
   return (t as Variable).type === VariableSymbol;
 }
@@ -1420,9 +1400,9 @@ export function compileProgram(program: ts.Program): string {
   });
   for (const f of program.getSourceFiles()) {
     if (!f.fileName.endsWith(".d.ts")) {
-      const withoutExtension = f.fileName.substring(0, f.fileName.length - 3);
+      f.fileName.substring(0, f.fileName.length - 3);
       try {
-        return compileFile(f, program.getTypeChecker());
+        return compileFile(f);
       } catch (ex) {
         console.error(ex);
       }

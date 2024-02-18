@@ -2,10 +2,10 @@ import { Instruction } from "./instruction";
 
 export interface Pass {
     reverse?: boolean;
-    (instr: Instruction, ip: number, program:Program): void;
+    (instr: Instruction, ip: number, program:Code): void;
 }
 
-export class Program {
+export class Code {
     code: Instruction[] = [];
 
     add(instr: Instruction) {

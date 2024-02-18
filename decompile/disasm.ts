@@ -1,21 +1,21 @@
-import { RawBehavior } from "./RawBehavior";
-import { RawBlueprint } from "./RawBlueprint";
-import { RawInstruction } from "./RawInstruction";
-import { instructions } from "./dsinstr";
-import { DesyncedStringToObject } from "../dsconvert";
-import { Pass, Program } from "../ir/program";
+import {RawBehavior} from "./RawBehavior";
+import {RawBlueprint} from "./RawBlueprint";
+import {RawInstruction} from "./RawInstruction";
+import {instructions} from "./dsinstr";
+import {DesyncedStringToObject} from "../dsconvert";
+import {Code, Pass} from "../ir/code";
 import {
   Arg,
+  FALSE,
   Instruction,
+  Label,
+  LiteralValue,
+  NodeRef,
   RegRef,
   Stop,
-  NodeRef,
-  TRUE,
-  FALSE,
-  LiteralValue,
-  Label,
   STOP,
   StringLiteral,
+  TRUE,
 } from "../ir/instruction";
 
 interface RawValue {
@@ -25,7 +25,7 @@ interface RawValue {
 }
 
 export class Disassembler {
-  program = new Program();
+  program = new Code();
   output: string[] = [];
   mainBehavior?: RawBehavior;
   extraBehaviors: RawBehavior[] = [];
@@ -34,12 +34,12 @@ export class Disassembler {
 
   pendingLabels: string[] = [];
 
-  constructor(obj: Record<string, unknown>) {
+  constructor(obj: RawBlueprint|RawBehavior) {
     this.#label("main");
     if ("frame" in obj) {
-      this.blueprint(obj as unknown as RawBlueprint);
+      this.blueprint(obj as RawBlueprint);
     } else {
-      this.mainBehavior = obj as unknown as RawBehavior;
+      this.mainBehavior = obj as RawBehavior;
     }
     this.#doExtras();
   }
@@ -131,14 +131,13 @@ export class Disassembler {
     });
     const nodeOffset = this.program.code.length;
     for (let i = 0; `${i}` in obj; i++) {
-      this.#emitInstr(obj[`${i}`], i, nodeOffset, subOffset, main);
+      this.#emitInstr(obj[`${i}`], nodeOffset, subOffset, main);
     }
     this.program.code[this.program.code.length - 1].next ??= STOP;
   }
 
   #emitInstr(
     raw: RawInstruction,
-    ip: number,
     nodeOffset: number,
     subOffset: number,
     main: string
@@ -197,12 +196,11 @@ export class Disassembler {
       return STOP;
     }
     const rv = op as RawValue;
-    const v = new LiteralValue({
+    return new LiteralValue({
       id: rv.id,
       num: rv.num,
       coord: rv.coord,
     });
-    return v;
   }
 
   #doExtras() {
@@ -344,7 +342,7 @@ function renderArg(arg: Arg | undefined): string {
   throw new Error(`Unrecognized arg: ${JSON.stringify(arg)}`);
 }
 
-function buildLabels(prog: Program) {
+function buildLabels(prog: Code) {
   const labels = new Map<number, string>();
   prog.apply((inst, i) => {
     if (inst.next?.type === "nodeRef") {
@@ -375,7 +373,7 @@ function buildLabels(prog: Program) {
   });
 }
 
-export function generateAsm(prog: Program): string[] {
+export function generateAsm(prog: Code): string[] {
   buildLabels(prog);
   const output: string[] = [];
   prog.apply(RenderAssembly(output));

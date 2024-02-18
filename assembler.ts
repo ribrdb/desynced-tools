@@ -1,40 +1,31 @@
 // Copyright 2023 Ryan Brown
 
-import { instructions } from "./decompile/dsinstr";
-import { RawBehavior } from "./decompile/RawBehavior";
-import { RawBlueprint } from "./decompile/RawBlueprint";
-import { RawInstruction } from "./decompile/RawInstruction";
+import {instructions} from "./decompile/dsinstr";
+import {RawBehavior} from "./decompile/RawBehavior";
+import {RawBlueprint} from "./decompile/RawBlueprint";
+import {RawInstruction} from "./decompile/RawInstruction";
 import {
   Arg,
+  FALSE,
   Instruction,
+  isId,
   Label,
+  LiteralValue,
+  NodeRef,
   RegRef,
+  ResolvedSub,
   Stop,
   STOP,
-  NodeRef,
-  isId,
   TRUE,
-  FALSE,
-  LiteralValue,
-  ResolvedSub,
 } from "./ir/instruction";
-import { Pass, Program, reversePass } from "./ir/program";
-import { MethodInfo, methods } from "./methods";
-
-type NamedInstrs = Map<string, Program>;
-
-interface Behavior {
-  mainLabel?: string;
-  main: Program;
-  subs: NamedInstrs;
-  others: NamedInstrs; // Other behaviors for use in blueprints
-  bps: NamedInstrs;
-}
+import {Code, Pass, reversePass} from "./ir/code";
+import {MethodInfo, methods} from "./methods";
+import {Behavior, splitProgram} from "./ir/behavior";
 
 interface SubInfo {
   label: number;
   name: string;
-  instructions: Program;
+  instructions: Code;
 }
 
 class LabelInfo {
@@ -71,8 +62,8 @@ const coordPattern = new RegExp(
   `^(${numberLiteralPattern})\\s+(${numberLiteralPattern})$`
 );
 
-function parseAssembly(code: string): Program {
-  const prog = new Program();
+function parseAssembly(code: string): Code {
+  const code1 = new Code();
 
   const lines = code.split("\n");
   let comment: string | undefined;
@@ -100,17 +91,16 @@ function parseAssembly(code: string): Program {
         labels.push(op.substring(0, op.length - 1));
         continue;
       }
-      const args = rest?.match(/^\s*$/) ? [] : rest?.split(/\s*,\s*/) ?? [];
 
       const inst = new Instruction(op, []);
       inst.comment = comment;
       inst.labels = labels;
       inst.lineno = i + 1;
-      prog.add(inst);
+      code1.add(inst);
 
       const methodInfo = ops[op];
       rest?.split(/\s*,\s*/).forEach((arg) => {
-        const value = parseArg(inst, arg, methodInfo, strings);
+        parseArg(inst, arg, methodInfo, strings);
       });
 
       comment = undefined;
@@ -122,9 +112,9 @@ function parseAssembly(code: string): Program {
     const inst = new Instruction(".ret", []);
     inst.comment = comment;
     inst.labels = labels;
-    prog.add(inst);
+    code1.add(inst);
   }
-  return prog;
+  return code1;
 }
 
 export async function assemble(
@@ -159,10 +149,10 @@ class Assembler {
     const bp: RawBlueprint = {
       frame,
     };
-    this.program.main.apply((inst, i) => {
+    this.program.main.apply((inst) => {
       switch (inst.op) {
         case ".name":
-          bp.name = string(inst, inst.args[0]!);
+          bp.name = str(inst, inst.args[0]!);
           break;
         case ".powered_down":
           bp.powered_down = bool(inst.args[0]);
@@ -172,7 +162,7 @@ class Assembler {
           break;
         case ".logistics":
           bp.logistics ??= {};
-          bp.logistics[string(inst, inst.args[0])] = bool(inst.args[1]);
+          bp.logistics[str(inst, inst.args[0])] = bool(inst.args[1]);
           break;
         case ".reg":
           bp.regs ??= {};
@@ -201,7 +191,7 @@ class Assembler {
         case ".component": {
           bp.components ??= [];
           const [index, id, code] = inst.args;
-          const ctype = string(inst, id);
+          const ctype = str(inst, id);
           if (code?.type === "label") {
             const behavior = this.program.others.get(code.label);
             if (!behavior) {
@@ -236,8 +226,8 @@ class Assembler {
     return main;
   }
 
-  assembleSub(prog: Program): RawBehavior {
-    const code = prog.code;
+  assembleSub(sub: Code): RawBehavior {
+    const code = sub.code;
     const savedParams = this.params;
     this.params = [];
     try {
@@ -249,17 +239,17 @@ class Assembler {
 
       const result: RawBehavior = {};
 
-      prog.apply(pseudoPass(result, labelInfo));
-      prog.apply(removeNopPass(labelInfo));
-      removeDeadCode(prog, labelInfo);
+      sub.apply(pseudoPass(result, labelInfo));
+      sub.apply(removeNopPass(labelInfo));
+      removeDeadCode(sub, labelInfo);
 
-      const resolver = resolveLabelsPass(prog, {
+      const resolver = resolveLabelsPass(sub, {
         behavior: result,
         labelInfo,
         resolveSub: this.resolveSub.bind(this),
         resolveBp: this.resolveBp.bind(this),
       });
-      prog.apply(resolver);
+      sub.apply(resolver);
 
       for (let i = 0; i < this.params.length; i++) {
         this.params[i] ??= false;
@@ -291,59 +281,6 @@ class Assembler {
       throw new Error(`Blueprint ${bpName} not found.`);
     }
     return new Assembler(prog).assembleBlueprint();
-  }
-
-  convertArg(a: string, key?: string, write = false) {
-    // TODO: coord literal?
-    let m: RegExpMatchArray | null;
-    if (a == "true") {
-      return true;
-    } else if (a == "false") {
-      return false;
-    } else if (a == "nil") {
-      return undefined;
-    } else if (key == "sub") {
-      let subName = a.substring(1);
-    } else if (key == "txt") {
-      return a;
-    } else if (key == "bp") {
-      const prog = {
-        ...this.program,
-        main: this.program.bps.get(a.substring(1))!,
-      };
-      if (!prog.main) {
-        throw new Error(`Blueprint ${a} not found.`);
-      }
-      return new Assembler(prog).assembleBlueprint();
-    } else if (key?.match(/^(c|nx|ny)$/)) {
-      return Number(a);
-    } else if (a == "goto") {
-      return -1;
-    } else if (a == "store") {
-      return -2;
-    } else if (a == "visual") {
-      return -3;
-    } else if (a == "signal") {
-      return -4;
-    } else if (a.match(/^p\d+$/)) {
-      const i = Number(a.substring(1));
-      if (write) {
-        this.params[i - 1] = true;
-      } else {
-        this.params[i - 1] ??= false;
-      }
-      return i;
-    } else if (a.match(/^[A-Z]$/)) {
-      return a;
-    } else if (a.match(numberLiteralExactPattern)) {
-      return { num: Number(a) };
-    } else if ((m = a.match(itemNumPattern))) {
-      return { id: m[1], num: Number(m[2]) };
-    } else if ((m = a.match(coordPattern))) {
-      return { coord: { x: Number(m[1]), y: Number(m[2]) } };
-    } else {
-      return { id: a };
-    }
   }
 }
 
@@ -389,7 +326,6 @@ function parseArg(
   if (keyMatch) {
     const key = keyMatch[1];
     const value = parseArg(inst, keyMatch[2], methodInfo, strings, true);
-    key;
     setKey(inst, key, value!);
     return value;
   }
@@ -472,46 +408,7 @@ function setKey(inst: Instruction, key: string, value: Arg) {
   );
 }
 
-function splitProgram(prog: Program): Behavior {
-  const result: Behavior = {
-    mainLabel: prog.code[0]?.labels[0],
-    main: prog,
-    subs: new Map(),
-    bps: new Map(),
-    others: new Map(),
-  };
-  const splitter: Pass = (instr, i) => {
-    let key: "subs" | "others" | "bps" | undefined;
-    if (i == 0) return;
-    switch (instr.op) {
-      case ".sub":
-        key = "subs";
-        break;
-      case ".behavior":
-        key = "others";
-        break;
-      case ".blueprint":
-        key = "bps";
-        break;
-    }
-    if (key) {
-      const newCode = prog.code.splice(i);
-      const newProg = new Program();
-      newProg.code = newCode;
-      const label = instr.labels[0] ?? newCode[1]?.labels[0];
-      if (!label) {
-        throw new Error(`No label for ${instr.op} at line ${instr.lineno}`);
-      }
-      const group: NamedInstrs = result[key];
-      group.set(label, newProg);
-    }
-  };
-  splitter.reverse = true;
-  prog.apply(splitter);
-  return result;
-}
-
-function string(inst: Instruction, a: Arg | undefined) {
+function str(inst: Instruction, a: Arg | undefined) {
   if (isId(a) || a?.type === "string") {
     return a.stringValue()!;
   }
@@ -534,7 +431,7 @@ function bool(a: Arg | undefined) {
 }
 
 function pseudoPass(behavior: RawBehavior, labelInfo: LabelInfo): Pass {
-  const pass: Pass = (instr, i, prog) => {
+  const pass: Pass = (instr, i, code) => {
     if (isPseudoJump(instr)) {
       if (!instr.args[0]) {
         throw new Error(`Invalid jump instruction at line ${instr.lineno}`);
@@ -542,14 +439,14 @@ function pseudoPass(behavior: RawBehavior, labelInfo: LabelInfo): Pass {
       const label = instr.args[0] as Label;
       instr.labels.forEach((l) => labelInfo.alias(l, label.label));
 
-      replaceJump(prog, i, label);
+      replaceJump(code, i, label);
     } else if (instr.op.startsWith(".")) {
       switch (instr.op) {
         case ".ret":
           if (instr.labels.length > 0) {
             instr.labels.forEach((l) => labelInfo.return(l));
           } else {
-            replaceJump(prog, i, STOP);
+            replaceJump(code, i, STOP);
             return;
           }
           break;
@@ -558,7 +455,7 @@ function pseudoPass(behavior: RawBehavior, labelInfo: LabelInfo): Pass {
         case ".blueprint":
           break;
         case ".name":
-          behavior.name = string(instr, instr.args[0]);
+          behavior.name = str(instr, instr.args[0]);
           break;
         case ".pname": {
           const [reg, name] = instr.args;
@@ -572,7 +469,7 @@ function pseudoPass(behavior: RawBehavior, labelInfo: LabelInfo): Pass {
             );
           }
           behavior.pnames ??= [];
-          behavior.pnames[reg.reg - 1] = string(instr, name);
+          behavior.pnames[reg.reg - 1] = str(instr, name);
           break;
         }
         case ".out": {
@@ -596,15 +493,15 @@ function pseudoPass(behavior: RawBehavior, labelInfo: LabelInfo): Pass {
             `Unknown pseudo instruction ${instr.op} at line ${instr.lineno}`
           );
       }
-      if (typeof instr.next == "number") {
+      if (instr.next?.type === "nodeRef") {
         throw new Error(
           `Unexpected type of "instr.next". Labels should not be resolved`
         );
       }
       if (instr.next !== undefined) {
-        replaceJump(prog, i, instr.next);
+        replaceJump(code, i, instr.next);
       } else {
-        prog.code.splice(i, 1);
+        code.code.splice(i, 1);
       }
     }
   };
@@ -614,7 +511,7 @@ function pseudoPass(behavior: RawBehavior, labelInfo: LabelInfo): Pass {
 }
 
 function replaceJump(
-  prog: Program,
+  code: Code,
   ip: number,
   target: Label | Stop | NodeRef
 ) {
@@ -624,17 +521,17 @@ function replaceJump(
     );
   }
   if (ip == 0) {
-    prog.code[0] = new Instruction("nop", []);
-    prog.code[0].next = target;
+    code.code[0] = new Instruction("nop", []);
+    code.code[0].next = target;
   } else {
-    prog.code[ip - 1].next = target;
-    prog.code.splice(ip, 1);
+    code.code[ip - 1].next = target;
+    code.code.splice(ip, 1);
   }
 }
 
 function removeNopPass(labelInfo: LabelInfo): Pass {
   let isLastInstr = true;
-  const pass: Pass = (instr, i, prog) => {
+  const pass: Pass = (instr, i, code) => {
     if (isLastInstr) {
       isLastInstr = false;
       instr.next ??= STOP;
@@ -644,7 +541,7 @@ function removeNopPass(labelInfo: LabelInfo): Pass {
     }
 
     // Remove the nop instruction.
-    prog.code.splice(i, 1);
+    code.code.splice(i, 1);
 
     if (instr.next !== undefined) {
       if (instr.next.type === "nodeRef") {
@@ -662,7 +559,7 @@ function removeNopPass(labelInfo: LabelInfo): Pass {
         }
       });
       if (i > 0) {
-        let prev = prog.code[i - 1];
+        let prev = code.code[i - 1];
         if (prev.next == undefined) {
           prev.next = next;
         }
@@ -670,13 +567,13 @@ function removeNopPass(labelInfo: LabelInfo): Pass {
         // The code starts with a nop that is a jump. Reorder the instructions.
         if (next.type === "stop") {
           // The code is actually empty.
-          prog.code.length = 0;
+          code.code.length = 0;
           return;
         }
         let target = labelInfo.resolve(next.label);
         let targetIndex: number | undefined = undefined;
-        for (let j = 0; j < prog.code.length; ++j) {
-          if (prog.code[j].labels.includes(target)) {
+        for (let j = 0; j < code.code.length; ++j) {
+          if (code.code[j].labels.includes(target)) {
             targetIndex = j;
             break;
           }
@@ -687,21 +584,21 @@ function removeNopPass(labelInfo: LabelInfo): Pass {
         // If targetIndex is 0, no reordering is required.
         if (targetIndex != 0) {
           // Reorder code starting at targetIndex
-          let prefix = prog.code.splice(0, targetIndex);
+          let prefix = code.code.splice(0, targetIndex);
 
           // If the code before targetIndex has no next, then it now requires one
           let newLastInstr = prefix[prefix.length - 1];
           if (newLastInstr.next === undefined) {
             newLastInstr.next = new Label(target);
           }
-          prog.code.push(...prefix);
+          code.code.push(...prefix);
         }
       }
     } else if (instr.labels.length > 0) {
       // Handle the case when the nop is a label
-      if (i < prog.code.length) {
+      if (i < code.code.length) {
         // There is an instruction after the nop, move the labels
-        let next = prog.code[i];
+        let next = code.code[i];
         next.labels = next.labels || [];
         instr.labels.forEach((l) => {
           next.labels!.push(l);
@@ -720,7 +617,7 @@ function removeNopPass(labelInfo: LabelInfo): Pass {
   return pass;
 }
 
-function removeDeadCode(code: Program, labelInfo: LabelInfo) {
+function removeDeadCode(code: Code, labelInfo: LabelInfo) {
   // Try to remove dead code until there is no more changes.
   let codeIsStable = false;
   while (!codeIsStable) {
@@ -760,7 +657,7 @@ function removeDeadCode(code: Program, labelInfo: LabelInfo) {
 }
 
 function resolveLabelsPass(
-  code: Program,
+  code: Code,
   {
     labelInfo,
     behavior,
@@ -769,8 +666,8 @@ function resolveLabelsPass(
   }: {
     labelInfo: LabelInfo;
     behavior: RawBehavior;
-    resolveBp: (string) => RawBlueprint | undefined;
-    resolveSub: (string) => ResolvedSub | undefined;
+    resolveBp: (s:string) => RawBlueprint | undefined;
+    resolveSub: (s:string) => ResolvedSub | undefined;
   }
 ): Pass {
   const labelMap = new Map<string, number | false>();
@@ -870,8 +767,8 @@ function resolveLabelsPass(
 function addSpecialOptions(
   instr: Instruction,
   ds: RawInstruction,
-  resolveSub: (string) => ResolvedSub | undefined,
-  resolveBp: (string) => RawBlueprint | undefined
+  resolveSub: (s:string) => ResolvedSub | undefined,
+  resolveBp: (s:string) => RawBlueprint | undefined
 ) {
   if (instr.comment) {
     ds.cmt = instr.comment;
