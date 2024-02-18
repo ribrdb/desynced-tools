@@ -1,9 +1,11 @@
 // Copyright 2023 Ryan Brown
 
-import {instructions} from "./decompile/dsinstr";
-import {RawBehavior} from "./decompile/RawBehavior";
-import {RawBlueprint} from "./decompile/RawBlueprint";
-import {RawInstruction} from "./decompile/RawInstruction";
+import { instructions } from "./decompile/dsinstr";
+import { RawBehavior } from "./decompile/RawBehavior";
+import { RawBlueprint } from "./decompile/RawBlueprint";
+import { RawInstruction } from "./decompile/RawInstruction";
+import { binaryInsert } from "binary-insert";
+import binarySearch from "binary-search";
 import {
   Arg,
   FALSE,
@@ -18,9 +20,9 @@ import {
   STOP,
   TRUE,
 } from "./ir/instruction";
-import {Code, Pass, reversePass} from "./ir/code";
-import {MethodInfo, methods} from "./methods";
-import {Behavior, splitProgram} from "./ir/behavior";
+import { Code, Pass, reversePass } from "./ir/code";
+import { MethodInfo, methods } from "./methods";
+import { Behavior, splitProgram } from "./ir/behavior";
 
 interface SubInfo {
   label: number;
@@ -242,6 +244,7 @@ class Assembler {
       sub.apply(pseudoPass(result, labelInfo));
       sub.apply(removeNopPass(labelInfo));
       removeDeadCode(sub, labelInfo);
+      reorderCode(sub, labelInfo);
 
       const resolver = resolveLabelsPass(sub, {
         behavior: result,
@@ -510,11 +513,7 @@ function pseudoPass(behavior: RawBehavior, labelInfo: LabelInfo): Pass {
   return pass;
 }
 
-function replaceJump(
-  code: Code,
-  ip: number,
-  target: Label | Stop | NodeRef
-) {
+function replaceJump(code: Code, ip: number, target: Label | Stop | NodeRef) {
   if (target.type === "nodeRef") {
     throw new Error(
       `Unexpected type of "target". Labels should not be resolved`
@@ -656,6 +655,87 @@ function removeDeadCode(code: Code, labelInfo: LabelInfo) {
   }
 }
 
+function reorderCode(code: Code, labelInfo: LabelInfo) {
+  // Make sure that unreachable labels come last.
+  // This should usually be a no-op.
+  const newOrder = new Set<number>();
+  const labelIPs = new Map<string, number>();
+  const unprocessed = new Set<number>();
+  code.apply((inst, i) => {
+    inst.labels.forEach((l) => labelIPs.set(l, i));
+    unprocessed.add(i);
+  });
+
+  const toProcess: number[] = [];
+  let start = 0;
+  do {
+    add(start);
+    controlFlow();
+    start = -1;
+    for (const i of unprocessed) {
+      if (code.code[i].op === "label") {
+        start = i;
+        break;
+      }
+    }
+  } while (start > 0);
+
+  code.code = [...newOrder].map((i) => code.code[i]);
+
+  function add (n: number) {
+    if (unprocessed.has(n)) {
+      binaryInsert(toProcess, n, (a, b) => b - a);
+      unprocessed.delete(n);
+    }
+  };
+  function addLast(n: number) {
+    toProcess.push(n);
+    unprocessed.delete(n);
+  };
+
+  function controlFlow() {
+
+    while (toProcess.length > 0) {
+      const i = toProcess.pop()!;
+      if (newOrder.has(i)) continue;
+      newOrder.add(i);
+  
+      const resolve = (a: Arg | undefined): number | undefined => {
+        if (a === undefined) return i + 1;
+        if (a.type === "nodeRef") return a.nodeIndex;
+        if (a.type === "stop") return undefined;
+        if (a.type === "label") {
+          let label = labelInfo.resolve(a.label);
+          if (labelInfo.returnLabels.has(label)) {
+            return undefined;
+          }
+          return labelIPs.get(label);
+        }
+      };
+  
+      const instr = code.code[i];
+      const info = instructions[instr.op];
+      instr.forArgs(info?.execArgs, (arg) => {
+        const resolved = resolve(arg);
+        if (resolved != null) add(resolved);
+      });
+      
+      if (info?.terminates) {
+        continue;
+      }
+  
+      const next = resolve(instr.next);
+      if (next != null) {
+        if (next == i + 1) {
+          addLast(next);
+        } else {
+          add(next);
+        }
+      }
+    }
+  }
+}
+
 function resolveLabelsPass(
   code: Code,
   {
@@ -666,8 +746,8 @@ function resolveLabelsPass(
   }: {
     labelInfo: LabelInfo;
     behavior: RawBehavior;
-    resolveBp: (s:string) => RawBlueprint | undefined;
-    resolveSub: (s:string) => ResolvedSub | undefined;
+    resolveBp: (s: string) => RawBlueprint | undefined;
+    resolveSub: (s: string) => ResolvedSub | undefined;
   }
 ): Pass {
   const labelMap = new Map<string, number | false>();
@@ -767,8 +847,8 @@ function resolveLabelsPass(
 function addSpecialOptions(
   instr: Instruction,
   ds: RawInstruction,
-  resolveSub: (s:string) => ResolvedSub | undefined,
-  resolveBp: (s:string) => RawBlueprint | undefined
+  resolveSub: (s: string) => ResolvedSub | undefined,
+  resolveBp: (s: string) => RawBlueprint | undefined
 ) {
   if (instr.comment) {
     ds.cmt = instr.comment;

@@ -92,6 +92,36 @@ exports[`nil_dest.asm 1`] = `
 }
 `;
 
+exports[`out_of_order.asm 1`] = `
+{
+  "0": {
+    "0": {
+      "id": "v_letter_A",
+    },
+    "next": false,
+    "op": "jump",
+  },
+  "1": {
+    "0": {
+      "id": "v_letter_A",
+    },
+    "op": "label",
+  },
+  "2": {
+    "op": "notify",
+    "txt": "again",
+  },
+  "3": {
+    "0": {
+      "id": "v_letter_A",
+    },
+    "next": false,
+    "op": "jump",
+  },
+  "parameters": [],
+}
+`;
+
 exports[`recurse_main.asm 1`] = `
 {
   "0": {
