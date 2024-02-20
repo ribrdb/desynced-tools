@@ -257,7 +257,8 @@ class Assembler {
       for (let i = 0; i < this.params.length; i++) {
         this.params[i] ??= false;
       }
-      result.parameters = this.params;
+      // result.parameters = this.params;
+      result.parameters ??= [];
 
       return result;
     } finally {
@@ -477,6 +478,8 @@ function pseudoPass(behavior: RawBehavior, labelInfo: LabelInfo): Pass {
           }
           behavior.pnames ??= [];
           behavior.pnames[reg.reg - 1] = str(instr, name);
+          behavior.parameters ??= [];
+          behavior.parameters[reg.reg - 1] ??= true;
           break;
         }
         case ".out": {
