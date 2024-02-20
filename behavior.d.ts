@@ -1,5 +1,5 @@
 
-type Value = number & {
+interface BaseValue {
   /**
    * Switch based on type of value
    */
@@ -142,12 +142,12 @@ declare function lock(): void;
  * Labels can be jumped to from anywhere in a behavior
  * @param label Label identifier
  */
-declare function label(label: Value | AnyValue): void;
+declare function label(label: Value): void;
 /**
  * Jumps execution to label with the same label id
  * @param label Label identifier
  */
-declare function jump(label: Value | AnyValue): void;
+declare function jump(label: Value): void;
 /**
  * Pauses execution of the behavior until 1 or more ticks later
  * @param time Number of ticks to wait
@@ -196,7 +196,7 @@ declare function clearResearch(tech: Value): void;
  * @param component_index Component and register number to set
  * @param group_index? Component group index if multiple are equipped
  */
-declare function setCompReg(value: Value | AnyValue, component_index: Value | CompNum, group_index?: Value | number): void;
+declare function setCompReg(value: Value, component_index: Value | CompNum, group_index?: Value | number): void;
 /**
  * Reads a value from a component register
  * @param component_index Component and register number to set
@@ -217,7 +217,7 @@ declare function setNumber(value: Value, num_coord: Value | CoordNum): Value;
 /**
  * Returns a coordinate made from x and y values
  */
-declare function combineCoordinate(x: Value | AnyValue, y: Value | AnyValue): Value;
+declare function combineCoordinate(x: Value, y: Value): Value;
 /**
  * Split a coordinate into x and y values
  * @returns [x, y]
@@ -663,8 +663,14 @@ declare var store: Value;
 declare var visual: Value;
 declare var signal: Value;
 
-type AnyValue = Coord | ItemNum | FrameNum | RadarFilter;
-type Coord = [number, number];
+interface String extends BaseValue {
+  // Required by typescript since String already has a method named match
+  match(filter1?: Value | RadarFilter, filter2?: Value | RadarFilter, filter3?: Value | RadarFilter): boolean;
+}
+interface Number extends BaseValue {}
+
+type Value = Coord | ItemNum | FrameNum | RadarFilter;
+interface Coord extends BaseValue, Array<number> {}
 type CoordNum = Coord | number;
 
 type RadarFilter =
@@ -783,7 +789,12 @@ type Item =
   | "virus_source_code"
   | "rainbow_research";
 
-type ItemNum = Item | number | { id: Item; num: number };
+interface ItemNumPair extends BaseValue {
+  id: Item,
+  num: number
+}
+
+type ItemNum = Item | number | ItemNumPair;
 type Comp =
   | "c_refinery"
   | "c_robotics_factory"
@@ -841,7 +852,12 @@ type Comp =
   | "c_human_spaceport"
   | "c_human_science"
   | "c_alien_research";
-type CompNum = Comp | number | { id: Comp; num: number };
+
+interface CompNumPair extends BaseValue {
+  id: Comp,
+  num: number
+}
+type CompNum = Comp | number | CompNumPair;
 
 type Resource =
   | "metalore"
@@ -854,7 +870,12 @@ type Resource =
   | "blight_crystal"
   | "blight_extraction"
   | "bug_carapace";
-type ResourceNum = Resource | number | { id: Resource; num: number };
+
+interface ResourceNumPair extends BaseValue {
+  id: Resource;
+  num: number;
+}
+type ResourceNum = Resource | number | ResourceNumPair;
 type Frame =
   | "f_building1x1a"
   | "f_building1x1b"
@@ -913,4 +934,15 @@ type Frame =
   | "f_alienbot"
   | "f_human_explorable_5x5_a"
   | "f_carrier_bot";
-type FrameNum = Frame | number | { id: Frame; num: number };
+
+interface FrameNumPair extends BaseValue {
+  id: Frame;
+  num: number;
+}
+type FrameNum = Frame | number | FrameNumPair;
+
+declare function coord(x: number, y: number): Coord;
+declare function value(id: Comp, num: number): CompNumPair;
+declare function value(id: Item, num: number): ItemNumPair;
+declare function value(id: Resource, num: number): ResourceNumPair;
+declare function value(id: Frame, num: number): FrameNumPair;

@@ -1,0 +1,13 @@
+{
+    "extends": "../tsconfig.json",
+    "compilerOptions": {
+      "strictNullChecks": false
+    },
+    "include": [
+        "*.ts"
+    ],
+    "exclude": ["*.test.ts"],
+    "files": [
+        "../behavior.d.ts"
+    ]
+  }

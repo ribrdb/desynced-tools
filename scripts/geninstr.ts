@@ -28,7 +28,7 @@ type filter =
   | "resource_num";
 
 const FilterTypes = {
-  any: "Value | AnyValue",
+  any: "Value",
   entity: "Value",
   num: "Value | number",
   number: "Value | number",
@@ -395,7 +395,7 @@ export const methods: { [key: string]: MethodInfo } = ${JSON.stringify(
 );
 
 const dtsContents = `
-type Value = number & {
+interface BaseValue {
 ${dtsProps.join("\n")}
 
 ${dtsMethods.join("\n")}
@@ -409,8 +409,14 @@ declare var store: Value;
 declare var visual: Value;
 declare var signal: Value;
 
-type AnyValue = Coord | ItemNum | FrameNum | RadarFilter;
-type Coord = [number, number];
+interface String extends BaseValue {
+  // Required by typescript since String already has a method named match
+  match(filter1?: Value | RadarFilter, filter2?: Value | RadarFilter, filter3?: Value | RadarFilter): boolean;
+}
+interface Number extends BaseValue {}
+
+type Value = Coord | ItemNum | FrameNum | RadarFilter;
+interface Coord extends BaseValue, Array<number> {}
 type CoordNum = Coord | number;
 
 type RadarFilter =
@@ -529,7 +535,12 @@ type Item =
   | "virus_source_code"
   | "rainbow_research";
 
-type ItemNum = Item | number | { id: Item; num: number };
+interface ItemNumPair extends BaseValue {
+  id: Item,
+  num: number
+}
+
+type ItemNum = Item | number | ItemNumPair;
 type Comp =
   | "c_refinery"
   | "c_robotics_factory"
@@ -587,7 +598,12 @@ type Comp =
   | "c_human_spaceport"
   | "c_human_science"
   | "c_alien_research";
-type CompNum = Comp | number | { id: Comp; num: number };
+
+interface CompNumPair extends BaseValue {
+  id: Comp,
+  num: number
+}
+type CompNum = Comp | number | CompNumPair;
 
 type Resource =
   | "metalore"
@@ -600,7 +616,12 @@ type Resource =
   | "blight_crystal"
   | "blight_extraction"
   | "bug_carapace";
-type ResourceNum = Resource | number | { id: Resource; num: number };
+
+interface ResourceNumPair extends BaseValue {
+  id: Resource;
+  num: number;
+}
+type ResourceNum = Resource | number | ResourceNumPair;
 type Frame =
   | "f_building1x1a"
   | "f_building1x1b"
@@ -659,7 +680,18 @@ type Frame =
   | "f_alienbot"
   | "f_human_explorable_5x5_a"
   | "f_carrier_bot";
-type FrameNum = Frame | number | { id: Frame; num: number };
+
+interface FrameNumPair extends BaseValue {
+  id: Frame;
+  num: number;
+}
+type FrameNum = Frame | number | FrameNumPair;
+
+declare function coord(x: number, y: number): Coord;
+declare function value(id: Comp, num: number): CompNumPair;
+declare function value(id: Item, num: number): ItemNumPair;
+declare function value(id: Resource, num: number): ResourceNumPair;
+declare function value(id: Frame, num: number): FrameNumPair;
 `;
 
 fs.writeFileSync("behavior.d.ts", dtsContents);

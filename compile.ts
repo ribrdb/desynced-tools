@@ -603,9 +603,88 @@ class Compiler {
       }
       return dest;
     } else if (ts.isStringLiteral(e)) {
-      return new Variable(new LiteralValue({ id: e.text }));
+      const value = new LiteralValue({ id: e.text });
+      if (dest) {
+        this.#emit(
+          methods.setReg,
+          value,
+          this.ref(dest, VariableOperations.Write)
+        );
+      } else {
+        return new Variable(value);
+      }
+      return dest;
+    } else if (ts.isArrayLiteralExpression(e)) {
+      let arr: number[] = [];
+      for(const property of e.elements) {
+        const value = this.compileExpr(property);
+        if(value.reg?.type !== 'value' || value.reg.value.num == null) {
+          this.#error(`unsupported property ${property.kind}`, property);
+        }
+
+        arr.push(value.reg.value.num);
+      }
+
+      const value = new LiteralValue({
+        coord: {
+          x: arr[0],
+          y: arr[1]
+        }
+      });
+      if (dest) {
+        this.#emit(
+          methods.setReg,
+          value,
+          this.ref(dest, VariableOperations.Write)
+        );
+      } else {
+        return new Variable(value);
+      }
+      return dest;
+    } else if (ts.isObjectLiteralExpression(e)) {
+      let obj = {};
+      for(const property of e.properties) {
+        const name = property.name;
+        if(!name) {
+          this.#error(`property missing name`, property);
+        }
+
+        if (ts.isPropertyAssignment(property)) {
+          const value = this.compileExpr(property.initializer);
+          if(value.reg?.type !== 'value') {
+            this.#error(`unsupported property ${property.kind}`, property);
+          }
+
+          obj = {
+            ...obj,
+            ...value.reg.value
+          }
+        } else {
+          this.#error(`unsupported property ${property.kind}`, property);
+        }
+      }
+
+      const value = new LiteralValue(obj);
+      if (dest) {
+        this.#emit(
+          methods.setReg,
+          value,
+          this.ref(dest, VariableOperations.Write)
+        );
+      } else {
+        return new Variable(value);
+      }
+      return dest;
     } else if (ts.isParenthesizedExpression(e)) {
       return this.compileExpr(e.expression, dest);
+    } else if (ts.isAsExpression(e)) {
+      return this.compileExpr(e.expression, dest);
+    } else if (ts.isPrefixUnaryExpression(e)) {
+      if(e.operator == ts.SyntaxKind.PlusToken) {
+        return this.compileExpr(e.operand, dest);
+      } else {
+        this.#error(`unsupported prefix expression ${e.kind} ${ts.SyntaxKind[e.kind]}`, e);
+      }
     }
     this.#error(`unsupported expression ${e.kind} ${ts.SyntaxKind[e.kind]}`, e);
   }
@@ -717,6 +796,55 @@ class Compiler {
     return this.compileResolvedCall(e, name, undefined, args, [dest]);
   }
 
+  parseBuiltinArg(arg: ts.Expression) {
+    if (ts.isStringLiteral(arg)) {
+      return arg.text;
+    } else if(ts.isNumericLiteral(arg)) {
+      return Number(arg.text);
+    } else {
+      this.#error(`Unsupported argument type: ${ts.SyntaxKind[arg.kind]}`, arg);
+    }
+  };
+
+  builtins: Record<string, (e: ts.CallExpression) => LiteralValue> = {
+    value: (e) => {
+      if (e.arguments.length !== 2) {
+        this.#error(`Unsupported argument length: ${e.arguments.length}`, e);
+      }
+
+      const a = this.parseBuiltinArg(e.arguments[0]);
+      const b = this.parseBuiltinArg(e.arguments[1]);
+
+      if (typeof a !== 'string' || typeof b !== 'number') {
+        this.#error(`Unsupported argument types: (${ts.SyntaxKind[e.arguments[0].kind]}, ${ts.SyntaxKind[e.arguments[1].kind]})`, e);
+      }
+
+      return new LiteralValue({
+        id: a,
+        num: b
+      });
+    },
+    coord: (e) => {
+      if (e.arguments.length !== 2) {
+        this.#error(`Unsupported argument length: ${e.arguments.length}`, e);
+      }
+
+      const a = this.parseBuiltinArg(e.arguments[0]);
+      const b = this.parseBuiltinArg(e.arguments[1]);
+
+      if (typeof a !== 'number' || typeof b !== 'number') {
+        this.#error(`Unsupported argument types: (${ts.SyntaxKind[e.arguments[0].kind]}, ${ts.SyntaxKind[e.arguments[1].kind]})`, e);
+      }
+
+      return new LiteralValue({
+        coord: {
+          x: a,
+          y: b
+        }
+      });
+    }
+  }
+
   compileCall(
     e: ts.CallExpression,
     outs: (Variable | undefined)[] = []
@@ -725,6 +853,22 @@ class Compiler {
     let name: string;
     if (ts.isIdentifier(e.expression)) {
       name = e.expression.text;
+
+      if(name in this.builtins) {
+        const value = this.builtins[name](e);
+
+        if (outs[0]) {
+          this.#emit(
+            methods.setReg,
+            value,
+            this.ref(outs[0], VariableOperations.Write)
+          );
+
+          return outs[0];
+        } else {
+          return new Variable(value);
+        }
+      }
     } else if (ts.isPropertyAccessExpression(e.expression)) {
       name = e.expression.name.text;
       thisArg = e.expression.expression;
