@@ -135,7 +135,6 @@ export async function assemble(
 
 class Assembler {
   subs: SubInfo[] = [];
-  params: boolean[] = []; // true if parameter is modified, false if read only
 
   constructor(public program: Behavior) {
     this.subs = findReferencedSubs(program);
@@ -230,40 +229,33 @@ class Assembler {
 
   assembleSub(sub: Code): RawBehavior {
     const code = sub.code;
-    const savedParams = this.params;
-    this.params = [];
-    try {
-      if (code.length == 0 || code[0].op == ".ret") {
-        return {};
-      }
-
-      let labelInfo = new LabelInfo();
-
-      const result: RawBehavior = {};
-
-      sub.apply(pseudoPass(result, labelInfo));
-      sub.apply(removeNopPass(labelInfo));
-      removeDeadCode(sub, labelInfo);
-      reorderCode(sub, labelInfo);
-
-      const resolver = resolveLabelsPass(sub, {
-        behavior: result,
-        labelInfo,
-        resolveSub: this.resolveSub.bind(this),
-        resolveBp: this.resolveBp.bind(this),
-      });
-      sub.apply(resolver);
-
-      for (let i = 0; i < this.params.length; i++) {
-        this.params[i] ??= false;
-      }
-      // result.parameters = this.params;
-      result.parameters ??= [];
-
-      return result;
-    } finally {
-      this.params = savedParams;
+    if (code.length == 0 || code[0].op == ".ret") {
+      return {};
     }
+
+    let labelInfo = new LabelInfo();
+
+    const result: RawBehavior = {};
+
+    sub.apply(pseudoPass(result, labelInfo));
+    sub.apply(removeNopPass(labelInfo));
+    removeDeadCode(sub, labelInfo);
+    reorderCode(sub, labelInfo);
+
+    const params = result.pnames?.map(() => false) ?? [];
+
+    const resolver = resolveLabelsPass(sub, {
+      behavior: result,
+      labelInfo,
+      resolveSub: this.resolveSub.bind(this),
+      resolveBp: this.resolveBp.bind(this),
+      markParamRw: (reg) => params[reg] = true,
+    });
+    sub.apply(resolver);
+
+    result.parameters = params;
+
+    return result;
   }
 
   resolveSub(subName: string) {
@@ -478,8 +470,6 @@ function pseudoPass(behavior: RawBehavior, labelInfo: LabelInfo): Pass {
           }
           behavior.pnames ??= [];
           behavior.pnames[reg.reg - 1] = str(instr, name);
-          behavior.parameters ??= [];
-          behavior.parameters[reg.reg - 1] ??= true;
           break;
         }
         case ".out": {
@@ -750,11 +740,13 @@ function resolveLabelsPass(
     behavior,
     resolveBp,
     resolveSub,
+    markParamRw,
   }: {
     labelInfo: LabelInfo;
     behavior: RawBehavior;
     resolveBp: (s: string) => RawBlueprint | undefined;
     resolveSub: (s: string) => ResolvedSub | undefined;
+    markParamRw: (s: number) => void;
   }
 ): Pass {
   const labelMap = new Map<string, number | false>();
@@ -838,6 +830,11 @@ function resolveLabelsPass(
             value = undefined;
           } else {
             value = v.reg;
+
+            const method = ops[instr.op];
+            if(value > 0 && (typeof method.out === "number" ? method.out === vi : method.out?.includes(vi))) {
+              markParamRw(value - 1)
+            }
           }
           break;
         default:

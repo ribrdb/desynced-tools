@@ -154,6 +154,30 @@ exports[`out_of_order.asm 1`] = `
 }
 `;
 
+exports[`param_rw.asm 1`] = `
+{
+  "0": {
+    "0": 1,
+    "op": "notify",
+    "txt": "hi",
+  },
+  "1": {
+    "0": 2,
+    "next": false,
+    "op": "get_self",
+  },
+  "name": "foo",
+  "parameters": [
+    false,
+    true,
+  ],
+  "pnames": [
+    "v",
+    "v2",
+  ],
+}
+`;
+
 exports[`recurse_main.asm 1`] = `
 {
   "0": {
