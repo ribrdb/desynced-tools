@@ -204,6 +204,13 @@ declare function setCompReg(value: Value | AnyValue, component_index: Value | Co
  */
 declare function getCompReg(component_index: Value | CompNum, group_index?: Value | number): Value;
 /**
+ * Checks whether a particular component is currently working
+ * @param component_index Component to get
+ * @param group_index? Component group index if multiple are equipped
+ * @returns Returns the component ID currently working
+ */
+declare function isWorking(component_index: Value | CompNum, group_index?: Value | number): Value | undefined;
+/**
  * Sets the numerical/coordinate part of a value
  */
 declare function setNumber(value: Value, num_coord: Value | CoordNum): Value;
@@ -563,8 +570,9 @@ declare function readkey(frame: Value): Value;
 /**
  * Returns if a unit can produce an item
  * @param item Production Item
+ * @param component? Optional Component to check (if Component not equipped)
  */
-declare function canProduce(item: Value | Item): boolean;
+declare function canProduce(item: Value | Item, component?: Value): boolean;
 /**
  * Returns the ingredients required to produce an item
  * @returns [First Ingredient, Second Ingredient, Third Ingredient]

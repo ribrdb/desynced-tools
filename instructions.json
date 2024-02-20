@@ -303,7 +303,7 @@
           "in",
           "Range",
           "Range (up to units visibility range)",
-          "number"
+          "num"
         ],
         [
           "in",
@@ -493,6 +493,38 @@
       ],
       "name": "Get from Component",
       "desc": "Reads a value from a component register",
+      "category": "Math"
+    },
+    "is_working": {
+      "args": [
+        [
+          "exec",
+          "Is Not Working",
+          "If the requested component is NOT currently working"
+        ],
+        [
+          "in",
+          "Component/Index",
+          "Component to get",
+          "comp_num"
+        ],
+        [
+          "in",
+          "Group/Index",
+          "Component group index if multiple are equipped",
+          "num",
+          true
+        ],
+        [
+          "out",
+          "Value",
+          "Returns the component ID currently working",
+          "entity",
+          true
+        ]
+      ],
+      "name": "Is Working",
+      "desc": "Checks whether a particular component is currently working",
       "category": "Math"
     },
     "set_number": {
@@ -2167,6 +2199,13 @@
           "Item",
           "Production Item",
           "item"
+        ],
+        [
+          "in",
+          "Component",
+          "Optional Component to check (if Component not equipped)",
+          "entity",
+          true
         ]
       ],
       "category": "Global"
