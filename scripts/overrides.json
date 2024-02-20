@@ -56,8 +56,7 @@
         "B": false
       },
       "outArgs": []
-    }],
-    "type": "operator"
+    }]
   },
   "is_same_grid": {
     "js": "sameGrid",

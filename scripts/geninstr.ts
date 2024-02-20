@@ -339,21 +339,26 @@ ${indent}`;
 }
 
 function makeConditionType(genInfo: GenInfo, returnType: string): string {
-  if (genInfo.outArgs.length > 0) {
-    return `${returnType} | undefined`;
-  }
   const values = [...Object.values(genInfo.conditions!)];
+  let conditionType: string;
   if (values.every((v) => typeof v == "boolean")) {
-    return "boolean";
+    conditionType = "boolean";
+  } else {
+    conditionType = values
+      .filter((v) => typeof v === "string")
+      .map((v) => `"${v}"`)
+      .join(" | ");
+    if (values.some((v) => typeof v !== "string")) {
+      conditionType = `${conditionType} | undefined`;
+    }
   }
-  returnType = values
-    .filter((v) => typeof v === "string")
-    .map((v) => `"${v}"`)
-    .join(" | ");
-  if (values.some((v) => typeof v !== "string")) {
-    return `${returnType} | undefined`;
+
+  if (genInfo.outArgs.length > 0) {
+    returnType = returnType.replace(/^\[|\]$/g, "");
+    return `[${conditionType}, ${returnType}]`;
+  } else {
+    return conditionType;
   }
-  return returnType;
 }
 
 function uniqify(params: ParamInfo[]) {
