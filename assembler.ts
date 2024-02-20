@@ -134,7 +134,7 @@ export async function assemble(
 }
 
 class Assembler {
-  subs: SubInfo[] = [];
+  subs: Map<string, SubInfo> = new Map();
 
   constructor(public program: Behavior) {
     this.subs = findReferencedSubs(program);
@@ -220,14 +220,22 @@ class Assembler {
   }
 
   assembleBehavior(): RawBehavior {
-    const main: RawBehavior = this.assembleSub(this.program.main);
-    if (this.subs.length) {
-      main.subs = this.subs.map((s) => this.assembleSub(s.instructions));
+    const behaviors: Map<number, RawBehavior> = new Map();
+    // Assemble subroutines in reverse call order so parameter rw flags can be propagated
+    for (const sub of Array.from(this.subs.values()).reverse()) {
+      behaviors.set(sub.label, this.assembleSub(sub.instructions, behaviors));
     }
+
+    const main: RawBehavior = this.assembleSub(this.program.main, behaviors);
+    if (behaviors.size > 0) {
+      // Reverse back to original call order
+      main.subs = Array.from(behaviors.values()).reverse();
+    }
+
     return main;
   }
 
-  assembleSub(sub: Code): RawBehavior {
+  assembleSub(sub: Code, behaviors: Map<number, RawBehavior>): RawBehavior {
     const code = sub.code;
     if (code.length == 0 || code[0].op == ".ret") {
       return {};
@@ -242,18 +250,20 @@ class Assembler {
     removeDeadCode(sub, labelInfo);
     reorderCode(sub, labelInfo);
 
-    const params = result.pnames?.map(() => false) ?? [];
+    result.parameters = Array(result.pnames?.length ?? 0);
 
     const resolver = resolveLabelsPass(sub, {
       behavior: result,
       labelInfo,
       resolveSub: this.resolveSub.bind(this),
+      resolveBehavior: label => behaviors.get(label),
       resolveBp: this.resolveBp.bind(this),
-      markParamRw: (reg) => params[reg] = true,
     });
     sub.apply(resolver);
 
-    result.parameters = params;
+    for (let i = 0; i < result.parameters.length; i++) {
+      result.parameters[i] ??= false;
+    }
 
     return result;
   }
@@ -262,7 +272,7 @@ class Assembler {
     if (subName === this.program.mainLabel) {
       return new ResolvedSub(0);
     }
-    const sub = this.subs.find((v) => v.name == subName);
+    const sub = this.subs.get(subName);
     if (sub) {
       return new ResolvedSub(sub.label);
     }
@@ -280,34 +290,79 @@ class Assembler {
   }
 }
 
-function findReferencedSubs(program: Behavior): SubInfo[] {
-  const result = new Map<string, SubInfo>();
-  const pass: Pass = (inst) => {
-    if (inst.op == "call") {
-      const subName = inst.sub?.type === "label" && inst.sub.label;
-      if (!subName) return;
-      if (subName === program.mainLabel) {
-        // This is a recursive call to the initial function.
-        return;
-      }
-      const sub = program.subs.get(subName);
-      if (!sub) {
-        throw new Error(`Sub ${subName} not found at line ${inst.lineno}`);
-      }
-      if (!result.has(subName)) {
-        result.set(subName, {
-          name: subName,
-          instructions: sub,
-          label: result.size + 1,
-        });
+function findReferencedSubs(program: Behavior): Map<string, SubInfo> {
+  const callgraph = {};
 
-        sub.apply(pass);
+  const pass: (name: string) => Pass = (name) => { 
+    callgraph[name] ??= [];
+
+    return (inst) => {
+      if (inst.op == "call") {
+        const subName = inst.sub?.type === "label" && inst.sub.label;
+        if (!subName) return;
+        // track that name called subName
+        callgraph[name].push(subName);
+        if (subName === program.mainLabel) {
+          // This is a recursive call to the initial function.
+          return;
+        }
+        const sub = program.subs.get(subName);
+        if (!sub) {
+          throw new Error(`Sub ${subName} not found at line ${inst.lineno}`);
+        }
+        if(!(subName in callgraph)) {
+          sub.apply(pass(subName));
+        }
       }
     }
   };
 
-  program.main.apply(pass);
-  return [...result.values()];
+  const mainLabel = program.mainLabel ?? "";
+
+  program.main.apply(pass(mainLabel));
+  
+  // Sort the subroutines in call order
+  const sortedSubNames = bfsSort(callgraph, mainLabel);
+
+  const result = new Map<string, SubInfo>();
+  for (const subName of sortedSubNames) {
+    if(subName === mainLabel) continue;
+
+    const sub = program.subs.get(subName);
+    if(!sub) {
+      throw new Error(`Sub ${subName} not found`);
+    }
+
+    result.set(subName, {
+      name: subName,
+      instructions: sub,
+      label: result.size + 1
+    });
+  }
+
+  return result;
+}
+
+function bfsSort<T>(graph: { [key: string]: string[] }, rootNode: string) {
+  const visited = new Set<string>();
+  const result: string[] = [];
+  const queue = [rootNode];
+  visited.add(queue[0]);
+
+  while (queue.length) {
+    const next = queue.shift();
+    if(next == null) continue;
+    result.push(next);
+
+    for (const edge of graph[next]) {
+      if(!visited.has(edge)) {
+        visited.add(edge);
+        queue.push(edge);
+      }
+    }
+  }
+
+  return result;
 }
 
 function isPseudoJump(inst: Instruction) {
@@ -740,13 +795,13 @@ function resolveLabelsPass(
     behavior,
     resolveBp,
     resolveSub,
-    markParamRw,
+    resolveBehavior
   }: {
     labelInfo: LabelInfo;
     behavior: RawBehavior;
     resolveBp: (s: string) => RawBlueprint | undefined;
     resolveSub: (s: string) => ResolvedSub | undefined;
-    markParamRw: (s: number) => void;
+    resolveBehavior: (label: number) => RawBehavior | undefined;
   }
 ): Pass {
   const labelMap = new Map<string, number | false>();
@@ -832,8 +887,16 @@ function resolveLabelsPass(
             value = v.reg;
 
             const method = ops[instr.op];
-            if(value > 0 && (typeof method.out === "number" ? method.out === vi : method.out?.includes(vi))) {
-              markParamRw(value - 1)
+            if(value > 0) {
+              let isWrite;
+              if(instr.sub?.type === 'resolvedSub') {
+                const behavior = resolveBehavior(instr.sub.index);
+                isWrite = behavior?.parameters?.[vi] ?? false;
+              } else {
+                isWrite = typeof method.out === "number" ? method.out === vi : method.out?.includes(vi) ?? false;
+              }
+              behavior.parameters ??= [];
+              behavior.parameters[value - 1] ||= isWrite;
             }
           }
           break;
