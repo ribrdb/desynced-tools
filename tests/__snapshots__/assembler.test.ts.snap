@@ -79,6 +79,38 @@ exports[`label.asm 1`] = `
 }
 `;
 
+exports[`nested_sub.asm 1`] = `
+{
+  "0": {
+    "next": false,
+    "op": "call",
+    "sub": 1,
+  },
+  "name": "foo",
+  "parameters": [],
+  "subs": [
+    {
+      "0": {
+        "next": false,
+        "op": "call",
+        "sub": 2,
+      },
+      "name": "sub1",
+      "parameters": [],
+    },
+    {
+      "0": {
+        "next": false,
+        "op": "notify",
+        "txt": "hello world",
+      },
+      "name": "sub2",
+      "parameters": [],
+    },
+  ],
+}
+`;
+
 exports[`nil_dest.asm 1`] = `
 {
   "0": {

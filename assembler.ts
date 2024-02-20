@@ -289,7 +289,7 @@ class Assembler {
 
 function findReferencedSubs(program: Behavior): SubInfo[] {
   const result = new Map<string, SubInfo>();
-  program.main.apply((inst) => {
+  const pass: Pass = (inst) => {
     if (inst.op == "call") {
       const subName = inst.sub?.type === "label" && inst.sub.label;
       if (!subName) return;
@@ -307,9 +307,13 @@ function findReferencedSubs(program: Behavior): SubInfo[] {
           instructions: sub,
           label: result.size + 1,
         });
+
+        sub.apply(pass);
       }
     }
-  });
+  };
+
+  program.main.apply(pass);
   return [...result.values()];
 }
 
