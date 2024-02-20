@@ -136,6 +136,21 @@ l11:
   .ret	"
 `;
 
+exports[`this_arg_param.ts 1`] = `
+"test:
+  .name	"test"
+  .pname	p1, a
+  select_nearest	:l1, :l2, p1, signal
+l1:
+  notify	$txt="a"
+  jump	:l0
+l2:
+  notify	$txt="b"
+  jump	:l0
+l0:
+  .ret	"
+`;
+
 exports[`variable_blocks.ts 1`] = `
 "foo:
   .name	"foo"

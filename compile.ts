@@ -776,9 +776,11 @@ class Compiler {
       info.special == "txt" && rawArgs[0] && ts.isStringLiteral(rawArgs[0]);
     const txtArg = hasTxt && (rawArgs.shift() as ts.StringLiteral).text;
 
-    info.in?.forEach((v, i) => {
-      args[v] = rawArgs[i] ? this.compileExpr(rawArgs[i]) : nilReg;
-    });
+    info.in
+      ?.filter(v => info.thisArg !== v)
+      .forEach((v, i) => {
+        args[v] = rawArgs[i] ? this.compileExpr(rawArgs[i]) : nilReg;
+      });
     if (info.thisArg != null) {
       if (
         info.autoSelf &&
