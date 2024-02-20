@@ -134,6 +134,25 @@ exports[`call_with_computation.ts 1`] = `
   .ret	"
 `;
 
+exports[`first_arg_control_flow.ts 1`] = `
+"foo:
+  .name	"foo"
+  .pname	p1, "v"
+  select_nearest	:l1, :l2, p1, signal, A
+  jump	:l3
+l1:
+  notify	A, $txt="A is closest"
+  jump	:l0
+l2:
+  notify	A, $txt="B is closest"
+  jump	:l0
+l3:
+  notify	$txt="Default branch"
+  jump	:l0
+l0:
+  .ret	"
+`;
+
 exports[`if_unit_type.ts 1`] = `
 "test:
   .name	"test"

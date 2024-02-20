@@ -1895,7 +1895,8 @@ class Compiler {
     }
     let outDefs = typeof info.out === "number" ? [info.out] : info.out;
     outDefs?.forEach((v, i) => {
-      args[v] = outs[i] || nilReg;
+      // First out is reserved for control value if executing branching instructions that opts into it
+      args[v] = outs[info.firstArgControlFlow ? i + 1 : i] || nilReg;
     });
 
     if (info.exec != null) {
@@ -2344,14 +2345,23 @@ class Compiler {
             );
           }
         });
-
-        if (decl.initializer && ts.isCallExpression(decl.initializer)) {
-          return this.compileCall(decl.initializer, outs);
-        } else {
-          this.#error(
-            "only call expression are valid for array initializer",
-            decl,
-          );
+        if (decl.initializer) {
+          if (ts.isCallExpression(decl.initializer)) {
+            return this.compileCall(decl.initializer, outs);
+          } else if (ts.isPropertyAccessExpression(decl.initializer)) {
+            return this.compileResolvedCall(
+              decl,
+              decl.initializer.name.text,
+              decl.initializer.expression,
+              [],
+              outs,
+            );
+          } else {
+            this.#error(
+              "only call expression are valid for array initializer",
+              decl,
+            );
+          }
         }
       } else {
         this.#error("Unable to bind object", decl);
