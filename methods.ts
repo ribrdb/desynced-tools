@@ -221,6 +221,18 @@ export const methods: { [key: string]: MethodInfo } = {
     ],
     "out": 1
   },
+  "isWorking": {
+    "id": "is_working",
+    "exec": {
+      "true": "next",
+      "false": 0
+    },
+    "in": [
+      1,
+      2
+    ],
+    "out": 3
+  },
   "setNumber": {
     "id": "set_number",
     "in": [
@@ -979,7 +991,8 @@ export const methods: { [key: string]: MethodInfo } = {
       "false": "next"
     },
     "in": [
-      1
+      1,
+      2
     ]
   },
   "getIngredients": {

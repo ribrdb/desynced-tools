@@ -300,6 +300,25 @@ export const instructions:{[key:string]:InstrInfo} = {
     ],
     "optional": 1
   },
+  "is_working": {
+    "js": "isWorking",
+    "type": "function",
+    "inArgs": [
+      1,
+      2
+    ],
+    "outArgs": [
+      3
+    ],
+    "execArgs": [
+      0
+    ],
+    "optional": 1,
+    "conditions": {
+      "next": true,
+      "Is Not Working": false
+    }
+  },
   "set_number": {
     "js": "setNumber",
     "type": "function",
@@ -1252,11 +1271,13 @@ export const instructions:{[key:string]:InstrInfo} = {
     "js": "canProduce",
     "type": "function",
     "inArgs": [
-      1
+      1,
+      2
     ],
     "execArgs": [
       0
     ],
+    "optional": 1,
     "conditions": {
       "Can Produce": true,
       "next": false

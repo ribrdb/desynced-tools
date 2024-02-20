@@ -219,10 +219,15 @@
   },
   "can_produce": {
     "js": "canProduce",
+    "optional": 1,
     "conditions": {
       "Can Produce": true,
       "next": false
     }
+  },
+  "is_working": {
+    "js": "isWorking",
+    "optional": 1
   },
   "faction_item_amount": {
     "js": "factionItemAmount",
