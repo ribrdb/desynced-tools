@@ -115,6 +115,19 @@ l0:
   .ret	"
 `;
 
+exports[`switch_no_default.ts 1`] = `
+"foo:
+  .name	"foo"
+  .pname	p1, v
+  value_type	p1, :l0, :l0, :l0, :l0, :l0, :l0
+  jump	:l1
+l1:
+  notify	$txt="No Match"
+  jump	:l0
+l0:
+  .ret	"
+`;
+
 exports[`test1.ts 1`] = `
 "foo:
   .name	"foo"
