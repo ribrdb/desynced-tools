@@ -3,7 +3,7 @@ import { RawInstruction } from "./RawInstruction";
 
 export interface RawBehavior {
   [key: number]: RawInstruction;
-  parameters?: unknown[];
+  parameters?: boolean[];
   name?: string;
   pnames?: string[];
   vars?: unknown[];
