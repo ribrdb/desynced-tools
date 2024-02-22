@@ -313,8 +313,6 @@ export function ObjectToDesyncedString(obj, type)
 	// Custom Base62 format for encoding Lua tables into strings (there is no Base62 standard so the way bytes and lengths are encoded is original)
 	const Base62_ByteToChar = ['0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z','a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'];
 	const Base62_CharsForBytes = [ 0, 2, 3, 5 ];
-	function Base62_GetEncodedU32Size(u) { for (var n = 1; ; n++) if (!(u = (u/31)|0)) return n; }
-	function Base62_GetEncodedDataSize(datalen) { return (((datalen * 6 + 2) / 4)|0) + 1; } // with 1 byte checksum
 	function Base62_WriteU32(arr, u)
 	{
 		var tok = Base62_ByteToChar[31 + (u % 31)];
