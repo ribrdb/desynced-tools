@@ -1050,8 +1050,8 @@ class Compiler {
     }
     let outDefs = typeof info.out === "number" ? [info.out] : info.out;
     outDefs?.forEach((v, i) => {
-      // First out is reserved for control value if executing branching instructions
-      args[v] = outs[info.exec == null || info.loop ? i : i + 1] || nilReg;
+      // First out is reserved for control value if executing branching instructions that opts into it
+      args[v] = outs[info.firstArgControlFlow ? i + 1 : i] || nilReg;
     });
 
     if (info.exec != null) {

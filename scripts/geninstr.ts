@@ -79,6 +79,7 @@ interface GenInfo {
   inArgs: [number, ...ArgInfo][];
   outArgs: [number, ...ArgInfo][];
   execArgs: [number, ...ArgInfo][];
+  firstArgControlFlow?: boolean;
 }
 
 interface CompileInfo {
@@ -91,6 +92,7 @@ interface CompileInfo {
   loop?: boolean;
   special?: "txt" | "bp";
   c?: number;
+  firstArgControlFlow?: boolean;
 }
 
 const instructions = gameData.instructions as unknown as {
@@ -229,6 +231,9 @@ function generateCompile(genInfo: GenInfo) {
   } else if (genInfo.outArgs.length > 1) {
     info.out = genInfo.outArgs.map((v) => v[0]);
   }
+  if(genInfo.firstArgControlFlow) {
+    info.firstArgControlFlow = true;
+  }
   compileInfos[genInfo.js] = info;
 }
 
@@ -354,8 +359,12 @@ function makeConditionType(genInfo: GenInfo, returnType: string): string {
   }
 
   if (genInfo.outArgs.length > 0) {
-    returnType = returnType.replace(/^\[|\]$/g, "");
-    return `[${conditionType}, ${returnType}]`;
+    if(genInfo.firstArgControlFlow) {
+      returnType = returnType.replace(/^\[|\]$/g, "");
+      return `[${conditionType}, ${returnType}]`;
+    } else {
+      return `${returnType} | undefined`;
+    }
   } else {
     return conditionType;
   }
@@ -413,6 +422,7 @@ fs.writeFileSync(
   special?: 'txt'|'bp';
   c?: number;
   sub?: string;
+  firstArgControlFlow?: boolean;
 }
 export const methods: { [key: string]: MethodInfo } = ${JSON.stringify(
     compileInfos,
@@ -527,6 +537,7 @@ interface InstrInfo {
   outArgs?: number[];
   execArgs?: number[];
   optional?: number;
+  firstArgControlFlow?: boolean;
 }
 export const instructions:{[key:string]:InstrInfo} = ${JSON.stringify(
     decompileInfos,

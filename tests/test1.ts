@@ -3,14 +3,14 @@ export function foo(v:Value) {
     if (self.fullBattery()) {
         return;
     }
-    const [isMissing, missingItem] = v.solve();
-    if (isMissing) {
+    const missing = v.solve();
+    if (missing) {
         notify("no solution");
     } else {
         notify("solved");
     }
     let a:number;
-    switch (missingItem?.type) {
+    switch (missing?.type) {
         case "Item": {
             a = 1;
             break;

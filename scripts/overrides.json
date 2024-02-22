@@ -56,7 +56,12 @@
         "B": false
       },
       "outArgs": []
-    }]
+    }, {
+      "js": "selectNearest",
+      "type": "function",
+      "firstArgControlFlow": true
+    }],
+    "type": "operator"
   },
   "is_same_grid": {
     "js": "sameGrid",
