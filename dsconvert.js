@@ -142,7 +142,8 @@ export function DesyncedStringToObject(str, info)
 					else
 					{
 						if (buf[p] == MP_DESYNCED_DEADKEY) { p++; GetIntPacked(); continue; } // used for Lua table memory layout
-						t[Parse(true)] = val;
+						var key = Parse(true);
+						t[/\D/.test(key) ? key : ((key|0) - 1)] = val; // convert numerical keys to 0-based indexing
 						GetIntPacked(); // used for Lua table memory layout
 					}
 				}
@@ -242,7 +243,6 @@ export function ObjectToDesyncedString(obj, type)
 				else                       { Push(MP_Uint64); Grow(8).setUint64(pos, v, true); }
 				break;
 			case 'string':
-				if (is_table_key && !/\D/.test(v)) return Serialize(v|0, true); // numerical keys need to be int
 				const strsz = v.length;
 				if      (strsz <    32) { Push(MP_FixStr | strsz); }
 				else if (strsz <   256) { Push(MP_Str8); Grow(1).setUint8(pos, strsz); }
@@ -293,7 +293,8 @@ export function ObjectToDesyncedString(obj, type)
 						if (j < size_array) continue;
 
 						// Write out object key
-						Serialize(keys[j - size_array], true);
+						var key = keys[j - size_array];
+						Serialize(/\D/.test(key) ? key : ((key|0) + 1), true); // convert numerical keys to 1-based indexing
 						Push(0); // used for Lua table memory layout, ignored by the game for incoming encoded strings
 					}
 				}
