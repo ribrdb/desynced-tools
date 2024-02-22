@@ -859,6 +859,7 @@ class Compiler {
               s
             );
           }
+          let hasDefault = false;
           for (const clause of s.caseBlock.clauses) {
             const clauseLabel = this.#label();
             this.#emitLabel(clauseLabel);
@@ -866,13 +867,21 @@ class Compiler {
               const key = this.#parseNormalSwitchExpression(clause.expression);
               this.#rewriteLabel(variable.exec.get(key)!, clauseLabel);
             } else {
+              hasDefault = true;
               variable.exec.forEach((ref) => {
                 this.#rewriteLabel(ref, clauseLabel, true);
               });
             }
             clause.statements.forEach(this.compileStatement, this);
           }
+
+          if(!hasDefault) {
+            variable.exec.forEach((ref) => {
+              this.#rewriteLabel(ref, theEnd, true);
+            });
+          }
         }
+
         this.#emitLabel(theEnd);
       }
     );
