@@ -242,6 +242,7 @@ export function ObjectToDesyncedString(obj, type)
 				else                       { Push(MP_Uint64); Grow(8).setUint64(pos, v, true); }
 				break;
 			case 'string':
+				if (is_table_key && !/\D/.test(v)) return Serialize(v|0, true); // numerical keys need to be int
 				const strsz = v.length;
 				if      (strsz <    32) { Push(MP_FixStr | strsz); }
 				else if (strsz <   256) { Push(MP_Str8); Grow(1).setUint8(pos, strsz); }
@@ -253,15 +254,18 @@ export function ObjectToDesyncedString(obj, type)
 				break;
 			case 'object':
 				if (is_table_key) throw new Error("Unable to serialize table key of type 'table'");
-				var size_node = 0, size_array = 0;
-				while (v.hasOwnProperty(size_array)) size_array++;
-				var keys = Object.keys(v), key_count = keys.length, is_map = (key_count > size_array);
-				var sz = (is_map ? (((key_count - size_array - 1).toString(2).length << 1) | (size_array ? 1 : 0)) : size_array);
-				if      (sz <    16) { Push((is_map ? MP_FixMap : MP_FixArray) | sz); }
-				else if (sz < 65536) { Push((is_map ? MP_Map16 : MP_Array16)); Grow(2).setUint16(pos, sz, true); }
-				else                 { Push((is_map ? MP_Map32 : MP_Array32)); Grow(4).setUint32(pos, sz, true); }
+				for (var size_node = 0, size_array = 0, array_keys = 0;; size_array++)
+				{
+					if (v.hasOwnProperty(size_array)) array_keys++;
+					else if (!v.hasOwnProperty(size_array+1)) break; // allow 1 gap
+				}
+				var keys = Object.keys(v), key_count = keys.length, map_keys = key_count - array_keys;
+				var sz = (map_keys ? (((key_count - array_keys - 1).toString(2).length << 1) | (size_array ? 1 : 0)) : size_array);
+				if      (sz <    16) { Push((map_keys ? MP_FixMap : MP_FixArray) | sz); }
+				else if (sz < 65536) { Push((map_keys ? MP_Map16 : MP_Array16)); Grow(2).setUint16(pos, sz, true); }
+				else                 { Push((map_keys ? MP_Map32 : MP_Array32)); Grow(4).setUint32(pos, sz, true); }
 
-				if (is_map)
+				if (map_keys)
 				{
 					size_node = (1 << (sz >> 1)); // always the next power of 2
 					if (size_array)
@@ -272,17 +276,17 @@ export function ObjectToDesyncedString(obj, type)
 					Push(0); // used for Lua table memory layout, ignored by the game for incoming encoded strings
 				}
 
-				for (var i = 0, total = size_array + size_node, vacancy_bits = 0; i != total;)
+				for (var i = 0, total = size_array + size_node, last = size_array + map_keys, vacancy_bits = 0; i != total;)
 				{
-					var bit = (i & 7);
-					if (i >= key_count) vacancy_bits |= 1 << bit;
+					var bit = (i & 7), vacant = (i >= last || (i < size_array && v[i] === undefined));
+					vacancy_bits = ((bit ? vacancy_bits : 0) | (vacant << bit));
 					if (++i != total && bit != 7) continue;
 
 					// Write out bit+1 elements
-					Push(vacancy_bits); // vacancy bits (only non-zero at the end)
+					Push(vacancy_bits);
 					for (var j = i - 1 - bit; j != i; j++)
 					{
-						if (j >= key_count) continue; // vacant
+						if (j >= last || (j < size_array && v[j] === undefined)) continue; // vacant
 
 						// Write out array/object value
 						Serialize(j < size_array ? v[j] : v[keys[j - size_array]]);
