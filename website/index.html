@@ -189,7 +189,7 @@ label6:
       }
       const obj = await ds.assemble(asm);
       const type = obj.frame ? "B" : "C";
-      const text = await ds.ObjectToDesyncedString(obj, type);
+      const text = ds.ObjectToDesyncedString(obj, type);
       let copied = false;
       if (navigator.userActivation.isActive) {
         try {
