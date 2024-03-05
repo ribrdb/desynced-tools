@@ -3,8 +3,8 @@
 exports[`assign_to_undefined.ts 1`] = `
 "foo:
   .name	"foo"
-  .pname	p1, u
-  .pname	p2, v
+  .pname	p1, "u"
+  .pname	p2, "v"
   set_reg	nil, p1
   set_reg	nil, p2
   .ret	"
@@ -13,7 +13,7 @@ exports[`assign_to_undefined.ts 1`] = `
 exports[`call_with_computation.ts 1`] = `
 "foo:
   .name	"foo"
-  .pname	p1, v
+  .pname	p1, "v"
   sub	p1, 1, A
   set_number	p1, A, nil
   .ret	"
@@ -22,7 +22,7 @@ exports[`call_with_computation.ts 1`] = `
 exports[`if_unit_type.ts 1`] = `
 "test:
   .name	"test"
-  .pname	p1, a
+  .pname	p1, "a"
   unit_type	p1, :l2, :l1, :l3
   jump	:l3
 l1:
@@ -62,7 +62,7 @@ sub2:
 exports[`numeric_compare.ts 1`] = `
 "foo:
   .name	"foo"
-  .pname	p1, v
+  .pname	p1, "v"
   get_battery	A
   check_number	:l0, :l1, A, 20
   jump	:l0
@@ -90,9 +90,9 @@ l2:
 exports[`rng.ts 1`] = `
 "rng:
   .name	"rng"
-  .pname	p1, max
-  .pname	p2, min
-  .pname	p3, state
+  .pname	p1, "max"
+  .pname	p2, "min"
+  .pname	p3, "state"
   unlock	
   sub	p1, p2, B
   add	B, 1, A
@@ -118,7 +118,7 @@ l0:
 exports[`switch_no_default.ts 1`] = `
 "foo:
   .name	"foo"
-  .pname	p1, v
+  .pname	p1, "v"
   value_type	p1, :l0, :l0, :l0, :l0, :l0, :l0
   jump	:l1
 l1:
@@ -131,7 +131,7 @@ l0:
 exports[`test1.ts 1`] = `
 "foo:
   .name	"foo"
-  .pname	p1, v
+  .pname	p1, "v"
   check_battery	:l1
   jump	:l0
 l1:
@@ -170,10 +170,17 @@ l11:
   .ret	"
 `;
 
+exports[`test2.ts 1`] = `
+"foo:
+  .name	"foo"
+  .pname	p1, "p1"
+  .ret	"
+`;
+
 exports[`this_arg_param.ts 1`] = `
 "test:
   .name	"test"
-  .pname	p1, a
+  .pname	p1, "a"
   select_nearest	:l1, :l2, p1, signal
 l1:
   notify	$txt="a"
@@ -188,7 +195,7 @@ l0:
 exports[`variable_blocks.ts 1`] = `
 "foo:
   .name	"foo"
-  .pname	p1, p
+  .pname	p1, "p"
   set_reg	1, nil
   set_reg	2, A
   set_reg	A, p1
@@ -200,7 +207,7 @@ exports[`variable_blocks.ts 1`] = `
 exports[`variable_scope.ts 1`] = `
 "foo:
   .name	"foo"
-  .pname	p1, v
+  .pname	p1, "v"
   set_reg	p1, A
 l0:
 l1:

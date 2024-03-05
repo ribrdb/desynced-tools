@@ -246,7 +246,7 @@ class Compiler {
       const name = param.name.getText();
       const reg = new RegRef(i+1);
       this.currentScope.paramCounter = i + 1;
-      this.#rawEmit(".pname", reg, new LiteralValue({id:name}));
+      this.#rawEmit(".pname", reg, new StringLiteral(name));
       this.variable(param.name as ts.Identifier, reg);
     });
     let outsCount = this.countOutputs(f);
