@@ -808,15 +808,25 @@ class Compiler {
 
   builtins: Record<string, (e: ts.CallExpression) => LiteralValue> = {
     value: (e) => {
-      if (e.arguments.length !== 2) {
+      if (e.arguments.length < 1 || e.arguments.length > 2) {
         this.#error(`Unsupported argument length: ${e.arguments.length}`, e);
       }
 
       const a = this.parseBuiltinArg(e.arguments[0]);
-      const b = this.parseBuiltinArg(e.arguments[1]);
 
-      if (typeof a !== 'string' || typeof b !== 'number') {
-        this.#error(`Unsupported argument types: (${ts.SyntaxKind[e.arguments[0].kind]}, ${ts.SyntaxKind[e.arguments[1].kind]})`, e);
+      if (typeof a !== 'string') {
+        this.#error(`Unsupported argument type for argument 2: (${ts.SyntaxKind[e.arguments[0].kind]})`, e.arguments[0]);
+      }
+
+      if (e.arguments.length === 1) {
+        return new LiteralValue({
+          id: a
+        })
+      }
+
+      const b = this.parseBuiltinArg(e.arguments[1]);
+      if (typeof b !== 'number') {
+        this.#error(`Unsupported argument type for argument 2: (${ts.SyntaxKind[e.arguments[1].kind]})`, e.arguments[1]);
       }
 
       return new LiteralValue({

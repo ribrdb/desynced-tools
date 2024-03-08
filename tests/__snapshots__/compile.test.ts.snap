@@ -55,19 +55,20 @@ label2:
   check_battery	nil, p1
 label3:
   set_reg	c_small_relay@2, p1
-  set_reg	c_battery@3, p1
   check_battery	nil, p1
 label4:
   set_reg	10 20, p1
-  set_reg	30 40, p1
   check_battery	nil, p1
 label5:
   set_number	p1, 30, p1
+  count_item	c_battery, p1
+  count_item	c_battery, p1
+  count_item	p1, p1
   sub	p1, 1, p1
   add	p1, 1, p1
-  set_reg	c_battery, B
-  set_reg	10, nil
-  add	B, 1, B
+  set_reg	c_battery, nil
+  set_reg	10, B
+  add	B, 1, nil
   .ret	"
 `;
 
