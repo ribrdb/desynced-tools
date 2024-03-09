@@ -1,9 +1,14 @@
 // To update the instruction defs:
-// - generate instructions.json: `node scripts/extractor.cjs path/to/instructions.lua`
+// - generate dumped-game-data.json:
+//   - Launch game, install Data Dump mod
+//   - In the main menu go to Options -> Mods -> Data Dump
+//   - Click Copy, navigate to https://swazrgb.github.io/desynced-data-dump/
+//   - Paste clipboard contents in Data String, press Convert to JSON
+//   - Paste resulting JSON in dumped-game-data.json
 // - `npx ts-node scripts/geninstr.ts`
 
 import * as fs from "fs";
-import instrJson from "../instructions.json";
+import { gameData, GameData } from "../data";
 import overrides from "./overrides.json";
 
 const dtsProps: string[] = [];
@@ -85,8 +90,8 @@ interface CompileInfo {
   c?: number;
 }
 
-const { instructions } = instrJson as any as {
-  instructions: { [key: string]: InstrInfo };
+const instructions = gameData.instructions as unknown as {
+  [key: string]: InstrInfo
 };
 
 for (const op in instructions) {
@@ -365,6 +370,16 @@ function uniqify(params: ParamInfo[]) {
   return params;
 }
 
+function quote(str: string) {
+  return JSON.stringify(str);
+}
+
+function toEnum<T extends GameData>(data: Array<T>): string {
+  return data.map(e => {
+   return `  | ${quote(e.id)}`
+  }).join("\n");
+}
+
 function makeJSVarName(name: string): string {
   return name
     .replace(/[^a-zA-Z0-9]/g, "_")
@@ -390,7 +405,14 @@ export const methods: { [key: string]: MethodInfo } = ${JSON.stringify(
     compileInfos,
     undefined,
     2
-  )}
+  )};
+
+export const ops: {
+  [key: string]: MethodInfo;
+} = {};
+for (const op of Object.values(methods)) {
+  ops[op.id] = op;
+}
 `
 );
 
@@ -409,263 +431,52 @@ declare var store: Value;
 declare var visual: Value;
 declare var signal: Value;
 
-type AnyValue = Coord | ItemNum | FrameNum | RadarFilter;
+type AnyValue = Coord | ItemNum | FrameNum | RadarFilter | ColorNum | ExtraNum;
 type Coord = [number, number];
 type CoordNum = Coord | number;
 
+type NumOrPair<T> = T | number | {
+  id: T,
+  num: number
+};
+
+type Color =
+${toEnum(gameData.values.filter(e => e.tag === "color"))};
+type ColorNum = NumOrPair<Color>;
+
+type Extra =
+${toEnum(gameData.values.filter(e => e.tag === "value"))};
+type ExtraNum = NumOrPair<Extra>;
+
 type RadarFilter =
   | Resource
-  | "v_own_faction"
-  | "v_ally_faction"
-  | "v_enemy_faction"
-  | "v_world_faction"
-  | "v_bot"
-  | "v_building"
-  | "v_is_foundation"
-  | "v_construction"
-  | "v_droppeditem"
-  | "v_resource"
-  | "v_mineable"
-  | "v_anomaly"
-  | "v_valley"
-  | "v_plateau"
-  | "v_not_blight"
-  | "v_blight"
-  | "v_alien_faction"
-  | "v_human_faction"
-  | "v_robot_faction"
-  | "v_bug_faction"
-  | "v_solved"
-  | "v_unsolved"
-  | "v_can_loot"
-  | "v_in_powergrid"
-  | "v_mothership"
-  | "v_damaged"
-  | "v_infected"
-  | "v_broken"
-  | "v_unpowered"
-  | "v_emergency"
-  | "v_powereddown"
-  | "v_pathblocked"
-  | "v_idle";
+${toEnum(gameData.values.filter(e => e.tag === "entityfilter"))};
 
 type Item =
   | Comp
-  | "metalore"
-  | "crystal"
-  | "laterite"
-  | "aluminiumrod"
-  | "aluminiumsheet"
-  | "silica"
-  | "fused_electrodes"
-  | "reinforced_plate"
-  | "optic_cable"
-  | "circuit_board"
-  | "infected_circuit_board"
-  | "obsidian"
-  | "metalbar"
-  | "metalplate"
-  | "foundationplate"
-  | "ldframe"
-  | "energized_plate"
-  | "hdframe"
-  | "beacon_frame"
-  | "refined_crystal"
-  | "crystal_powder"
-  | "obsidian_brick"
-  | "alien_artifact"
-  | "alien_artifact_research"
-  | "silicon"
-  | "wire"
-  | "cable"
-  | "icchip"
-  | "micropro"
-  | "cpu"
-  | "steelblock"
-  | "concreteslab"
-  | "ceramictiles"
-  | "polymer"
-  | "robot_datacube"
-  | "alien_datacube"
-  | "human_datacube"
-  | "blight_datacube"
-  | "virus_research_data"
-  | "empty_databank"
-  | "datacube_matrix"
-  | "robot_research"
-  | "human_research"
-  | "alien_research"
-  | "blight_research"
-  | "virus_research"
-  | "adv_data"
-  | "human_databank"
-  | "alien_databank"
-  | "drone_transfer_package"
-  | "drone_transfer_package2"
-  | "drone_miner_package"
-  | "drone_adv_miner_package"
-  | "drone_defense_package1"
-  | "flyer_package_m"
-  | "satellite_package"
-  | "blight_crystal"
-  | "blight_extraction"
-  | "blightbar"
-  | "blight_plasma"
-  | "microscope"
-  | "transformer"
-  | "smallreactor"
-  | "engine"
-  | "datakey"
-  | "alien_core"
-  | "bot_ai_core"
-  | "elain_ai_core"
-  | "broken_ai_core"
-  | "bug_carapace"
-  | "anomaly_particle"
-  | "anomaly_cluster"
-  | "resimulator_core"
-  | "power_petal"
-  | "phase_leaf"
-  | "virus_source_code"
-  | "rainbow_research";
+  | Resource
+${toEnum(gameData.items.filter(item => item.tag !== "resource"))};
+type ItemNum = NumOrPair<Item>;
 
-type ItemNum = Item | number | { id: Item; num: number };
 type Comp =
-  | "c_refinery"
-  | "c_robotics_factory"
-  | "c_small_relay"
-  | "c_large_power_relay"
-  | "c_solar_panel"
-  | "c_capacitor"
-  | "c_higrade_capacitor"
-  | "c_small_battery"
-  | "c_shared_storage"
-  | "c_internal_storage"
-  | "c_autobase"
-  | "c_portablecrane"
-  | "c_internal_crane1"
-  | "c_internal_crane2"
-  | "c_radio_storage"
-  | "c_modulehealth_s"
-  | "c_modulehealth_m"
-  | "c_modulehealth_l"
-  | "c_modulevisibility_s"
-  | "c_modulevisibility_m"
-  | "c_modulevisibility_l"
-  | "c_moduleefficiency_s"
-  | "c_moduleefficiency_m"
-  | "c_moduleefficiency_l"
-  | "c_modulespeed_s"
-  | "c_modulespeed_m"
-  | "c_modulespeed_l"
-  | "c_particle_leaves"
-  | "c_glitch"
-  | "c_damageself"
-  | "c_small_storage"
-  | "c_destroyself"
-  | "c_phase_plant"
-  | "c_damage_plant"
-  | "c_damage_plant_internal"
-  | "c_large_storage"
-  | "c_fusion_generator"
-  | "c_battery"
-  | "c_large_battery"
-  | "c_large_power_transmitter"
-  | "c_medium_storage"
-  | "c_blight_container_i"
-  | "c_blight_container_s"
-  | "c_blight_container_m"
-  | "c_virus_decomposer"
-  | "c_alien_attack"
-  | "c_alien_extractor"
-  | "c_alien_factory"
-  | "c_human_refinery"
-  | "c_human_factory_robots"
-  | "c_human_science_analyzer_robots"
-  | "c_human_commandcenter"
-  | "c_human_barracks"
-  | "c_human_spaceport"
-  | "c_human_science"
-  | "c_alien_research";
-type CompNum = Comp | number | { id: Comp; num: number };
+${toEnum(gameData.components)};
+type CompNum = NumOrPair<Comp>;
 
 type Resource =
-  | "metalore"
-  | "crystal"
-  | "laterite"
-  | "silica"
-  | "obsidian"
-  | "alien_artifact"
-  | "alien_artifact_research"
-  | "blight_crystal"
-  | "blight_extraction"
-  | "bug_carapace";
-type ResourceNum = Resource | number | { id: Resource; num: number };
+${toEnum(gameData.items.filter(item => item.tag === "resource"))};
+type ResourceNum = NumOrPair<Resource>;
+
 type Frame =
-  | "f_building1x1a"
-  | "f_building1x1b"
-  | "f_building1x1c"
-  | "f_building1x1d"
-  | "f_building1x1f"
-  | "f_building1x1g"
-  | "f_building2x1a"
-  | "f_building2x1e"
-  | "f_building2x1f"
-  | "f_building2x1g"
-  | "f_building2x2b"
-  | "f_building2x2f"
-  | "f_bot_1s_as"
-  | "f_bot_1s_adw"
-  | "f_bot_2m_as"
-  | "f_bot_1s_a"
-  | "f_bot_1s_b"
-  | "f_bot_2s"
-  | "f_construction"
-  | "f_foundation"
-  | "f_human_foundation"
-  | "f_human_foundation_basic"
-  | "f_feature"
-  | "f_blocking_feature"
-  | "f_floating_feature"
-  | "f_dropped_resource"
-  | "f_building1x1e"
-  | "f_building2x1b"
-  | "f_building2x1c"
-  | "f_building2x1d"
-  | "f_building2x2a"
-  | "f_building2x2c"
-  | "f_building2x2d"
-  | "f_building2x2e"
-  | "f_building_pf"
-  | "f_transport_bot"
-  | "f_bot_1m1s"
-  | "f_bot_1m_b"
-  | "f_bot_1m_c"
-  | "f_bot_1l_a"
-  | "f_flyer_bot"
-  | "f_drone_transfer_a"
-  | "f_drone_transfer_a2"
-  | "f_drone_miner_a"
-  | "f_drone_adv_miner"
-  | "f_drone_defense_a"
-  | "f_flyer_m"
-  | "f_satellite"
-  | "f_building3x2a"
-  | "f_building3x2b"
-  | "f_building_fg"
-  | "f_human_flyer"
-  | "f_human_tank"
-  | "f_human_miner"
-  | "f_alienbot"
-  | "f_human_explorable_5x5_a"
-  | "f_carrier_bot";
-type FrameNum = Frame | number | { id: Frame; num: number };
+${toEnum(gameData.frames)};
+type FrameNum = NumOrPair<Frame>;
 
 declare function coord(x: number, y: number): Value;
 declare function value(id: Comp, num?: number): Value;
 declare function value(id: Item, num?: number): Value;
 declare function value(id: Resource, num?: number): Value;
 declare function value(id: Frame, num?: number): Value;
+declare function value(id: Color, num?: number): Value;
+declare function value(id: Extra, num?: number): Value;
 `;
 
 fs.writeFileSync("behavior.d.ts", dtsContents);

@@ -1,0 +1,8043 @@
+{
+  "logistics_flags": [
+    {
+      "flag": "can_construction",
+      "default": true
+    },
+    {
+      "flag": "carrier",
+      "default": true
+    },
+    {
+      "flag": "channel_1",
+      "default": true
+    },
+    {
+      "flag": "channel_2",
+      "default": false
+    },
+    {
+      "flag": "channel_3",
+      "default": false
+    },
+    {
+      "flag": "channel_4",
+      "default": false
+    },
+    {
+      "flag": "crane_only",
+      "default": false
+    },
+    {
+      "flag": "high_priority",
+      "default": false
+    },
+    {
+      "flag": "requester",
+      "default": true
+    },
+    {
+      "flag": "supplier",
+      "default": true
+    },
+    {
+      "flag": "transport_route",
+      "default": false
+    }
+  ],
+  "values": {
+    "v_alert": {
+      "name": "Unlocked",
+      "tag": "value"
+    },
+    "v_alien_faction": {
+      "name": "Alien",
+      "tag": "entityfilter"
+    },
+    "v_ally_faction": {
+      "name": "Ally",
+      "tag": "entityfilter"
+    },
+    "v_anomaly": {
+      "name": "Anomaly",
+      "tag": "entityfilter"
+    },
+    "v_arrow_down": {
+      "name": "Arrow Down",
+      "tag": "value"
+    },
+    "v_arrow_downleft": {
+      "name": "Arrow Down left",
+      "tag": "value"
+    },
+    "v_arrow_downright": {
+      "name": "Arrow Down Right",
+      "tag": "value"
+    },
+    "v_arrow_left": {
+      "name": "Arrow Left",
+      "tag": "value"
+    },
+    "v_arrow_right": {
+      "name": "Arrow Right",
+      "tag": "value"
+    },
+    "v_arrow_up": {
+      "name": "Arrow Up",
+      "tag": "value"
+    },
+    "v_arrow_upleft": {
+      "name": "Arrow Up Left",
+      "tag": "value"
+    },
+    "v_arrow_upright": {
+      "name": "Arrow Up Right",
+      "tag": "value"
+    },
+    "v_blight": {
+      "name": "Blight",
+      "tag": "entityfilter"
+    },
+    "v_bot": {
+      "name": "Unit",
+      "tag": "entityfilter"
+    },
+    "v_broken": {
+      "name": "Broken",
+      "tag": "entityfilter"
+    },
+    "v_bug_faction": {
+      "name": "Bug",
+      "tag": "entityfilter"
+    },
+    "v_building": {
+      "name": "Building",
+      "tag": "entityfilter"
+    },
+    "v_can_loot": {
+      "name": "Can Loot",
+      "tag": "entityfilter"
+    },
+    "v_color_black": {
+      "name": "Black",
+      "tag": "color"
+    },
+    "v_color_blue": {
+      "name": "Blue",
+      "tag": "color"
+    },
+    "v_color_brown": {
+      "name": "Brown",
+      "tag": "color"
+    },
+    "v_color_crimson": {
+      "name": "Crimson",
+      "tag": "color"
+    },
+    "v_color_cyan": {
+      "name": "Cyan",
+      "tag": "color"
+    },
+    "v_color_dark_grey": {
+      "name": "Dark Gray",
+      "tag": "color"
+    },
+    "v_color_green": {
+      "name": "Green",
+      "tag": "color"
+    },
+    "v_color_light_green": {
+      "name": "Light Green",
+      "tag": "color"
+    },
+    "v_color_light_grey": {
+      "name": "Light Gray",
+      "tag": "color"
+    },
+    "v_color_magenta": {
+      "name": "Magenta",
+      "tag": "color"
+    },
+    "v_color_pastel": {
+      "name": "Pastel",
+      "tag": "color"
+    },
+    "v_color_pink": {
+      "name": "Pink",
+      "tag": "color"
+    },
+    "v_color_red": {
+      "name": "Red",
+      "tag": "color"
+    },
+    "v_color_white": {
+      "name": "White",
+      "tag": "color"
+    },
+    "v_color_yellow": {
+      "name": "Yellow",
+      "tag": "color"
+    },
+    "v_construction": {
+      "name": "Construction",
+      "tag": "entityfilter"
+    },
+    "v_damaged": {
+      "name": "Damaged",
+      "tag": "entityfilter"
+    },
+    "v_droppeditem": {
+      "name": "Dropped Item",
+      "tag": "entityfilter"
+    },
+    "v_emergency": {
+      "name": "Emergency",
+      "tag": "entityfilter"
+    },
+    "v_enemy_faction": {
+      "name": "Enemy",
+      "tag": "entityfilter"
+    },
+    "v_human_faction": {
+      "name": "Human",
+      "tag": "entityfilter"
+    },
+    "v_idle": {
+      "name": "Idle",
+      "tag": "entityfilter"
+    },
+    "v_in_powergrid": {
+      "name": "In Power Grid",
+      "tag": "entityfilter"
+    },
+    "v_infected": {
+      "name": "Infected",
+      "tag": "entityfilter"
+    },
+    "v_is_foundation": {
+      "name": "Foundation",
+      "tag": "entityfilter"
+    },
+    "v_letter_A": {
+      "name": "A",
+      "tag": "value"
+    },
+    "v_letter_B": {
+      "name": "B",
+      "tag": "value"
+    },
+    "v_letter_C": {
+      "name": "C",
+      "tag": "value"
+    },
+    "v_letter_D": {
+      "name": "D",
+      "tag": "value"
+    },
+    "v_letter_E": {
+      "name": "E",
+      "tag": "value"
+    },
+    "v_letter_F": {
+      "name": "F",
+      "tag": "value"
+    },
+    "v_letter_G": {
+      "name": "G",
+      "tag": "value"
+    },
+    "v_letter_H": {
+      "name": "H",
+      "tag": "value"
+    },
+    "v_letter_I": {
+      "name": "I",
+      "tag": "value"
+    },
+    "v_letter_J": {
+      "name": "J",
+      "tag": "value"
+    },
+    "v_letter_K": {
+      "name": "K",
+      "tag": "value"
+    },
+    "v_letter_L": {
+      "name": "L",
+      "tag": "value"
+    },
+    "v_letter_M": {
+      "name": "M",
+      "tag": "value"
+    },
+    "v_letter_N": {
+      "name": "N",
+      "tag": "value"
+    },
+    "v_letter_O": {
+      "name": "O",
+      "tag": "value"
+    },
+    "v_letter_P": {
+      "name": "P",
+      "tag": "value"
+    },
+    "v_letter_Q": {
+      "name": "Q",
+      "tag": "value"
+    },
+    "v_letter_R": {
+      "name": "R",
+      "tag": "value"
+    },
+    "v_letter_S": {
+      "name": "S",
+      "tag": "value"
+    },
+    "v_letter_T": {
+      "name": "T",
+      "tag": "value"
+    },
+    "v_letter_U": {
+      "name": "U",
+      "tag": "value"
+    },
+    "v_letter_V": {
+      "name": "V",
+      "tag": "value"
+    },
+    "v_letter_W": {
+      "name": "W",
+      "tag": "value"
+    },
+    "v_letter_X": {
+      "name": "X",
+      "tag": "value"
+    },
+    "v_letter_Y": {
+      "name": "Y",
+      "tag": "value"
+    },
+    "v_letter_Z": {
+      "name": "Z",
+      "tag": "value"
+    },
+    "v_lock_locked": {
+      "name": "Locked",
+      "tag": "value"
+    },
+    "v_lock_unlocked": {
+      "name": "Unlocked",
+      "tag": "value"
+    },
+    "v_mineable": {
+      "name": "Mineable",
+      "tag": "entityfilter"
+    },
+    "v_mothership": {
+      "name": "Mothership",
+      "tag": "entityfilter"
+    },
+    "v_moving": {
+      "name": "Moving",
+      "tag": "entityfilter"
+    },
+    "v_not_blight": {
+      "name": "Not Blight",
+      "tag": "entityfilter"
+    },
+    "v_notify": {},
+    "v_number_0": {
+      "name": "0",
+      "tag": "value"
+    },
+    "v_number_1": {
+      "name": "1",
+      "tag": "value"
+    },
+    "v_number_2": {
+      "name": "2",
+      "tag": "value"
+    },
+    "v_number_3": {
+      "name": "3",
+      "tag": "value"
+    },
+    "v_number_4": {
+      "name": "4",
+      "tag": "value"
+    },
+    "v_number_5": {
+      "name": "5",
+      "tag": "value"
+    },
+    "v_number_6": {
+      "name": "6",
+      "tag": "value"
+    },
+    "v_number_7": {
+      "name": "7",
+      "tag": "value"
+    },
+    "v_number_8": {
+      "name": "8",
+      "tag": "value"
+    },
+    "v_number_9": {
+      "name": "9",
+      "tag": "value"
+    },
+    "v_octagon": {
+      "name": "Octagon",
+      "tag": "value"
+    },
+    "v_own_faction": {
+      "name": "Owned",
+      "tag": "entityfilter"
+    },
+    "v_pathblocked": {
+      "name": "PathBlocked",
+      "tag": "entityfilter"
+    },
+    "v_pentagon": {
+      "name": "Pentagon",
+      "tag": "value"
+    },
+    "v_plateau": {
+      "name": "Plateau",
+      "tag": "entityfilter"
+    },
+    "v_powereddown": {
+      "name": "PoweredDown",
+      "tag": "entityfilter"
+    },
+    "v_resource": {
+      "name": "Resource",
+      "tag": "entityfilter"
+    },
+    "v_robot_faction": {
+      "name": "Robot",
+      "tag": "entityfilter"
+    },
+    "v_signal_a": {
+      "name": "?",
+      "tag": "alien_signal"
+    },
+    "v_signal_b": {
+      "name": "?",
+      "tag": "alien_signal"
+    },
+    "v_signal_c": {
+      "name": "?",
+      "tag": "alien_signal"
+    },
+    "v_signal_d": {
+      "name": "?",
+      "tag": "alien_signal"
+    },
+    "v_signal_e": {
+      "name": "?",
+      "tag": "alien_signal"
+    },
+    "v_solved": {
+      "name": "Solved",
+      "tag": "entityfilter"
+    },
+    "v_star": {
+      "name": "Star",
+      "tag": "value"
+    },
+    "v_transport_route": {
+      "name": "Transport Route",
+      "tag": "value"
+    },
+    "v_unpowered": {
+      "name": "Unpowered",
+      "tag": "entityfilter"
+    },
+    "v_unsolved": {
+      "name": "Unsolved",
+      "tag": "entityfilter"
+    },
+    "v_valley": {
+      "name": "Valley",
+      "tag": "entityfilter"
+    },
+    "v_world_faction": {
+      "name": "World",
+      "tag": "entityfilter"
+    }
+  },
+  "frames": {
+    "f_alien_console": {
+      "name": "Console",
+      "visual": "v_explorable_blightanomaly_03",
+      "slots": {
+        "storage": 4
+      }
+    },
+    "f_alien_explorable": {
+      "name": "Alien Explorable",
+      "slots": {
+        "storage": 6
+      }
+    },
+    "f_alien_heart_shard": {
+      "name": "Heart Shard",
+      "visual": "v_explorable_blightanomaly_01",
+      "slots": {
+        "storage": 4
+      }
+    },
+    "f_alien_monolith": {
+      "name": "Monolith",
+      "visual": "v_explorable_monolith_01",
+      "slots": {
+        "storage": 4
+      }
+    },
+    "f_alien_observer": {
+      "name": "Alien Observer",
+      "visual": "v_explorable_blightanomaly_02",
+      "slots": {
+        "storage": 4
+      }
+    },
+    "f_alien_soldier": {
+      "name": "Alien Soldier",
+      "flags": "AnimateRoot",
+      "size": "Unit",
+      "visual": "v_alien_soldier",
+      "slots": {
+        "storage": 2
+      }
+    },
+    "f_alien_time_egg": {
+      "name": "Time Egg",
+      "visual": "v_explorable_timeegg_01",
+      "slots": {
+        "storage": 4
+      }
+    },
+    "f_alien_worker": {
+      "name": "Alien Worker",
+      "flags": "AnimateRoot",
+      "size": "Unit",
+      "visual": "v_empty_alien",
+      "slots": {
+        "storage": 4
+      }
+    },
+    "f_amac": {
+      "name": "AMAC",
+      "size": "Special",
+      "visual": "v_amac_01_xl",
+      "slots": {
+        "storage": 4
+      }
+    },
+    "f_anomaly_sim": {
+      "name": "Anomaly Resimulator"
+    },
+    "f_beacon": {
+      "name": "Beacon",
+      "size": "Other",
+      "visual": "v_beacon",
+      "slots": {
+        "storage": 1
+      }
+    },
+    "f_beacon_l": {
+      "name": "Large Beacon",
+      "size": "Other",
+      "visual": "v_beacon_l",
+      "slots": {
+        "storage": 2
+      }
+    },
+    "f_blight_peekaboo": {
+      "name": "???",
+      "flags": "NonSelectable",
+      "size": "Mission"
+    },
+    "f_blocking_feature": {
+      "name": "Land Feature",
+      "type": "Decoration"
+    },
+    "f_bot_1l_a": {
+      "name": "Rock",
+      "flags": "AnimateRoot|ClearFoliage",
+      "size": "Unit",
+      "visual": "v_bot_1l_a",
+      "slots": {
+        "storage": 8
+      }
+    },
+    "f_bot_1m_a": {
+      "name": "Cub",
+      "flags": "AnimateRoot",
+      "size": "Unit",
+      "visual": "v_bot_1m_a",
+      "slots": {
+        "storage": 2
+      }
+    },
+    "f_bot_1m_b": {
+      "name": "Hauler",
+      "size": "Unit",
+      "visual": "v_bot_1m_b",
+      "slots": {
+        "storage": 4
+      }
+    },
+    "f_bot_1m_c": {
+      "name": "Mark V",
+      "size": "Unit",
+      "visual": "v_bot_1m_c",
+      "slots": {
+        "storage": 4
+      }
+    },
+    "f_bot_1m1s": {
+      "name": "Hound",
+      "flags": "AnimateRoot",
+      "size": "Unit",
+      "visual": "v_bot_1m1s_a",
+      "slots": {
+        "storage": 4
+      }
+    },
+    "f_bot_1s_a": {
+      "name": "Worker",
+      "flags": "AnimateRoot",
+      "size": "Unit",
+      "visual": "v_bot_1s_a",
+      "slots": {
+        "storage": 1
+      }
+    },
+    "f_bot_1s_adw": {
+      "name": "Engineer",
+      "flags": "AnimateRoot",
+      "size": "Unit",
+      "visual": "v_bot_1s_adw",
+      "slots": {
+        "storage": 2
+      }
+    },
+    "f_bot_1s_as": {
+      "name": "Scout",
+      "flags": "AnimateRoot",
+      "size": "Unit",
+      "visual": "v_bot_1s_as",
+      "slots": {
+        "storage": 4
+      }
+    },
+    "f_bot_1s_b": {
+      "name": "Dashbot",
+      "flags": "AnimateRoot",
+      "size": "Unit",
+      "visual": "v_bot_1s_b",
+      "slots": {
+        "storage": 2
+      }
+    },
+    "f_bot_2m_as": {
+      "name": "Command Center",
+      "flags": "AnimateRoot",
+      "size": "Unit",
+      "visual": "v_bot_2m_as",
+      "slots": {
+        "storage": 8
+      }
+    },
+    "f_bot_2s": {
+      "name": "Twinbot",
+      "flags": "AnimateRoot",
+      "size": "Unit",
+      "visual": "v_bot_2s_a",
+      "slots": {
+        "storage": 4
+      }
+    },
+    "f_bug_hive": {
+      "name": "Bug Hive",
+      "visual": "v_bughive",
+      "slots": {
+        "bughole": 18,
+        "storage": 4
+      }
+    },
+    "f_bug_hive_large": {
+      "name": "Large Bug Hive",
+      "visual": "v_bughive_large",
+      "slots": {
+        "bughole": 27,
+        "storage": 4
+      }
+    },
+    "f_bug_hole": {
+      "name": "Bug Hole",
+      "visual": "v_bughole",
+      "slots": {
+        "bughole": 3,
+        "storage": 1
+      }
+    },
+    "f_bug_home": {
+      "name": "Bug Hole"
+    },
+    "f_building_fg": {
+      "name": "Fusion Generator",
+      "size": "Special",
+      "visual": "v_building_fg",
+      "slots": {
+        "storage": 2
+      }
+    },
+    "f_building_pf": {
+      "name": "Particle Forge",
+      "size": "Special",
+      "visual": "v_building_pf",
+      "slots": {
+        "storage": 2
+      }
+    },
+    "f_building_sim": {
+      "name": "Re-simulator",
+      "size": "Special",
+      "visual": "v_building_sim",
+      "slots": {
+        "storage": 4
+      }
+    },
+    "f_building_simulator": {
+      "name": "Simulator",
+      "size": "Special",
+      "visual": "v_building_simulator",
+      "slots": {
+        "storage": 4
+      }
+    },
+    "f_building1x1a": {
+      "name": "Building 1x1 (1M)",
+      "size": "Medium",
+      "visual": "v_base1x1a",
+      "slots": {
+        "storage": 2
+      }
+    },
+    "f_building1x1b": {
+      "name": "Building 1x1 (L)",
+      "size": "Large",
+      "visual": "v_base1x1b",
+      "slots": {
+        "storage": 1
+      }
+    },
+    "f_building1x1c": {
+      "name": "Building 1x1 (2S)",
+      "size": "Small",
+      "visual": "v_base1x1c",
+      "slots": {
+        "storage": 2
+      }
+    },
+    "f_building1x1d": {
+      "name": "Building 1x1 (1S)",
+      "size": "Small",
+      "visual": "v_base1x1d",
+      "slots": {
+        "storage": 4
+      }
+    },
+    "f_building1x1e": {
+      "name": "Storage Block (24)",
+      "size": "Small",
+      "visual": "v_base1x1e",
+      "slots": {
+        "storage": 24
+      }
+    },
+    "f_building1x1f": {
+      "name": "Storage Block (8)",
+      "size": "Small",
+      "visual": "v_base1x1f",
+      "slots": {
+        "storage": 8
+      }
+    },
+    "f_building1x1g": {
+      "name": "Storage Block (16)",
+      "size": "Small",
+      "visual": "v_base1x1g",
+      "slots": {
+        "storage": 16
+      }
+    },
+    "f_building2x1a": {
+      "name": "Building 2x1 (2M)",
+      "size": "Medium",
+      "visual": "v_base2x1a",
+      "slots": {
+        "storage": 4
+      }
+    },
+    "f_building2x1b": {
+      "name": "Building 2x1 (1M1L)",
+      "size": "Large",
+      "visual": "v_base2x1b",
+      "slots": {
+        "storage": 4
+      }
+    },
+    "f_building2x1c": {
+      "name": "Building 2x1 (2M)",
+      "size": "Medium",
+      "visual": "v_base2x1c",
+      "slots": {
+        "storage": 8
+      }
+    },
+    "f_building2x1d": {
+      "name": "Building 2x1 (1M)",
+      "size": "Medium",
+      "visual": "v_base2x1d",
+      "slots": {
+        "storage": 24
+      }
+    },
+    "f_building2x1e": {
+      "name": "Building 2x1 (2S1M)",
+      "size": "Medium",
+      "visual": "v_base2x1e",
+      "slots": {
+        "storage": 8
+      }
+    },
+    "f_building2x1f": {
+      "name": "Building 2x1 (1M1S)",
+      "size": "Medium",
+      "visual": "v_base2x1f",
+      "slots": {
+        "storage": 4
+      }
+    },
+    "f_building2x1g": {
+      "name": "Building 2x1 (1M)",
+      "size": "Medium",
+      "visual": "v_base2x1g",
+      "slots": {
+        "storage": 4
+      }
+    },
+    "f_building2x2a": {
+      "name": "Building 2x2 (2M1L)",
+      "size": "Large",
+      "visual": "v_base2x2a",
+      "slots": {
+        "storage": 6
+      }
+    },
+    "f_building2x2b": {
+      "name": "Building 2x2 (3M)",
+      "size": "Medium",
+      "visual": "v_base2x2b",
+      "slots": {
+        "storage": 6
+      }
+    },
+    "f_building2x2c": {
+      "name": "Building 2x2 (2M1L)",
+      "size": "Large",
+      "visual": "v_base2x2c",
+      "slots": {
+        "storage": 16
+      }
+    },
+    "f_building2x2d": {
+      "name": "Building 2x2 (2M1L)",
+      "size": "Large",
+      "visual": "v_base2x2d",
+      "slots": {
+        "storage": 6
+      }
+    },
+    "f_building2x2e": {
+      "name": "Building 2x2 (1M3S)",
+      "size": "Medium",
+      "visual": "v_base2x2e",
+      "slots": {
+        "storage": 12
+      }
+    },
+    "f_building2x2f": {
+      "name": "Building 2x2 (2M)",
+      "size": "Medium",
+      "visual": "v_base2x2f",
+      "slots": {
+        "storage": 8
+      }
+    },
+    "f_building3x2a": {
+      "name": "Building 3x2 (1L3M)",
+      "size": "Large",
+      "visual": "v_base3x2a",
+      "slots": {
+        "storage": 12
+      }
+    },
+    "f_building3x2b": {
+      "name": "Building 3x2 (2M2S)",
+      "size": "Medium",
+      "visual": "v_base3x2b",
+      "slots": {
+        "storage": 8
+      }
+    },
+    "f_carrier_bot": {
+      "name": "Runner",
+      "flags": "AnimateRoot",
+      "size": "Unit",
+      "visual": "v_carrier_bot",
+      "slots": {
+        "storage": 1
+      }
+    },
+    "f_charcharosaurus1": {
+      "name": "Gigakaiju",
+      "visual": "v_charcharosaurus1"
+    },
+    "f_construction": {
+      "name": "Construction",
+      "type": "Construction"
+    },
+    "f_damage_plant": {
+      "name": "Power Flower",
+      "flags": "NonSelectable",
+      "size": "Alien"
+    },
+    "f_drone_adv_miner": {
+      "name": "Advanced Miner Drone",
+      "flags": "AnimateRoot",
+      "size": "Drone",
+      "visual": "v_drone_adv_miner",
+      "slots": {
+        "storage": 1
+      }
+    },
+    "f_drone_defense_a": {
+      "name": "Defense Drone",
+      "flags": "AnimateRoot",
+      "size": "Drone",
+      "visual": "v_drone_defense_a",
+      "slots": {
+        "storage": 1
+      }
+    },
+    "f_drone_miner_a": {
+      "name": "Miner Drone",
+      "flags": "AnimateRoot",
+      "size": "Drone",
+      "visual": "v_drone_miner_a",
+      "slots": {
+        "storage": 1
+      }
+    },
+    "f_drone_transfer_a": {
+      "name": "Drone",
+      "flags": "AnimateRoot",
+      "size": "Drone",
+      "visual": "v_drone_transfer_a",
+      "slots": {
+        "storage": 1
+      }
+    },
+    "f_drone_transfer_a2": {
+      "name": "Transfer Drone",
+      "flags": "AnimateRoot",
+      "size": "Drone",
+      "visual": "v_drone_transfer_b",
+      "slots": {
+        "storage": 1
+      }
+    },
+    "f_dropped_item": {
+      "name": "Dropped Item",
+      "type": "DroppedItem"
+    },
+    "f_dropped_resource": {
+      "name": "Scattered Resource"
+    },
+    "f_empty": {
+      "visual": "v_empty"
+    },
+    "f_explorable": {
+      "name": "Explorable",
+      "slots": {
+        "storage": 6
+      }
+    },
+    "f_explorable_glitch": {
+      "name": "Explorable Glitch",
+      "slots": {
+        "storage": 4
+      }
+    },
+    "f_explorable_spaceelevator": {
+      "name": "Space Elevator",
+      "size": "Mission",
+      "visual": "v_explorable_spaceelevator",
+      "slots": {
+        "anomaly": 4,
+        "storage": 6
+      }
+    },
+    "f_exploreable_bot_glitch": {
+      "name": "Small Bot Glitch",
+      "flags": "AnimateRoot",
+      "slots": {
+        "storage": 4
+      }
+    },
+    "f_feature": {
+      "name": "Feature",
+      "type": "Decoration"
+    },
+    "f_floating_feature": {
+      "name": "Land Feature",
+      "type": "Decoration"
+    },
+    "f_flyer_bot": {
+      "name": "Flyer Bot",
+      "flags": "AnimateRoot",
+      "size": "Unit",
+      "visual": "v_flyer_bot",
+      "slots": {
+        "storage": 1
+      }
+    },
+    "f_flyer_m": {
+      "name": "Shuttle Bot",
+      "flags": "AnimateRoot|Flyer",
+      "size": "Unit",
+      "visual": "v_flyer_m",
+      "slots": {
+        "storage": 2
+      }
+    },
+    "f_forestleaves": {},
+    "f_foundation": {
+      "name": "Foundation",
+      "type": "Foundation",
+      "size": "Other",
+      "visual": "v_foundation"
+    },
+    "f_gastarias1": {
+      "name": "Scale Worm",
+      "flags": "ClearFoundations",
+      "visual": "v_gastarias1"
+    },
+    "f_gastarid1": {
+      "name": "Ravager",
+      "visual": "v_gastarid1"
+    },
+    "f_gate": {
+      "name": "Gate",
+      "type": "Gate",
+      "size": "Other",
+      "visual": "v_gate"
+    },
+    "f_giant_home": {
+      "name": "Giant Beast",
+      "visual": "v_bughole"
+    },
+    "f_human_ai_research": {
+      "name": "AI Research Center",
+      "size": "Large",
+      "visual": "v_human_communication",
+      "slots": {
+        "anomaly": 2,
+        "storage": 4
+      }
+    },
+    "f_human_explorable": {
+      "name": "Human Explorable",
+      "slots": {
+        "storage": 6
+      }
+    },
+    "f_human_explorable_5x5": {
+      "name": "Data Complex",
+      "size": "Human",
+      "visual": "v_human_explorable_5x5_a",
+      "slots": {
+        "storage": 0
+      }
+    },
+    "f_human_explorer": {
+      "name": "Human Explorer",
+      "size": "Mission",
+      "visual": "v_human_buggy",
+      "slots": {
+        "anomaly": 1
+      }
+    },
+    "f_human_explorer_broken": {
+      "name": "Human Explorer (Broken)",
+      "size": "Mission",
+      "visual": "v_human_buggy_broken",
+      "slots": {
+        "storage": 2
+      }
+    },
+    "f_human_explorer_upgraded": {
+      "name": "AI Explorer",
+      "size": "Mission",
+      "visual": "v_human_buggy_upgraded",
+      "slots": {
+        "anomaly": 1,
+        "storage": 2
+      }
+    },
+    "f_human_flyer": {
+      "name": "Human Flyer",
+      "flags": "AnimateRoot",
+      "size": "Unit",
+      "visual": "v_human_flyer",
+      "slots": {
+        "storage": 2
+      }
+    },
+    "f_human_foundation": {
+      "name": "Human Foundation",
+      "type": "Foundation",
+      "size": "Other",
+      "visual": "v_human_foundation_basic"
+    },
+    "f_human_foundation_basic": {
+      "name": "Basic Human Foundation",
+      "type": "Foundation",
+      "size": "Other",
+      "visual": "v_human_foundation_basic"
+    },
+    "f_human_miner": {
+      "name": "Human Miner Mech",
+      "size": "Unit",
+      "visual": "v_human_miner",
+      "slots": {
+        "storage": 1
+      }
+    },
+    "f_human_tank": {
+      "name": "Human Tank",
+      "flags": "AnimateRoot",
+      "size": "Unit",
+      "visual": "v_human_tank",
+      "slots": {
+        "storage": 0
+      }
+    },
+    "f_landingpod": {
+      "name": "Command Center",
+      "visual": "v_base2x2_as",
+      "slots": {
+        "storage": 12
+      }
+    },
+    "f_mining_base": {
+      "name": "Miner Base (Abandoned)",
+      "size": "Mission",
+      "visual": "v_base2x2f_broken",
+      "slots": {
+        "storage": 4
+      }
+    },
+    "f_mothership": {
+      "name": "Mothership",
+      "flags": "Space",
+      "visual": "v_empty_alien",
+      "slots": {
+        "storage": 8
+      }
+    },
+    "f_particlespawner": {
+      "name": "Particle Spawner",
+      "flags": "NonSelectable"
+    },
+    "f_phase_plant": {
+      "name": "Phase Flower",
+      "flags": "NonSelectable",
+      "size": "Alien"
+    },
+    "f_present1x1": {
+      "name": "Present",
+      "size": "Small",
+      "visual": "v_Present_1x1",
+      "slots": {
+        "storage": 4
+      }
+    },
+    "f_resourcenode_blightcrystal": {
+      "name": "Resource Blight Crystal",
+      "type": "Resource",
+      "flags": "NonSelectable"
+    },
+    "f_resourcenode_crystal": {
+      "name": "Resource Crystal",
+      "type": "Resource",
+      "flags": "NonSelectable"
+    },
+    "f_resourcenode_laterite": {
+      "name": "Resource Laterite",
+      "type": "Resource",
+      "flags": "NonSelectable"
+    },
+    "f_resourcenode_metal": {
+      "name": "Resource Metal",
+      "type": "Resource",
+      "flags": "NonSelectable"
+    },
+    "f_resourcenode_obsidian": {
+      "name": "Resource Obsidian",
+      "type": "Resource",
+      "flags": "NonSelectable"
+    },
+    "f_resourcenode_silica": {
+      "name": "Resource Silica",
+      "type": "Resource",
+      "flags": "NonSelectable"
+    },
+    "f_resourcenode_tree": {
+      "name": "Silica Tree",
+      "type": "Resource",
+      "flags": "NonSelectable"
+    },
+    "f_roamingbot": {
+      "name": "Curious Bot",
+      "flags": "AnimateRoot",
+      "visual": "v_robot_s",
+      "slots": {
+        "storage": 2
+      }
+    },
+    "f_satellite": {
+      "name": "Satellite",
+      "flags": "Space",
+      "visual": "v_satellite",
+      "slots": {
+        "storage": 5
+      }
+    },
+    "f_scaramar1": {
+      "name": "Malika",
+      "visual": "v_scaramar1"
+    },
+    "f_scaramar2": {
+      "name": "Mothika",
+      "visual": "v_scaramar2"
+    },
+    "f_spacedrop": {
+      "name": "Drop Ship",
+      "visual": "v_spacedrop_1",
+      "slots": {
+        "storage": 6
+      }
+    },
+    "f_transport_bot": {
+      "name": "Transport Bot",
+      "flags": "AnimateRoot",
+      "size": "Unit",
+      "visual": "v_transport_bot",
+      "slots": {
+        "storage": 12
+      }
+    },
+    "f_trilobyte1": {
+      "name": "Trilobyte",
+      "size": "Unit",
+      "visual": "v_trilobite1",
+      "slots": {
+        "storage": 1
+      }
+    },
+    "f_wall": {
+      "name": "Wall",
+      "type": "Wall",
+      "size": "Other",
+      "visual": "v_wall0"
+    },
+    "f_wall_bli": {
+      "name": "Blight Wall",
+      "visual": "v_wall_bli0"
+    },
+    "f_wall_vir": {
+      "name": "Virus Wall",
+      "visual": "v_wall_vir0"
+    },
+    "f_world_big_daikon": {
+      "name": "Super Silica Tree",
+      "flags": "NonSelectable",
+      "size": "Mission"
+    }
+  },
+  "components": {
+    "c_adv_miner": {
+      "name": "Laser Mining Tool",
+      "attachment_size": "Small",
+      "visual": "v_miner_adv_s"
+    },
+    "c_adv_portable_turret": {
+      "name": "Small Advanced Turret",
+      "attachment_size": "Small",
+      "visual": "v_starterturret_adv_s"
+    },
+    "c_ai_bot_behavior": {
+      "name": "AI Bot"
+    },
+    "c_aibase_trigger": {
+      "name": "c_aibase_trigger",
+      "attachment_size": "Hidden"
+    },
+    "c_alien_ac": {
+      "name": "Alien Simulation Core",
+      "attachment_size": "Internal",
+      "visual": "v_generic_i"
+    },
+    "c_alien_attack": {
+      "name": "Alien Attack",
+      "attachment_size": "Internal"
+    },
+    "c_alien_container_i": {
+      "name": "Internal Alien Container",
+      "attachment_size": "Internal",
+      "visual": "v_generic_i"
+    },
+    "c_alien_core": {
+      "name": "Alien_Core",
+      "attachment_size": "Internal"
+    },
+    "c_alien_extractor": {
+      "name": "Alien Extractor",
+      "attachment_size": "Internal"
+    },
+    "c_alien_factory": {
+      "name": "Alien Factory",
+      "attachment_size": "Internal"
+    },
+    "c_alien_feeder": {
+      "name": "Alien Feeder",
+      "attachment_size": "Internal"
+    },
+    "c_alien_key": {
+      "name": "Alien Decryption Key",
+      "attachment_size": "Internal",
+      "visual": "v_generic_i"
+    },
+    "c_alien_liquid_fx": {
+      "name": "Alien Liquid",
+      "attachment_size": "Internal"
+    },
+    "c_alien_lock": {
+      "name": "Alien Lock"
+    },
+    "c_alien_miner": {
+      "name": "Alien Miner",
+      "attachment_size": "Internal"
+    },
+    "c_alien_research": {
+      "name": "Alien Research",
+      "attachment_size": "Internal"
+    },
+    "c_alien_stealth": {
+      "name": "Alien Stealth Module",
+      "attachment_size": "Internal",
+      "visual": "v_generic_i"
+    },
+    "c_alien_translator": {
+      "name": "Alien Translator",
+      "attachment_size": "Internal",
+      "visual": "v_generic_i"
+    },
+    "c_alien_unit": {
+      "name": "Alien Unit"
+    },
+    "c_anomaly_container_i": {
+      "name": "Internal Anomaly Containment",
+      "attachment_size": "Internal",
+      "visual": "v_generic_i"
+    },
+    "c_anomaly_event": {
+      "name": "Anomaly",
+      "attachment_size": "Internal"
+    },
+    "c_anomaly_go_home": {
+      "name": "c_anomaly_go_home"
+    },
+    "c_anomaly_resimulator_trigger": {
+      "name": "c_anomaly_resimulator_trigger",
+      "attachment_size": "Hidden"
+    },
+    "c_antlers1s": {
+      "name": "Antlers",
+      "attachment_size": "Small",
+      "visual": "v_Antlers_01_S"
+    },
+    "c_antlersnose1s": {
+      "name": "Antlers Nose",
+      "attachment_size": "Small",
+      "visual": "v_AntlersNose_01_S"
+    },
+    "c_assembler": {
+      "name": "Assembler",
+      "attachment_size": "Medium",
+      "visual": "v_assembler_01_m"
+    },
+    "c_autobase": {
+      "name": "AI Behavior Controller",
+      "attachment_size": "Internal"
+    },
+    "c_battery": {
+      "name": "Medium Battery",
+      "attachment_size": "Medium",
+      "visual": "v_battery_01_m"
+    },
+    "c_behavior": {
+      "name": "Behavior Controller",
+      "attachment_size": "Internal",
+      "visual": "v_generic_i"
+    },
+    "c_big_daikon_trigger": {
+      "name": "c_big_daikon_trigger",
+      "attachment_size": "Hidden"
+    },
+    "c_blight_a_trigger": {
+      "name": "c_blight_a_trigger",
+      "attachment_size": "Hidden"
+    },
+    "c_blight_ac": {
+      "name": "Blight Simulation Core",
+      "attachment_size": "Internal",
+      "visual": "v_generic_i"
+    },
+    "c_blight_antenna": {
+      "name": "Blight Stabilizer",
+      "attachment_size": "Medium",
+      "visual": "v_blight_stabilizer"
+    },
+    "c_blight_container_i": {
+      "name": "Internal Blight Container",
+      "attachment_size": "Internal",
+      "visual": "v_generic_i"
+    },
+    "c_blight_container_m": {
+      "name": "Blight Container Medium",
+      "attachment_size": "Medium",
+      "visual": "v_blightcontainer_m"
+    },
+    "c_blight_container_s": {
+      "name": "Blight Container Small",
+      "attachment_size": "Small",
+      "visual": "v_blightcontainer_s"
+    },
+    "c_blight_control": {
+      "name": "Blight Control Tower",
+      "attachment_size": "Medium",
+      "visual": "v_blight_control"
+    },
+    "c_blight_converter": {
+      "name": "Resource Converter",
+      "attachment_size": "Medium",
+      "visual": "v_blight_converter"
+    },
+    "c_blight_extractor": {
+      "name": "Blight Extractor",
+      "attachment_size": "Small",
+      "visual": "v_blightextractor_s"
+    },
+    "c_blight_magnifier": {
+      "name": "Blight Magnifier",
+      "attachment_size": "Medium",
+      "visual": "v_blight_magnifier"
+    },
+    "c_blight_power": {
+      "name": "Blight Power Generator",
+      "attachment_size": "Medium",
+      "visual": "v_blightpowergenerator_01_m"
+    },
+    "c_blight_shield": {
+      "name": "Blight Charger",
+      "attachment_size": "Internal",
+      "visual": "v_generic_i"
+    },
+    "c_blight_terraformer": {
+      "name": "Alien Terraformer",
+      "attachment_size": "Internal",
+      "visual": "v_generic_i"
+    },
+    "c_bug_a_repair": {
+      "name": "Mining base repairs"
+    },
+    "c_bug_capture_trigger": {
+      "name": "c_bug_capture_trigger",
+      "attachment_size": "Hidden"
+    },
+    "c_bug_homeless": {
+      "name": "Homeless Bug"
+    },
+    "c_bug_mission_trigger": {
+      "name": "c_bug_mission_trigger",
+      "attachment_size": "Hidden"
+    },
+    "c_bug_spawn": {
+      "name": "Bug Hive Spawner"
+    },
+    "c_bug_spawner_large": {
+      "name": "c_bug_spawner_large"
+    },
+    "c_capacitor": {
+      "name": "Capacitor",
+      "attachment_size": "Internal",
+      "visual": "v_generic_i"
+    },
+    "c_carrier_factory": {
+      "name": "Robot Factory"
+    },
+    "c_construction": {
+      "name": "Constructor"
+    },
+    "c_crane": {
+      "name": "Item Transporter",
+      "attachment_size": "Medium",
+      "visual": "v_transporter_01_m"
+    },
+    "c_crystal_power": {
+      "name": "Crystal Power",
+      "attachment_size": "Small",
+      "visual": "v_crystalpower_01_s"
+    },
+    "c_damage_plant": {
+      "name": "Damage Plant"
+    },
+    "c_damage_plant_internal": {
+      "name": "Damage Planet Internal"
+    },
+    "c_damageself": {
+      "name": "Damage on Trigger"
+    },
+    "c_data_analyzer": {
+      "name": "Data Analyzer",
+      "attachment_size": "Large",
+      "visual": "v_dataanalyzer_L"
+    },
+    "c_deconstructor": {
+      "name": "Deconstructor",
+      "attachment_size": "Small",
+      "visual": "v_deconstructor_01_s"
+    },
+    "c_deploy_construction": {
+      "name": "Deployment Constructor"
+    },
+    "c_deployer": {
+      "name": "Deployer",
+      "attachment_size": "Internal",
+      "visual": "v_generic_i"
+    },
+    "c_deployment": {
+      "name": "Deployment",
+      "visual": "v_generic_i"
+    },
+    "c_destroyself": {
+      "name": "Destroy on Trigger"
+    },
+    "c_disappear_empty": {
+      "name": "Glitch Building"
+    },
+    "c_drone_comp": {
+      "name": "Drone Component",
+      "attachment_size": "Internal",
+      "visual": "v_generic_i"
+    },
+    "c_drone_launcher": {
+      "name": "Drone Launcher",
+      "attachment_size": "Medium",
+      "visual": "v_dronehub_01_m"
+    },
+    "c_drone_port": {
+      "name": "Drone Port",
+      "attachment_size": "Small",
+      "visual": "v_dronehub_01_s"
+    },
+    "c_explorable_admin_fix": {
+      "name": "Admin Console"
+    },
+    "c_explorable_autosolve": {
+      "name": "c_explorable_autosolve"
+    },
+    "c_explorable_balance": {
+      "name": "Balance Minigame"
+    },
+    "c_explorable_fix": {
+      "name": "Repair Required"
+    },
+    "c_explorable_fix_lvl2": {
+      "name": "Datakey Socket"
+    },
+    "c_explorable_netwalk": {
+      "name": "Netwalk Minigame"
+    },
+    "c_explorable_nineclicks": {
+      "name": "Nine Clicks Minigame"
+    },
+    "c_explorable_scannable": {
+      "name": "Intel Scanner"
+    },
+    "c_explorable_slide": {
+      "name": "Slide Minigame"
+    },
+    "c_extractor": {
+      "name": "Laser Extractor",
+      "attachment_size": "Medium",
+      "visual": "v_laserextractor_01_m"
+    },
+    "c_fabricator": {
+      "name": "Fabricator",
+      "attachment_size": "Small",
+      "visual": "v_fabricator_01_s"
+    },
+    "c_fusion_generator": {
+      "name": "Fusion Generator"
+    },
+    "c_glitch": {
+      "name": "Glitch",
+      "attachment_size": "Internal"
+    },
+    "c_hacking_tool": {
+      "name": "Hacking Tool",
+      "attachment_size": "Small",
+      "visual": "v_hacking_tool_s"
+    },
+    "c_higgs_inserter": {
+      "name": "AI CORE Access",
+      "attachment_size": "Internal"
+    },
+    "c_higrade_capacitor": {
+      "name": "Hi-grade Capacitor",
+      "attachment_size": "Internal",
+      "visual": "v_generic_i"
+    },
+    "c_human_ac": {
+      "name": "Human Simulation Core",
+      "attachment_size": "Internal",
+      "visual": "v_generic_i"
+    },
+    "c_human_barracks": {
+      "name": "Human Barracks",
+      "attachment_size": "Internal"
+    },
+    "c_human_commandcenter": {
+      "name": "Human Command Center",
+      "attachment_size": "Internal"
+    },
+    "c_human_factory": {
+      "name": "Human Factory",
+      "attachment_size": "Internal"
+    },
+    "c_human_factory_robots": {
+      "name": "Human Factory",
+      "attachment_size": "Large",
+      "visual": "v_amalgamator_01_l"
+    },
+    "c_human_refinery": {
+      "name": "Human Refinery",
+      "attachment_size": "Internal"
+    },
+    "c_human_science": {
+      "name": "Human Science",
+      "attachment_size": "Internal"
+    },
+    "c_human_science_analyzer_robots": {
+      "name": "Human Science Analyzer",
+      "attachment_size": "Large",
+      "visual": "v_scienceanalyzer_l"
+    },
+    "c_human_spaceport": {
+      "name": "Human Spaceport",
+      "attachment_size": "Internal"
+    },
+    "c_human_tank_turret": {
+      "name": "Tank Turret",
+      "attachment_size": "Medium",
+      "visual": "v_human_tank_turret"
+    },
+    "c_integrated_capacitor": {
+      "name": "Integrated Capacitor"
+    },
+    "c_intel_extractor": {
+      "name": "Intel Extractor",
+      "attachment_size": "Internal"
+    },
+    "c_internal_crane1": {
+      "name": "Item Transporter",
+      "attachment_size": "Internal",
+      "visual": "v_generic_i"
+    },
+    "c_internal_crane2": {
+      "name": "Item Transporter",
+      "attachment_size": "Internal",
+      "visual": "v_generic_i"
+    },
+    "c_internal_storage": {
+      "name": "Internal Storage",
+      "attachment_size": "Internal",
+      "visual": "v_generic_i"
+    },
+    "c_landing_pad": {
+      "name": "Landing Pad",
+      "attachment_size": "Large",
+      "visual": "v_landingpad_01_l"
+    },
+    "c_large_battery": {
+      "name": "Large Battery",
+      "attachment_size": "Large",
+      "visual": "v_battery_01_l"
+    },
+    "c_large_power_relay": {
+      "name": "Large Power Field",
+      "attachment_size": "Large",
+      "visual": "v_power_relay_01_l"
+    },
+    "c_large_power_transmitter": {
+      "name": "Large Power Transmitter",
+      "attachment_size": "Large",
+      "visual": "v_power_transmitter_l"
+    },
+    "c_large_storage": {
+      "name": "Large Storage",
+      "attachment_size": "Large",
+      "visual": "v_storage_l"
+    },
+    "c_laser_turret": {
+      "name": "Laser Turret",
+      "attachment_size": "Medium",
+      "visual": "v_laser_turret_m"
+    },
+    "c_launch_pad": {
+      "name": "Launch Pad",
+      "attachment_size": "Internal"
+    },
+    "c_light": {
+      "name": "Light",
+      "attachment_size": "Small",
+      "visual": "v_light_01_s"
+    },
+    "c_light_rgb": {
+      "name": "Light RGB",
+      "attachment_size": "Small",
+      "visual": "v_light_01_s"
+    },
+    "c_medium_capacitor": {
+      "name": "Medium Capacitor",
+      "attachment_size": "Medium",
+      "visual": "v_crystalbattery_01_m"
+    },
+    "c_medium_storage": {
+      "name": "Medium Storage",
+      "attachment_size": "Medium",
+      "visual": "v_storage_01_m"
+    },
+    "c_miner": {
+      "name": "Miner",
+      "attachment_size": "Small",
+      "visual": "v_miner_s"
+    },
+    "c_missile_turret": {
+      "name": "Missile Launcher",
+      "attachment_size": "Large",
+      "visual": "v_missile_launcher_m"
+    },
+    "c_mission_human_a_repair": {
+      "name": "Repairs"
+    },
+    "c_mission_human_a_trigger": {
+      "name": "c_mission_human_a_trigger",
+      "attachment_size": "Hidden"
+    },
+    "c_mission_human_aicenter": {
+      "name": "AI Research Center",
+      "attachment_size": "Internal"
+    },
+    "c_mission_human_b_trigger": {
+      "name": "c_mission_human_b_trigger",
+      "attachment_size": "Hidden"
+    },
+    "c_mission_human_b_upgraded_trigger": {
+      "name": "c_mission_human_b_upgraded_trigger",
+      "attachment_size": "Hidden"
+    },
+    "c_mission_human_docker": {
+      "name": "Explorer"
+    },
+    "c_moduleefficiency": {
+      "name": "Internal Efficiency Module",
+      "attachment_size": "Internal",
+      "visual": "v_generic_i"
+    },
+    "c_moduleefficiency_l": {
+      "name": "Large Efficiency Module",
+      "attachment_size": "Large",
+      "visual": "v_modulebase_l"
+    },
+    "c_moduleefficiency_m": {
+      "name": "Medium Efficiency Module",
+      "attachment_size": "Medium",
+      "visual": "v_modulebase_m"
+    },
+    "c_moduleefficiency_s": {
+      "name": "Small Efficiency Module",
+      "attachment_size": "Small",
+      "visual": "v_modulebase_s"
+    },
+    "c_modulehealth": {
+      "name": "Internal Health Module",
+      "attachment_size": "Internal",
+      "visual": "v_generic_i"
+    },
+    "c_modulehealth_l": {
+      "name": "Large Health Module",
+      "attachment_size": "Large",
+      "visual": "v_modulebase_l"
+    },
+    "c_modulehealth_m": {
+      "name": "Medium Health Module",
+      "attachment_size": "Medium",
+      "visual": "v_modulebase_m"
+    },
+    "c_modulehealth_s": {
+      "name": "Small Health Module",
+      "attachment_size": "Small",
+      "visual": "v_modulebase_s"
+    },
+    "c_modulespeed": {
+      "name": "Internal Speed Module",
+      "attachment_size": "Internal",
+      "visual": "v_generic_i"
+    },
+    "c_modulespeed_l": {
+      "name": "Large Speed Module",
+      "attachment_size": "Large",
+      "visual": "v_modulebase_l"
+    },
+    "c_modulespeed_m": {
+      "name": "Medium Speed Module",
+      "attachment_size": "Medium",
+      "visual": "v_modulebase_m"
+    },
+    "c_modulespeed_s": {
+      "name": "Small Speed Module",
+      "attachment_size": "Small",
+      "visual": "v_modulebase_s"
+    },
+    "c_modulevisibility": {
+      "name": "Internal Visibility Module",
+      "attachment_size": "Internal",
+      "visual": "v_generic_i"
+    },
+    "c_modulevisibility_l": {
+      "name": "Large Visibility Module",
+      "attachment_size": "Large",
+      "visual": "v_modulebase_l"
+    },
+    "c_modulevisibility_m": {
+      "name": "Medium Visibility Module",
+      "attachment_size": "Medium",
+      "visual": "v_modulebase_m"
+    },
+    "c_modulevisibility_s": {
+      "name": "Small Visibility Module",
+      "attachment_size": "Small",
+      "visual": "v_modulebase_s"
+    },
+    "c_mothership_eject": {
+      "name": "Mothership Eject",
+      "attachment_size": "Hidden"
+    },
+    "c_mothership_repair": {
+      "name": "Mothership Repairs",
+      "attachment_size": "Internal"
+    },
+    "c_particle_birds": {
+      "name": "c_particle_birds",
+      "attachment_size": "Internal"
+    },
+    "c_particle_leaves": {
+      "name": "c_particle_leaves"
+    },
+    "c_phase_plant": {
+      "name": "Phase Plant"
+    },
+    "c_photon_cannon": {
+      "name": "Photon Cannon",
+      "attachment_size": "Medium",
+      "visual": "v_photon_canon_m"
+    },
+    "c_plasma_cannon": {
+      "name": "Plasma Cannon",
+      "attachment_size": "Medium",
+      "visual": "v_plasma_canon_m"
+    },
+    "c_plasma_turret": {
+      "name": "Plasma Turret",
+      "attachment_size": "Small",
+      "visual": "v_blight_plasmaturret_s"
+    },
+    "c_portable_radar": {
+      "name": "Portable Radar",
+      "attachment_size": "Internal",
+      "visual": "v_generic_i"
+    },
+    "c_portable_relay": {
+      "name": "Portable Power Field",
+      "attachment_size": "Internal",
+      "visual": "v_generic_i"
+    },
+    "c_portable_teleporter": {
+      "name": "Alien Portable Teleporter",
+      "attachment_size": "Internal",
+      "visual": "v_generic_i"
+    },
+    "c_portable_turret": {
+      "name": "Small Turret",
+      "attachment_size": "Small",
+      "visual": "v_starterturret_s"
+    },
+    "c_portable_turret_green": {
+      "name": "Viral Turret",
+      "attachment_size": "Small",
+      "visual": "v_starterturret_green_s"
+    },
+    "c_portable_turret_red": {
+      "name": "Blight Turret",
+      "attachment_size": "Small",
+      "visual": "v_starterturret_red_s"
+    },
+    "c_portablecrane": {
+      "name": "Portable Transporter",
+      "attachment_size": "Internal",
+      "visual": "v_generic_i"
+    },
+    "c_power_cell": {
+      "name": "Power Cell",
+      "attachment_size": "Internal",
+      "visual": "v_generic_i"
+    },
+    "c_power_core": {
+      "name": "Power Core",
+      "attachment_size": "Large",
+      "visual": "v_power_core_01_l"
+    },
+    "c_power_relay": {
+      "name": "Power Field",
+      "attachment_size": "Medium",
+      "visual": "v_power_relay_01_m"
+    },
+    "c_power_transmitter": {
+      "name": "Power Transmitter",
+      "attachment_size": "Medium",
+      "visual": "v_power_transmitter_m"
+    },
+    "c_power_unit": {
+      "name": "Power Unit",
+      "attachment_size": "Small",
+      "visual": "v_power_cell_01_s"
+    },
+    "c_present1s": {
+      "name": "Present",
+      "attachment_size": "Small",
+      "visual": "v_Present_01_S"
+    },
+    "c_radar": {
+      "name": "Long-range Radar",
+      "attachment_size": "Medium",
+      "visual": "v_radar_m"
+    },
+    "c_radio_receiver": {
+      "name": "Radio Receiver",
+      "attachment_size": "Internal",
+      "visual": "v_generic_i"
+    },
+    "c_radio_storage": {
+      "name": "c_radio_storage"
+    },
+    "c_radio_transmitter": {
+      "name": "Radio Transmitter",
+      "attachment_size": "Internal",
+      "visual": "v_generic_i"
+    },
+    "c_refinery": {
+      "name": "Refinery",
+      "attachment_size": "Medium",
+      "visual": "v_refinery_01_m"
+    },
+    "c_repairer": {
+      "name": "Repair Component",
+      "attachment_size": "Medium",
+      "visual": "v_repairer_01_m"
+    },
+    "c_repairer_aoe": {
+      "name": "AOE Repair Component",
+      "attachment_size": "Medium",
+      "visual": "v_repairer_AoE_01_m"
+    },
+    "c_repairkit": {
+      "name": "Repair Kit",
+      "attachment_size": "Internal",
+      "visual": "v_generic_i"
+    },
+    "c_repairport": {
+      "name": "Repair Garage",
+      "attachment_size": "Medium",
+      "visual": "v_repairport_01_m"
+    },
+    "c_resimulator": {
+      "name": "Re-simulator Core"
+    },
+    "c_robot_ac": {
+      "name": "Robot Simulation Core",
+      "attachment_size": "Internal",
+      "visual": "v_generic_i"
+    },
+    "c_robotics_factory": {
+      "name": "Robotics Assembler",
+      "attachment_size": "Medium",
+      "visual": "v_roboticsfactory_01_m"
+    },
+    "c_santahat": {
+      "name": "Santa Hat",
+      "attachment_size": "Medium",
+      "visual": "v_SantaHat_01_M"
+    },
+    "c_satellite": {
+      "name": "Satellite Unit",
+      "visual": "v_empty_inventory"
+    },
+    "c_satellite_deletor": {
+      "name": "Satellite Deletor"
+    },
+    "c_satellite_launcher": {
+      "name": "Satellite Launcher",
+      "attachment_size": "Large",
+      "visual": "v_empty_inventory"
+    },
+    "c_scout_radar": {
+      "name": "Scout Radar"
+    },
+    "c_selfdisassemble": {
+      "name": "Packager"
+    },
+    "c_shared_storage": {
+      "name": "Shared Storage",
+      "attachment_size": "Internal",
+      "visual": "v_generic_i"
+    },
+    "c_shield_generator": {
+      "name": "Portable Shield Generator",
+      "attachment_size": "Internal",
+      "visual": "v_generic_i"
+    },
+    "c_shield_generator2": {
+      "name": "Shield Generator",
+      "visual": "v_generic_i"
+    },
+    "c_shield_generator3": {
+      "name": "Hyper Shield Generator",
+      "visual": "v_generic_i"
+    },
+    "c_signal_reader": {
+      "name": "Signal Reader",
+      "attachment_size": "Internal",
+      "visual": "v_generic_i"
+    },
+    "c_signpost": {
+      "name": "Sign Post",
+      "attachment_size": "Internal",
+      "visual": "v_generic_i"
+    },
+    "c_simulation_interface": {
+      "name": "Simulation Interface",
+      "attachment_size": "Internal",
+      "visual": "v_smartstorage_m"
+    },
+    "c_small_battery": {
+      "name": "Small Battery",
+      "attachment_size": "Small",
+      "visual": "v_capacitor_01_s"
+    },
+    "c_small_radar": {
+      "name": "Small Radar",
+      "attachment_size": "Small",
+      "visual": "v_radar_s"
+    },
+    "c_small_relay": {
+      "name": "Small Power Field",
+      "attachment_size": "Small",
+      "visual": "v_power_relay_01_s"
+    },
+    "c_small_scanner": {
+      "name": "Small Intel Scanner",
+      "attachment_size": "Small",
+      "visual": "v_scanner_s"
+    },
+    "c_small_storage": {
+      "name": "Small Storage",
+      "attachment_size": "Small",
+      "visual": "v_storage_01_s"
+    },
+    "c_solar_cell": {
+      "name": "Solar Cell",
+      "attachment_size": "Small",
+      "visual": "v_solarpanel_01_s"
+    },
+    "c_solar_panel": {
+      "name": "Solar Panel",
+      "attachment_size": "Medium",
+      "visual": "v_solarpanel_01_m"
+    },
+    "c_space_elevator_factory": {
+      "name": "Space Elevator",
+      "attachment_size": "Internal"
+    },
+    "c_stealth": {
+      "name": "c_stealth"
+    },
+    "c_terraformer": {
+      "name": "Purifying Terraformer",
+      "attachment_size": "Internal",
+      "visual": "v_generic_i"
+    },
+    "c_trilobyte_attack": {
+      "name": "Trilobyte Attack",
+      "attachment_size": "Hidden"
+    },
+    "c_trilobyte_attack1": {
+      "name": "c_trilobyte_attack1"
+    },
+    "c_trilobyte_attack2": {
+      "name": "c_trilobyte_attack2"
+    },
+    "c_trilobyte_attack3": {
+      "name": "c_trilobyte_attack3"
+    },
+    "c_trilobyte_attack4": {
+      "name": "c_trilobyte_attack4"
+    },
+    "c_trilobyte_consume": {
+      "name": "Trilobyte Consume",
+      "attachment_size": "Internal"
+    },
+    "c_turret": {
+      "name": "Turret",
+      "attachment_size": "Medium",
+      "visual": "v_turret_m"
+    },
+    "c_turret_powerflower": {
+      "name": "Drain Turret",
+      "attachment_size": "Small",
+      "visual": "v_starterturret_drain_s"
+    },
+    "c_turret_powerflower_effect": {
+      "name": "Drain Turret Internal"
+    },
+    "c_unit_teleport": {
+      "name": "Unit Teleporter",
+      "attachment_size": "Large",
+      "visual": "v_teleporter_01_l"
+    },
+    "c_uplink": {
+      "name": "Uplink",
+      "attachment_size": "Medium",
+      "visual": "v_uplink_m"
+    },
+    "c_virus": {
+      "name": "Virus",
+      "attachment_size": "Internal"
+    },
+    "c_virus_ac": {
+      "name": "Virus Simulation Core",
+      "attachment_size": "Internal",
+      "visual": "v_generic_i"
+    },
+    "c_virus_bitlock": {
+      "name": "Crypto BitLock",
+      "attachment_size": "Medium",
+      "visual": "v_virus_robot_antenna_03"
+    },
+    "c_virus_bitlock_effect": {
+      "name": "BitLock Effect",
+      "attachment_size": "Internal"
+    },
+    "c_virus_container_i": {
+      "name": "Internal Virus Containment",
+      "attachment_size": "Internal",
+      "visual": "v_generic_i"
+    },
+    "c_virus_cure": {
+      "name": "Virus Cure",
+      "attachment_size": "Internal",
+      "visual": "v_generic_i"
+    },
+    "c_virus_decomposer": {
+      "name": "Robot Hive",
+      "attachment_size": "Large",
+      "visual": "v_virus_decomposer_l"
+    },
+    "c_virus_jamming": {
+      "name": "Virus Ray",
+      "attachment_size": "Medium",
+      "visual": "v_virus_robot_jammer"
+    },
+    "c_virus_possess": {
+      "name": "Blight Destabilizer",
+      "attachment_size": "Medium",
+      "visual": "v_virus_robot_possess"
+    },
+    "c_virus_possessor": {
+      "name": "Virus Possessor",
+      "attachment_size": "Medium",
+      "visual": "v_virus_robot_generator"
+    },
+    "c_virus_protection": {
+      "name": "Virus Protection",
+      "attachment_size": "Internal",
+      "visual": "v_generic_i"
+    },
+    "c_virus_recycler": {
+      "name": "Component Recycler",
+      "attachment_size": "Medium",
+      "visual": "v_virus_robot_jammer"
+    },
+    "c_virus_turret": {
+      "name": "Virus Bug Turret",
+      "attachment_size": "Medium",
+      "visual": "v_virus_robot_turret_01"
+    },
+    "c_wind_turbine": {
+      "name": "Wind Turbine",
+      "attachment_size": "Medium",
+      "visual": "v_wind_turbine_m"
+    },
+    "c_wind_turbine_l": {
+      "name": "Large Wind Turbine",
+      "attachment_size": "Large",
+      "visual": "v_wind_turbine_l"
+    }
+  },
+  "items": {
+    "adv_data": {
+      "name": "Compressed Simulation Data",
+      "visual": "v_simulation_data",
+      "slot_type": "storage",
+      "tag": "research",
+      "stack_size": 20
+    },
+    "alien_ai_core": {
+      "name": "Alien AI Core",
+      "visual": "v_bot_ai_core",
+      "slot_type": "storage",
+      "tag": "hitech_material",
+      "stack_size": 1
+    },
+    "alien_artifact": {
+      "name": "Alien Artifact",
+      "visual": "v_alien_artifact",
+      "slot_type": "storage",
+      "tag": "resource",
+      "stack_size": 20
+    },
+    "alien_artifact_research": {
+      "name": "Research Artifact",
+      "visual": "v_alien_artifact",
+      "slot_type": "storage",
+      "tag": "resource",
+      "stack_size": 20
+    },
+    "alien_databank": {
+      "name": "Alien Data Bank",
+      "visual": "v_human_data",
+      "slot_type": "storage",
+      "tag": "research",
+      "stack_size": 20
+    },
+    "alien_datacube": {
+      "name": "Alien Datacube",
+      "visual": "v_alien_data",
+      "slot_type": "storage",
+      "tag": "research",
+      "stack_size": 20
+    },
+    "alien_research": {
+      "name": "Alien Research",
+      "visual": "v_alien_research_item",
+      "slot_type": "storage",
+      "tag": "research",
+      "stack_size": 20
+    },
+    "aluminiumrod": {
+      "name": "Aluminum Rod",
+      "visual": "v_aluminium_rod",
+      "slot_type": "storage",
+      "tag": "simple_material",
+      "stack_size": 20
+    },
+    "aluminiumsheet": {
+      "name": "Aluminum Sheet",
+      "visual": "v_aluminium_sheet",
+      "slot_type": "storage",
+      "tag": "simple_material",
+      "stack_size": 20
+    },
+    "anomaly_cluster": {
+      "name": "Dense Anomaly Cluster",
+      "visual": "v_bot_ai_core",
+      "slot_type": "anomaly",
+      "tag": "hitech_material",
+      "stack_size": 10
+    },
+    "anomaly_heart": {
+      "name": "Anomaly Heart",
+      "slot_type": "anomaly",
+      "tag": "advanced_material",
+      "stack_size": 5
+    },
+    "anomaly_particle": {
+      "name": "Anomaly Particle",
+      "visual": "v_bot_ai_core",
+      "slot_type": "anomaly",
+      "tag": "hitech_material",
+      "stack_size": 20
+    },
+    "beacon_frame": {
+      "name": "Beacon Kit",
+      "visual": "v_beacon",
+      "slot_type": "storage",
+      "tag": "advanced_material",
+      "stack_size": 5
+    },
+    "blight_crystal": {
+      "name": "Blight Crystal Chunk",
+      "visual": "v_blight_crystal",
+      "slot_type": "storage",
+      "tag": "resource",
+      "stack_size": 20
+    },
+    "blight_databank": {
+      "name": "Blight Data Bank",
+      "visual": "v_human_data",
+      "slot_type": "storage",
+      "tag": "research",
+      "stack_size": 20
+    },
+    "blight_datacube": {
+      "name": "Blight Datacube",
+      "visual": "v_alien_data",
+      "slot_type": "storage",
+      "tag": "research",
+      "stack_size": 20
+    },
+    "blight_extraction": {
+      "name": "Blight Extraction",
+      "slot_type": "gas",
+      "tag": "resource",
+      "stack_size": 100
+    },
+    "blight_plasma": {
+      "name": "Blight Plasma",
+      "visual": "v_blight_plasma",
+      "slot_type": "storage",
+      "tag": "simple_material",
+      "stack_size": 20
+    },
+    "blight_research": {
+      "name": "Blight Research",
+      "visual": "v_blight_research_item",
+      "slot_type": "storage",
+      "tag": "research",
+      "stack_size": 20
+    },
+    "blightbar": {
+      "name": "Blight Bar",
+      "visual": "v_blightbar",
+      "slot_type": "storage",
+      "tag": "simple_material",
+      "stack_size": 20
+    },
+    "bot_ai_core": {
+      "name": "AI Core",
+      "visual": "v_bot_ai_core",
+      "slot_type": "storage",
+      "tag": "hitech_material",
+      "stack_size": 1
+    },
+    "broken_ai_core": {
+      "name": "Broken AI Core",
+      "visual": "v_bot_ai_core",
+      "slot_type": "storage",
+      "tag": "hitech_material",
+      "stack_size": 1
+    },
+    "bug_carapace": {
+      "name": "Bug Chitin",
+      "visual": "v_default_item",
+      "slot_type": "storage",
+      "tag": "resource",
+      "stack_size": 20
+    },
+    "cable": {
+      "name": "Cable",
+      "visual": "v_cable",
+      "slot_type": "storage",
+      "tag": "advanced_material",
+      "stack_size": 20
+    },
+    "ceramictiles": {
+      "name": "Ceramic Tiles",
+      "visual": "v_metalplate",
+      "slot_type": "storage",
+      "tag": "simple_material",
+      "stack_size": 20
+    },
+    "circuit_board": {
+      "name": "Circuit Board",
+      "visual": "v_circuit_board",
+      "slot_type": "storage",
+      "tag": "advanced_material",
+      "stack_size": 20
+    },
+    "concreteslab": {
+      "name": "Concretes Lab",
+      "visual": "v_metalplate",
+      "slot_type": "storage",
+      "tag": "simple_material",
+      "stack_size": 20
+    },
+    "cpu": {
+      "name": "CPU",
+      "visual": "v_cpu",
+      "slot_type": "storage",
+      "tag": "hitech_material",
+      "stack_size": 20
+    },
+    "crystal": {
+      "name": "Crystal Chunk",
+      "visual": "v_crystal",
+      "slot_type": "storage",
+      "tag": "resource",
+      "stack_size": 20
+    },
+    "crystal_powder": {
+      "name": "Crystal Powder",
+      "visual": "v_crystal_powder",
+      "slot_type": "storage",
+      "tag": "advanced_material",
+      "stack_size": 20
+    },
+    "datacube_matrix": {
+      "name": "Datacube Matrix",
+      "visual": "v_simulation_data",
+      "slot_type": "storage",
+      "tag": "research",
+      "stack_size": 20
+    },
+    "datakey": {
+      "name": "Datakey",
+      "visual": "v_gears",
+      "slot_type": "storage",
+      "tag": "advanced_material",
+      "stack_size": 20
+    },
+    "datakey_alien": {
+      "name": "Alien Datakey",
+      "visual": "v_gears",
+      "slot_type": "storage",
+      "tag": "advanced_material",
+      "stack_size": 20
+    },
+    "datakey_blight": {
+      "name": "Blight Datakey",
+      "visual": "v_gears",
+      "slot_type": "storage",
+      "tag": "advanced_material",
+      "stack_size": 20
+    },
+    "datakey_human": {
+      "name": "Human Datakey",
+      "visual": "v_gears",
+      "slot_type": "storage",
+      "tag": "advanced_material",
+      "stack_size": 20
+    },
+    "datakey_robot": {
+      "name": "Robot Datakey",
+      "visual": "v_gears",
+      "slot_type": "storage",
+      "tag": "advanced_material",
+      "stack_size": 20
+    },
+    "datakey_virus": {
+      "name": "Virus Datakey",
+      "slot_type": "storage",
+      "tag": "advanced_material",
+      "stack_size": 20
+    },
+    "drone_adv_miner_package": {
+      "name": "Advanced Miner Drone Package",
+      "visual": "v_packed_drone",
+      "slot_type": "storage",
+      "tag": "package",
+      "stack_size": 1
+    },
+    "drone_defense_package1": {
+      "name": "Defense Drone Package",
+      "visual": "v_packed_drone",
+      "slot_type": "storage",
+      "tag": "package",
+      "stack_size": 1
+    },
+    "drone_miner_package": {
+      "name": "Miner Drone Package",
+      "visual": "v_packed_drone",
+      "slot_type": "storage",
+      "tag": "package",
+      "stack_size": 1
+    },
+    "drone_transfer_package": {
+      "name": "Drone Package",
+      "visual": "v_packed_drone_a",
+      "slot_type": "storage",
+      "tag": "package",
+      "stack_size": 1
+    },
+    "drone_transfer_package2": {
+      "name": "Transfer Drone Package",
+      "visual": "v_packed_drone_b",
+      "slot_type": "storage",
+      "tag": "package",
+      "stack_size": 1
+    },
+    "elain_ai_core": {
+      "name": "ELAIN's AI Core",
+      "visual": "v_bot_ai_core",
+      "slot_type": "storage",
+      "tag": "hitech_material",
+      "stack_size": 1
+    },
+    "empty_databank": {
+      "name": "Empty Data Bank",
+      "visual": "v_simulation_data",
+      "slot_type": "storage",
+      "tag": "research",
+      "stack_size": 20
+    },
+    "energized_artifact": {
+      "name": "Energized Artifact",
+      "visual": "v_alien_artifact",
+      "slot_type": "storage",
+      "tag": "resource",
+      "stack_size": 20
+    },
+    "energized_plate": {
+      "name": "Energized Plate",
+      "visual": "v_energized_plate",
+      "slot_type": "storage",
+      "tag": "advanced_material",
+      "stack_size": 20
+    },
+    "engine": {
+      "name": "Engine",
+      "visual": "v_engine",
+      "slot_type": "storage",
+      "tag": "advanced_material",
+      "stack_size": 20
+    },
+    "flyer_package_m": {
+      "name": "Medium Flyer Package",
+      "visual": "v_packed_flyer_m",
+      "slot_type": "storage",
+      "tag": "package",
+      "stack_size": 1
+    },
+    "foundationplate": {
+      "name": "Foundation Plate",
+      "slot_type": "storage",
+      "tag": "simple_material",
+      "stack_size": 40
+    },
+    "fused_electrodes": {
+      "name": "Fused Electrodes",
+      "visual": "v_fused_electrodes",
+      "slot_type": "storage",
+      "tag": "hitech_material",
+      "stack_size": 20
+    },
+    "hdframe": {
+      "name": "High-Density Frame",
+      "visual": "v_high_density_frame",
+      "slot_type": "storage",
+      "tag": "hitech_material",
+      "stack_size": 20
+    },
+    "higgs_ai_ac": {
+      "name": "HIGGS's AI Core",
+      "visual": "v_bot_ai_core",
+      "slot_type": "storage",
+      "tag": "hitech_material",
+      "stack_size": 1
+    },
+    "higgs_oop_ai_core": {
+      "name": "HIGGS's Out-of-Phase AI Core ",
+      "visual": "v_bot_ai_core",
+      "slot_type": "storage",
+      "tag": "hitech_material",
+      "stack_size": 1
+    },
+    "human_databank": {
+      "name": "Human Data Bank",
+      "visual": "v_human_data",
+      "slot_type": "storage",
+      "tag": "research",
+      "stack_size": 20
+    },
+    "human_datacube": {
+      "name": "Human Datacube",
+      "visual": "v_human_data",
+      "slot_type": "storage",
+      "tag": "research",
+      "stack_size": 20
+    },
+    "human_research": {
+      "name": "Human Research",
+      "visual": "v_human_research_item",
+      "slot_type": "storage",
+      "tag": "research",
+      "stack_size": 20
+    },
+    "icchip": {
+      "name": "IC Chip",
+      "visual": "v_icchip",
+      "slot_type": "storage",
+      "tag": "hitech_material",
+      "stack_size": 20
+    },
+    "infected_circuit_board": {
+      "name": "Infected Circuit Board",
+      "visual": "v_circuit_board_infected",
+      "slot_type": "storage",
+      "tag": "advanced_material",
+      "stack_size": 20
+    },
+    "laterite": {
+      "name": "Laterite ore",
+      "visual": "v_laterite",
+      "slot_type": "storage",
+      "tag": "resource",
+      "stack_size": 20
+    },
+    "ldframe": {
+      "name": "Low-Density Frame",
+      "visual": "v_low_density_frame",
+      "slot_type": "storage",
+      "tag": "hitech_material",
+      "stack_size": 20
+    },
+    "metalbar": {
+      "name": "Metal Bar",
+      "visual": "v_metalbar",
+      "slot_type": "storage",
+      "tag": "simple_material",
+      "stack_size": 20
+    },
+    "metalore": {
+      "name": "Metal Ore",
+      "visual": "v_metalore",
+      "slot_type": "storage",
+      "tag": "resource",
+      "stack_size": 20
+    },
+    "metalplate": {
+      "name": "Metal Plate",
+      "visual": "v_metalplate",
+      "slot_type": "storage",
+      "tag": "simple_material",
+      "stack_size": 20
+    },
+    "micropro": {
+      "name": "Microprocessor",
+      "visual": "v_micropro",
+      "slot_type": "storage",
+      "tag": "hitech_material",
+      "stack_size": 20
+    },
+    "microscope": {
+      "name": "Microscope",
+      "visual": "v_microscope",
+      "slot_type": "storage",
+      "tag": "advanced_material",
+      "stack_size": 20
+    },
+    "obsidian": {
+      "name": "Obsidian chunk",
+      "visual": "v_obsidian",
+      "slot_type": "storage",
+      "tag": "resource",
+      "stack_size": 20
+    },
+    "obsidian_brick": {
+      "name": "Obsidian Brick",
+      "visual": "v_obsidian_brick",
+      "slot_type": "storage",
+      "tag": "simple_material",
+      "stack_size": 20
+    },
+    "optic_cable": {
+      "name": "Optic Cable",
+      "visual": "v_optic_cable",
+      "slot_type": "storage",
+      "tag": "hitech_material",
+      "stack_size": 20
+    },
+    "phase_leaf": {
+      "name": "Phase Leaf",
+      "slot_type": "storage",
+      "tag": "hitech_material",
+      "stack_size": 10
+    },
+    "polymer": {
+      "name": "Polymer",
+      "visual": "v_metalplate",
+      "slot_type": "storage",
+      "tag": "simple_material",
+      "stack_size": 20
+    },
+    "power_petal": {
+      "name": "Power Petal",
+      "slot_type": "storage",
+      "tag": "hitech_material",
+      "stack_size": 10
+    },
+    "rainbow_research": {
+      "name": "MultiCube - CURRENTLY NOT OBTAINABLE",
+      "visual": "v_default_item",
+      "slot_type": "storage",
+      "tag": "research",
+      "stack_size": 20
+    },
+    "refined_crystal": {
+      "name": "Refined Crystal",
+      "visual": "v_refined_crystal",
+      "slot_type": "storage",
+      "tag": "advanced_material",
+      "stack_size": 20
+    },
+    "reinforced_plate": {
+      "name": "Reinforced Plate",
+      "visual": "v_reinforced_plate",
+      "slot_type": "storage",
+      "tag": "advanced_material",
+      "stack_size": 20
+    },
+    "resimulator_core": {
+      "name": "Resimulator Core",
+      "slot_type": "storage",
+      "tag": "hitech_material",
+      "stack_size": 1
+    },
+    "robot_datacube": {
+      "name": "Robotics Datacube",
+      "visual": "v_robot_data",
+      "slot_type": "storage",
+      "tag": "research",
+      "stack_size": 20
+    },
+    "robot_research": {
+      "name": "Robotics Research",
+      "visual": "v_advanced_robotics_research",
+      "slot_type": "storage",
+      "tag": "research",
+      "stack_size": 20
+    },
+    "satellite_package": {
+      "name": "Satellite Package",
+      "visual": "v_packed_satellite",
+      "slot_type": "storage",
+      "tag": "package",
+      "stack_size": 1
+    },
+    "silica": {
+      "name": "Silica sand",
+      "visual": "v_silica",
+      "slot_type": "storage",
+      "tag": "resource",
+      "stack_size": 20
+    },
+    "silicon": {
+      "name": "Silicon",
+      "visual": "v_silicon",
+      "slot_type": "storage",
+      "tag": "simple_material",
+      "stack_size": 20
+    },
+    "smallreactor": {
+      "name": "Small Modular Reactor",
+      "visual": "v_small_reactor",
+      "slot_type": "storage",
+      "tag": "advanced_material",
+      "stack_size": 20
+    },
+    "steelblock": {
+      "name": "Steel Block",
+      "visual": "v_metalplate",
+      "slot_type": "storage",
+      "tag": "simple_material",
+      "stack_size": 20
+    },
+    "transformer": {
+      "name": "Transformer",
+      "visual": "v_transformer",
+      "slot_type": "storage",
+      "tag": "advanced_material",
+      "stack_size": 20
+    },
+    "virus_research": {
+      "name": "Virus Research",
+      "visual": "v_virus_research",
+      "slot_type": "storage",
+      "tag": "research",
+      "stack_size": 20
+    },
+    "virus_research_data": {
+      "name": "Virus Datacube",
+      "visual": "v_virus_data",
+      "slot_type": "storage",
+      "tag": "research",
+      "stack_size": 20
+    },
+    "virus_source_code": {
+      "name": "Virus Source Code",
+      "slot_type": "virus",
+      "tag": "hitech_material",
+      "stack_size": 1
+    },
+    "wire": {
+      "name": "Wire",
+      "visual": "v_wire",
+      "slot_type": "storage",
+      "tag": "simple_material",
+      "stack_size": 20
+    }
+  },
+  "visuals": {
+    "blight_set_01": {
+      "tile_size": [
+        8,
+        6
+      ]
+    },
+    "blight_set_02": {
+      "tile_size": [
+        8,
+        6
+      ]
+    },
+    "blight_set_03": {
+      "tile_size": [
+        8,
+        6
+      ]
+    },
+    "blight_set_04": {
+      "tile_size": [
+        8,
+        6
+      ]
+    },
+    "blight_set_05": {
+      "tile_size": [
+        14,
+        9
+      ]
+    },
+    "blight_set_06": {
+      "tile_size": [
+        13,
+        11
+      ]
+    },
+    "blight_set_07": {
+      "tile_size": [
+        6,
+        7
+      ]
+    },
+    "blight_set_08": {
+      "tile_size": [
+        7,
+        10
+      ]
+    },
+    "blight_set_09": {
+      "tile_size": [
+        6,
+        7
+      ]
+    },
+    "plateau_set_01": {
+      "tile_size": [
+        3,
+        3
+      ]
+    },
+    "plateau_set_02": {
+      "tile_size": [
+        6,
+        5
+      ]
+    },
+    "plateau_set_03": {
+      "tile_size": [
+        4,
+        5
+      ]
+    },
+    "plateau_set_hole_01": {
+      "flags": "CutsHole",
+      "tile_size": [
+        5,
+        5
+      ]
+    },
+    "plateau_set_hole_02": {
+      "flags": "CutsHole",
+      "tile_size": [
+        12,
+        22
+      ]
+    },
+    "v_2x2_a_ruined": {
+      "tile_size": [
+        2,
+        2
+      ]
+    },
+    "v_advanced_robotics_research": {},
+    "v_alien_artifact": {},
+    "v_alien_data": {},
+    "v_alien_extractor_dead": {
+      "flags": "RandomRotation",
+      "sockets": [
+        [
+          "",
+          "Internal"
+        ]
+      ],
+      "tile_size": [
+        2,
+        2
+      ]
+    },
+    "v_alien_feeder_dead": {
+      "flags": "RandomRotation",
+      "sockets": [
+        [
+          "",
+          "Internal"
+        ]
+      ],
+      "tile_size": [
+        2,
+        2
+      ]
+    },
+    "v_alien_research_item": {},
+    "v_alien_soldier": {
+      "sockets": [
+        [
+          "",
+          "Internal"
+        ]
+      ]
+    },
+    "v_alien_soldier_shadow": {
+      "sockets": [
+        [
+          "",
+          "Internal"
+        ]
+      ]
+    },
+    "v_aluminium_rod": {},
+    "v_aluminium_sheet": {},
+    "v_amac_01_xl": {
+      "sockets": [
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "large1",
+          "Large"
+        ]
+      ],
+      "tile_size": [
+        3,
+        2
+      ]
+    },
+    "v_amalgamator_01_l": {},
+    "v_Antlers_01_S": {},
+    "v_AntlersNose_01_S": {},
+    "v_assembler_01_m": {},
+    "v_base1x1a": {
+      "sockets": [
+        [
+          "Medium1",
+          "Medium"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ],
+      "tile_size": [
+        1,
+        1
+      ]
+    },
+    "v_base1x1b": {
+      "sockets": [
+        [
+          "Large1",
+          "Large"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ],
+      "tile_size": [
+        1,
+        1
+      ]
+    },
+    "v_base1x1c": {
+      "sockets": [
+        [
+          "small1",
+          "Small"
+        ],
+        [
+          "small2",
+          "Small"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ],
+      "tile_size": [
+        1,
+        1
+      ]
+    },
+    "v_base1x1d": {
+      "sockets": [
+        [
+          "small1",
+          "Small"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ],
+      "tile_size": [
+        1,
+        1
+      ]
+    },
+    "v_base1x1e": {
+      "sockets": [
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ],
+      "tile_size": [
+        1,
+        1
+      ]
+    },
+    "v_base1x1f": {
+      "sockets": [
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ],
+      "tile_size": [
+        1,
+        1
+      ]
+    },
+    "v_base1x1g": {
+      "sockets": [
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ],
+      "tile_size": [
+        1,
+        1
+      ]
+    },
+    "v_base2x1a": {
+      "sockets": [
+        [
+          "Medium2",
+          "Medium"
+        ],
+        [
+          "Medium1",
+          "Medium"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ],
+      "tile_size": [
+        1,
+        2
+      ]
+    },
+    "v_base2x1b": {
+      "sockets": [
+        [
+          "Medium1",
+          "Medium"
+        ],
+        [
+          "Large1",
+          "Large"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ],
+      "tile_size": [
+        1,
+        2
+      ]
+    },
+    "v_base2x1c": {
+      "sockets": [
+        [
+          "Medium1",
+          "Medium"
+        ],
+        [
+          "Medium2",
+          "Medium"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ],
+      "tile_size": [
+        1,
+        2
+      ]
+    },
+    "v_base2x1d": {
+      "sockets": [
+        [
+          "Medium1",
+          "Medium"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ],
+      "tile_size": [
+        1,
+        2
+      ]
+    },
+    "v_base2x1e": {
+      "sockets": [
+        [
+          "medium1",
+          "Medium"
+        ],
+        [
+          "small1",
+          "Small"
+        ],
+        [
+          "small2",
+          "Small"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ],
+      "tile_size": [
+        1,
+        2
+      ]
+    },
+    "v_base2x1f": {
+      "sockets": [
+        [
+          "Medium1",
+          "Medium"
+        ],
+        [
+          "Small1",
+          "Small"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ],
+      "tile_size": [
+        1,
+        2
+      ]
+    },
+    "v_base2x1g": {
+      "sockets": [
+        [
+          "Medium1",
+          "Medium"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ],
+      "tile_size": [
+        1,
+        2
+      ]
+    },
+    "v_base2x2_as": {
+      "sockets": [
+        [
+          "Medium1",
+          "Medium"
+        ],
+        [
+          "Medium2",
+          "Medium"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ],
+      "tile_size": [
+        3,
+        3
+      ]
+    },
+    "v_base2x2a": {
+      "sockets": [
+        [
+          "Medium1",
+          "Medium"
+        ],
+        [
+          "Medium2",
+          "Medium"
+        ],
+        [
+          "Large1",
+          "Large"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ],
+      "tile_size": [
+        2,
+        2
+      ]
+    },
+    "v_base2x2b": {
+      "sockets": [
+        [
+          "Medium1",
+          "Medium"
+        ],
+        [
+          "Medium2",
+          "Medium"
+        ],
+        [
+          "Medium3",
+          "Medium"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ],
+      "tile_size": [
+        2,
+        2
+      ]
+    },
+    "v_base2x2c": {
+      "sockets": [
+        [
+          "Large1",
+          "Large"
+        ],
+        [
+          "Medium1",
+          "Medium"
+        ],
+        [
+          "Medium2",
+          "Medium"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ],
+      "tile_size": [
+        2,
+        2
+      ]
+    },
+    "v_base2x2d": {
+      "sockets": [
+        [
+          "Large1",
+          "Large"
+        ],
+        [
+          "Medium1",
+          "Medium"
+        ],
+        [
+          "Medium2",
+          "Medium"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ],
+      "tile_size": [
+        2,
+        2
+      ]
+    },
+    "v_base2x2e": {
+      "sockets": [
+        [
+          "Medium1",
+          "Medium"
+        ],
+        [
+          "Small1",
+          "Small"
+        ],
+        [
+          "Small2",
+          "Small"
+        ],
+        [
+          "Small3",
+          "Small"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ],
+      "tile_size": [
+        2,
+        2
+      ]
+    },
+    "v_base2x2f": {
+      "sockets": [
+        [
+          "Medium1",
+          "Medium"
+        ],
+        [
+          "Medium2",
+          "Medium"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ],
+      "tile_size": [
+        2,
+        2
+      ]
+    },
+    "v_base2x2f_broken": {
+      "sockets": [
+        [
+          "Medium1",
+          "Medium"
+        ]
+      ],
+      "tile_size": [
+        2,
+        2
+      ]
+    },
+    "v_base3x2a": {
+      "sockets": [
+        [
+          "medium1",
+          "Medium"
+        ],
+        [
+          "medium2",
+          "Medium"
+        ],
+        [
+          "medium3",
+          "Medium"
+        ],
+        [
+          "large1",
+          "Large"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ],
+      "tile_size": [
+        3,
+        2
+      ]
+    },
+    "v_base3x2b": {
+      "sockets": [
+        [
+          "medium1",
+          "Medium"
+        ],
+        [
+          "medium2",
+          "Medium"
+        ],
+        [
+          "small1",
+          "Small"
+        ],
+        [
+          "small2",
+          "Small"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ],
+      "tile_size": [
+        2,
+        3
+      ]
+    },
+    "v_battery_01_l": {},
+    "v_battery_01_l_ruined": {
+      "tile_size": [
+        1,
+        1
+      ]
+    },
+    "v_battery_01_m": {},
+    "v_beacon": {
+      "sockets": [
+        [
+          "",
+          "Internal"
+        ]
+      ]
+    },
+    "v_beacon_l": {
+      "sockets": [
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ]
+    },
+    "v_big_daikon": {
+      "flags": "RandomRotation",
+      "tile_size": [
+        2,
+        2
+      ]
+    },
+    "v_blight_control": {},
+    "v_blight_converter": {},
+    "v_blight_crystal": {},
+    "v_blight_magnifier": {},
+    "v_blight_plasma": {},
+    "v_blight_plasmaturret_s": {
+      "flags": "ComponentFaceTarget"
+    },
+    "v_blight_research_item": {},
+    "v_blight_stabilizer": {},
+    "v_blightbar": {},
+    "v_blightcontainer_m": {},
+    "v_blightcontainer_s": {},
+    "v_blightcrystal_small1": {
+      "flags": "IsStatic | RandomRotation | RandomTranslation | RandomScale | NoShadows"
+    },
+    "v_blightcrystal1a": {
+      "flags": "IsStatic | RandomRotation | RandomScale"
+    },
+    "v_blightcrystal1b": {
+      "flags": "IsStatic | RandomRotation | RandomScale"
+    },
+    "v_blightextractor_s": {},
+    "v_blightpowergenerator_01_m": {},
+    "v_bot_1l_a": {
+      "sockets": [
+        [
+          "Large1",
+          "Large"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ]
+    },
+    "v_bot_1m_a": {
+      "sockets": [
+        [
+          "Medium1",
+          "Medium"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ]
+    },
+    "v_bot_1m_b": {
+      "sockets": [
+        [
+          "Medium1",
+          "Medium"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ]
+    },
+    "v_bot_1m_c": {
+      "sockets": [
+        [
+          "Medium1",
+          "Medium"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ]
+    },
+    "v_bot_1m1s_a": {
+      "sockets": [
+        [
+          "Medium1",
+          "Medium"
+        ],
+        [
+          "Small1",
+          "Small"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ]
+    },
+    "v_bot_1s_a": {
+      "sockets": [
+        [
+          "Small1",
+          "Small"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ]
+    },
+    "v_bot_1s_adw": {
+      "sockets": [
+        [
+          "Small1",
+          "Small"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ]
+    },
+    "v_bot_1s_as": {
+      "sockets": [
+        [
+          "Small1",
+          "Small"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ]
+    },
+    "v_bot_1s_b": {
+      "sockets": [
+        [
+          "Small1",
+          "Small"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ]
+    },
+    "v_bot_2m_as": {
+      "sockets": [
+        [
+          "Medium1",
+          "Medium"
+        ],
+        [
+          "Medium2",
+          "Medium"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ]
+    },
+    "v_bot_2s_a": {
+      "sockets": [
+        [
+          "Small1",
+          "Small"
+        ],
+        [
+          "Small2",
+          "Small"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ]
+    },
+    "v_bot_ai_core": {},
+    "v_bughive": {
+      "flags": "IsStatic | RandomRotation | RandomScale",
+      "tile_size": [
+        2,
+        2
+      ]
+    },
+    "v_bughive_large": {
+      "flags": "IsStatic | RandomRotation | RandomScale",
+      "tile_size": [
+        3,
+        3
+      ]
+    },
+    "v_bughole": {
+      "flags": "IsStatic | RandomRotation | RandomScale"
+    },
+    "v_building_fg": {
+      "tile_size": [
+        3,
+        3
+      ]
+    },
+    "v_building_pf": {
+      "tile_size": [
+        3,
+        3
+      ]
+    },
+    "v_building_sim": {
+      "sockets": [
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ],
+      "tile_size": [
+        3,
+        3
+      ]
+    },
+    "v_building_simulator": {
+      "sockets": [
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ],
+      "tile_size": [
+        6,
+        6
+      ]
+    },
+    "v_cable": {},
+    "v_capacitor_01_s": {},
+    "v_carrier_bot": {},
+    "v_charcharosaurus1": {
+      "sockets": [
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ],
+      "tile_size": [
+        1,
+        1
+      ]
+    },
+    "v_circuit_board": {},
+    "v_circuit_board_infected": {},
+    "v_cpu": {},
+    "v_crashedship_2x1_desert": {
+      "tile_size": [
+        1,
+        2
+      ]
+    },
+    "v_crashedship_2x1_moss": {
+      "tile_size": [
+        1,
+        2
+      ]
+    },
+    "v_crashedship_2x2_desert": {
+      "flags": "RandomRotation",
+      "tile_size": [
+        2,
+        2
+      ]
+    },
+    "v_crashedship_2x2_moss": {
+      "flags": "RandomRotation",
+      "tile_size": [
+        2,
+        2
+      ]
+    },
+    "v_crystal": {},
+    "v_crystal_powder": {},
+    "v_crystal_rich1": {
+      "flags": "IsStatic | RandomRotation",
+      "tile_size": [
+        3,
+        3
+      ]
+    },
+    "v_crystalbattery_01_m": {},
+    "v_crystalmedium1a": {
+      "flags": "IsStatic | RandomRotation | RandomScale"
+    },
+    "v_crystalmedium1b": {
+      "flags": "IsStatic | RandomRotation | RandomScale"
+    },
+    "v_crystalpower_01_s": {},
+    "v_crystalscatter_node1": {
+      "flags": "IsStatic | RandomRotation | RandomScale | RandomTranslation | NoShadows | AlignToTerrain",
+      "tile_size": [
+        1,
+        1
+      ]
+    },
+    "v_crystalsmalla": {
+      "flags": "IsStatic | RandomRotation | RandomTranslation | RandomScale | NoShadows"
+    },
+    "v_damage_plant": {
+      "flags": "IsStatic | RandomRotation | RandomScale | AlignToTerrain",
+      "tile_size": [
+        1,
+        1
+      ]
+    },
+    "v_dataanalyzer_L": {},
+    "v_deconstructor_01_s": {},
+    "v_decorationrock_largeplateau_1a": {
+      "flags": "IsStatic | RandomRotation | RandomScale | AlignToTerrain",
+      "tile_size": [
+        4,
+        4
+      ]
+    },
+    "v_decorationrock_largeplateau_1b": {
+      "flags": "IsStatic | RandomRotation | RandomScale | AlignToTerrain",
+      "tile_size": [
+        4,
+        4
+      ]
+    },
+    "v_decorationrock_largeplateau_1c": {
+      "flags": "IsStatic | RandomRotation | RandomScale | AlignToTerrain",
+      "tile_size": [
+        4,
+        4
+      ]
+    },
+    "v_decorationrock_largeplateau_2a": {
+      "flags": "IsStatic | RandomRotation | RandomScale | AlignToTerrain",
+      "tile_size": [
+        2,
+        2
+      ]
+    },
+    "v_decorationrock_largeplateau_2b": {
+      "flags": "IsStatic | RandomRotation | RandomScale | AlignToTerrain",
+      "tile_size": [
+        2,
+        2
+      ]
+    },
+    "v_decorationrock_largeplateau_2c": {
+      "flags": "IsStatic | RandomRotation | RandomScale | AlignToTerrain",
+      "tile_size": [
+        2,
+        2
+      ]
+    },
+    "v_decorationrock_largeplateau_2d": {
+      "flags": "IsStatic | RandomRotation | RandomScale | AlignToTerrain",
+      "tile_size": [
+        2,
+        2
+      ]
+    },
+    "v_decorationrock_largeplateau_3a": {
+      "flags": "IsStatic | RandomRotation | RandomScale | AlignToTerrain",
+      "tile_size": [
+        1,
+        1
+      ]
+    },
+    "v_decorationrock_largeplateau_3b": {
+      "flags": "IsStatic | RandomRotation | RandomScale | AlignToTerrain",
+      "tile_size": [
+        1,
+        1
+      ]
+    },
+    "v_decorationrock_largeplateau_3c": {
+      "flags": "IsStatic | RandomRotation | RandomScale | AlignToTerrain",
+      "tile_size": [
+        1,
+        1
+      ]
+    },
+    "v_decorationrock_largeplateau_3d": {
+      "flags": "IsStatic | RandomRotation | RandomScale | AlignToTerrain",
+      "tile_size": [
+        1,
+        1
+      ]
+    },
+    "v_default_component": {},
+    "v_default_item": {},
+    "v_drone_adv_miner": {
+      "flags": "RandomHeight|RandomTranslation",
+      "sockets": [
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ]
+    },
+    "v_drone_defense_a": {
+      "flags": "RandomHeight|RandomTranslation",
+      "sockets": [
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ]
+    },
+    "v_drone_miner_a": {
+      "flags": "RandomHeight|RandomTranslation",
+      "sockets": [
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ]
+    },
+    "v_drone_transfer_a": {
+      "flags": "RandomHeight|RandomTranslation",
+      "sockets": [
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ]
+    },
+    "v_drone_transfer_b": {
+      "flags": "RandomHeight|RandomTranslation",
+      "sockets": [
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ]
+    },
+    "v_dronehub_01_m": {},
+    "v_dronehub_01_s": {},
+    "v_dropped_item": {
+      "flags": "AlignToTerrain"
+    },
+    "v_empty": {},
+    "v_empty_alien": {
+      "sockets": [
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ]
+    },
+    "v_empty_inventory": {},
+    "v_energized_plate": {},
+    "v_energystorage": {},
+    "v_engine": {},
+    "v_explorable_blightanomaly_01": {
+      "flags": "RandomRotation|RandomScale",
+      "tile_size": [
+        2,
+        2
+      ]
+    },
+    "v_explorable_blightanomaly_02": {
+      "flags": "RandomRotation|RandomScale",
+      "tile_size": [
+        2,
+        2
+      ]
+    },
+    "v_explorable_blightanomaly_03": {
+      "flags": "RandomRotation|RandomScale",
+      "tile_size": [
+        2,
+        2
+      ]
+    },
+    "v_explorable_blightgiantoddball": {
+      "flags": "RandomRotation|RandomScale",
+      "tile_size": [
+        4,
+        4
+      ]
+    },
+    "v_explorable_bot": {
+      "sockets": [
+        [
+          "",
+          "Small"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ]
+    },
+    "v_explorable_bot2": {
+      "sockets": [
+        [
+          "",
+          "Small"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ]
+    },
+    "v_explorable_brokenship_1": {
+      "tile_size": [
+        1,
+        1
+      ]
+    },
+    "v_explorable_building_2": {
+      "sockets": [
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ],
+      "tile_size": [
+        3,
+        3
+      ]
+    },
+    "v_explorable_building_3": {
+      "sockets": [
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ],
+      "tile_size": [
+        3,
+        3
+      ]
+    },
+    "v_explorable_building_4": {
+      "sockets": [
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ],
+      "tile_size": [
+        3,
+        3
+      ]
+    },
+    "v_explorable_building_6": {
+      "sockets": [
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ],
+      "tile_size": [
+        3,
+        3
+      ]
+    },
+    "v_explorable_glitchbuilding": {
+      "tile_size": [
+        1,
+        1
+      ]
+    },
+    "v_explorable_monolith_01": {
+      "flags": "RandomRotation|RandomScale",
+      "tile_size": [
+        2,
+        2
+      ]
+    },
+    "v_explorable_spaceelevator": {
+      "tile_size": [
+        8,
+        8
+      ]
+    },
+    "v_explorable_timeegg_01": {
+      "flags": "RandomRotation|RandomScale",
+      "tile_size": [
+        2,
+        2
+      ]
+    },
+    "v_fabricator_01_s": {},
+    "v_flyer_bot": {
+      "sockets": [
+        [
+          "",
+          "Internal"
+        ]
+      ]
+    },
+    "v_flyer_m": {},
+    "v_foliagegrass1a": {
+      "flags": "IsStatic|RandomRotation|RandomTranslation|RandomScale|SmallObject"
+    },
+    "v_foliagegrass1b": {
+      "flags": "IsStatic|RandomRotation|RandomTranslation|RandomScale|SmallObject"
+    },
+    "v_foliagegrass1c": {
+      "flags": "IsStatic|RandomRotation|RandomTranslation|RandomScale|SmallObject"
+    },
+    "v_foliagegrass1d": {
+      "flags": "IsStatic|RandomRotation|RandomTranslation|RandomScale|SmallObject"
+    },
+    "v_foundation": {
+      "flags": "CanBePlacedOnSlopes|IsStatic",
+      "tile_size": [
+        1,
+        1
+      ]
+    },
+    "v_fungus2a": {
+      "flags": "IsStatic | RandomTranslation | RandomRotation | RandomScale"
+    },
+    "v_fungus2b": {
+      "flags": "IsStatic | RandomTranslation | RandomRotation | RandomScale"
+    },
+    "v_fungus2c": {
+      "flags": "IsStatic | RandomTranslation | RandomRotation | RandomScale"
+    },
+    "v_fungus2d": {
+      "flags": "IsStatic | RandomTranslation | RandomRotation | RandomScale"
+    },
+    "v_fungus2f": {
+      "flags": "IsStatic | RandomTranslation | RandomRotation | RandomScale"
+    },
+    "v_fungus2g": {
+      "flags": "IsStatic | RandomTranslation | RandomRotation | RandomScale"
+    },
+    "v_fungus2h": {
+      "flags": "IsStatic | RandomTranslation | RandomRotation | RandomScale"
+    },
+    "v_fused_electrodes": {},
+    "v_gastarias1": {
+      "sockets": [
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ],
+      "tile_size": [
+        1,
+        1
+      ]
+    },
+    "v_gastarid1": {
+      "sockets": [
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ],
+      "tile_size": [
+        1,
+        1
+      ]
+    },
+    "v_gate": {
+      "flags": "CanBePlacedOnSlopes|CanBePlacedOnCliffs"
+    },
+    "v_gears": {},
+    "v_generic_i": {},
+    "v_geyser_tree": {
+      "flags": "IsStatic | RandomRotation",
+      "tile_size": [
+        4,
+        4
+      ]
+    },
+    "v_hacking_tool_s": {
+      "flags": "ComponentFaceTarget"
+    },
+    "v_high_density_frame": {},
+    "v_human_ark": {
+      "sockets": [
+        [
+          "",
+          "Internal"
+        ]
+      ]
+    },
+    "v_human_ark_broken": {},
+    "v_human_barracks": {
+      "sockets": [
+        [
+          "",
+          "Internal"
+        ]
+      ],
+      "tile_size": [
+        3,
+        3
+      ]
+    },
+    "v_human_buggy": {
+      "sockets": [
+        [
+          "",
+          "Internal"
+        ]
+      ]
+    },
+    "v_human_buggy_broken": {},
+    "v_human_buggy_upgraded": {
+      "sockets": [
+        [
+          "",
+          "Internal"
+        ]
+      ]
+    },
+    "v_human_building_broken_a": {
+      "tile_size": [
+        2,
+        2
+      ]
+    },
+    "v_human_bunker": {
+      "sockets": [
+        [
+          "",
+          "Internal"
+        ]
+      ],
+      "tile_size": [
+        2,
+        2
+      ]
+    },
+    "v_human_commandcenter": {
+      "sockets": [
+        [
+          "",
+          "Internal"
+        ]
+      ],
+      "tile_size": [
+        4,
+        3
+      ]
+    },
+    "v_human_communication": {
+      "sockets": [
+        [
+          "",
+          "Internal"
+        ]
+      ],
+      "tile_size": [
+        3,
+        3
+      ]
+    },
+    "v_human_data": {},
+    "v_human_explorable_5x5_a": {
+      "sockets": [
+        [
+          "",
+          "Internal"
+        ]
+      ],
+      "tile_size": [
+        5,
+        5
+      ]
+    },
+    "v_human_factory": {
+      "sockets": [
+        [
+          "",
+          "Internal"
+        ]
+      ],
+      "tile_size": [
+        3,
+        4
+      ]
+    },
+    "v_human_flyer": {
+      "sockets": [
+        [
+          "",
+          "Internal"
+        ]
+      ]
+    },
+    "v_human_foundation_basic": {
+      "flags": "CanBePlacedOnSlopes|IsStatic",
+      "tile_size": [
+        1,
+        1
+      ]
+    },
+    "v_human_lander": {},
+    "v_human_miner": {},
+    "v_human_powerplant": {
+      "sockets": [
+        [
+          "",
+          "Internal"
+        ]
+      ],
+      "tile_size": [
+        3,
+        3
+      ]
+    },
+    "v_human_refinery": {
+      "sockets": [
+        [
+          "",
+          "Internal"
+        ]
+      ],
+      "tile_size": [
+        3,
+        3
+      ]
+    },
+    "v_human_research_item": {},
+    "v_human_sciencelab": {
+      "sockets": [
+        [
+          "",
+          "Internal"
+        ]
+      ],
+      "tile_size": [
+        3,
+        3
+      ]
+    },
+    "v_human_spaceport": {
+      "sockets": [
+        [
+          "",
+          "Internal"
+        ]
+      ],
+      "tile_size": [
+        4,
+        3
+      ]
+    },
+    "v_human_tank": {
+      "sockets": [
+        [
+          "Medium1",
+          "Medium"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ]
+    },
+    "v_human_tank_turret": {
+      "flags": "ComponentFaceTarget"
+    },
+    "v_human_transport": {},
+    "v_human_warehouse": {
+      "sockets": [
+        [
+          "",
+          "Internal"
+        ]
+      ],
+      "tile_size": [
+        4,
+        2
+      ]
+    },
+    "v_icchip": {},
+    "v_landingpad_01_l": {},
+    "v_laser_turret_m": {},
+    "v_laserextractor_01_m": {
+      "flags": "ComponentFaceTarget"
+    },
+    "v_laterite": {},
+    "v_laterite_medium1": {
+      "flags": "IsStatic | RandomRotation  | RandomScale | RandomTranslation | AlignToTerrain"
+    },
+    "v_laterite_node_large1": {
+      "flags": "IsStatic | RandomRotation | RandomScale",
+      "tile_size": [
+        3,
+        3
+      ]
+    },
+    "v_laterite_small1": {
+      "flags": "IsStatic | RandomRotation  | RandomScale | RandomTranslation | AlignToTerrain"
+    },
+    "v_light_01_s": {},
+    "v_longgrass_01": {
+      "flags": "IsStatic|RandomTranslation|RandomScale|NoShadows"
+    },
+    "v_low_density_frame": {},
+    "v_metalbar": {},
+    "v_metalmedium1a": {
+      "flags": "IsStatic | RandomRotation | RandomTranslation | RandomScale"
+    },
+    "v_metalmedium2a": {
+      "flags": "IsStatic | RandomRotation | RandomTranslation | RandomScale"
+    },
+    "v_metalore": {},
+    "v_metalpickup1a": {
+      "flags": "IsStatic | RandomRotation | RandomTranslation | AlignToTerrain"
+    },
+    "v_metalplate": {},
+    "v_metalrich1": {
+      "flags": "IsStatic | RandomRotation",
+      "tile_size": [
+        2,
+        2
+      ]
+    },
+    "v_metalrich2": {
+      "flags": "IsStatic | RandomRotation",
+      "tile_size": [
+        2,
+        2
+      ]
+    },
+    "v_metalsmall1a": {
+      "flags": "IsStatic | RandomRotation | RandomTranslation"
+    },
+    "v_micropro": {},
+    "v_microscope": {},
+    "v_miner_adv_s": {
+      "flags": "ComponentFaceTarget"
+    },
+    "v_miner_s": {
+      "flags": "ComponentFaceTarget"
+    },
+    "v_missile_launcher_m": {
+      "flags": "ComponentFaceTarget"
+    },
+    "v_missile_launcher_m_ruined": {
+      "tile_size": [
+        1,
+        1
+      ]
+    },
+    "v_modulebase_l": {},
+    "v_modulebase_m": {},
+    "v_modulebase_s": {},
+    "v_obsidian": {},
+    "v_obsidian_brick": {},
+    "v_obsidian_large": {
+      "flags": "IsStatic | RandomRotation | RandomScale"
+    },
+    "v_obsidian_medium": {
+      "flags": "IsStatic | RandomRotation | RandomScale | RandomTranslation"
+    },
+    "v_optic_cable": {},
+    "v_packed_drone": {},
+    "v_packed_drone_a": {},
+    "v_packed_drone_b": {},
+    "v_packed_flyer_m": {},
+    "v_packed_satellite": {},
+    "v_pearls_03": {
+      "flags": "IsStatic|RandomTranslation | RandomScale| RandomRotation",
+      "tile_size": [
+        2,
+        2
+      ]
+    },
+    "v_phase_plant": {
+      "flags": "IsStatic | RandomRotation | RandomScale | AlignToTerrain",
+      "tile_size": [
+        1,
+        1
+      ]
+    },
+    "v_photon_canon_m": {},
+    "v_plasma_canon_m": {},
+    "v_power_cell_01_s": {},
+    "v_power_core_01_l": {},
+    "v_power_relay_01_l": {},
+    "v_power_relay_01_m": {},
+    "v_power_relay_01_s": {},
+    "v_power_transmitter_l": {},
+    "v_power_transmitter_m": {},
+    "v_Present_01_S": {},
+    "v_Present_1x1": {
+      "sockets": [
+        [
+          "",
+          "Internal"
+        ]
+      ],
+      "tile_size": [
+        1,
+        1
+      ]
+    },
+    "v_radar_m": {},
+    "v_radar_s": {},
+    "v_refined_crystal": {},
+    "v_refinery_01_m": {},
+    "v_reinforced_plate": {},
+    "v_repairer_01_m": {},
+    "v_repairer_AoE_01_m": {},
+    "v_repairport_01_m": {},
+    "v_robot_data": {},
+    "v_robot_s": {
+      "sockets": [
+        [
+          "Small1",
+          "Small"
+        ],
+        [
+          "Small2",
+          "Small"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ]
+    },
+    "v_robot2": {
+      "sockets": [
+        [
+          "Medium1",
+          "Medium"
+        ],
+        [
+          "Small1",
+          "Small"
+        ],
+        [
+          "Small2",
+          "Small"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ]
+    },
+    "v_robot3": {
+      "sockets": [
+        [
+          "Medium1",
+          "Medium"
+        ],
+        [
+          "Medium2",
+          "Medium"
+        ],
+        [
+          "Small1",
+          "Small"
+        ],
+        [
+          "Small2",
+          "Small"
+        ],
+        [
+          "Small3",
+          "Small"
+        ]
+      ]
+    },
+    "v_robot4": {
+      "sockets": [
+        [
+          "Large1",
+          "Large"
+        ],
+        [
+          "Small1",
+          "Small"
+        ],
+        [
+          "Small2",
+          "Small"
+        ],
+        [
+          "Small3",
+          "Small"
+        ],
+        [
+          "Small4",
+          "Small"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ]
+    },
+    "v_roboticsfactory_01_m": {},
+    "v_SantaHat_01_M": {},
+    "v_satellite": {
+      "sockets": [
+        [
+          "",
+          "Small"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ]
+    },
+    "v_satellite_inventory": {},
+    "v_scanner_s": {
+      "flags": "ComponentFaceTarget"
+    },
+    "v_scaramar1": {
+      "sockets": [
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ],
+      "tile_size": [
+        1,
+        1
+      ]
+    },
+    "v_scaramar2": {
+      "flags": "RandomHeight",
+      "sockets": [
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ],
+      "tile_size": [
+        1,
+        1
+      ]
+    },
+    "v_scienceanalyzer_l": {},
+    "v_shortgrass_01": {
+      "flags": "RandomRotation|IsStatic|NoShadows"
+    },
+    "v_shortgrass_01_tall": {
+      "flags": "RandomRotation|IsStatic|NoShadows"
+    },
+    "v_silica": {},
+    "v_silica_medium1": {
+      "flags": "IsStatic | RandomRotation | RandomScale | RandomTranslation | AlignToTerrain"
+    },
+    "v_silica_node": {
+      "flags": "IsStatic | RandomRotation | RandomScale | AlignToTerrain",
+      "sockets": [
+        [
+          "large1",
+          "Large"
+        ]
+      ],
+      "tile_size": [
+        2,
+        2
+      ]
+    },
+    "v_silicascatter_node1": {
+      "flags": "IsStatic | RandomRotation | RandomScale | RandomTranslation | NoShadows | AlignToTerrain"
+    },
+    "v_silicon": {},
+    "v_simulation_data": {},
+    "v_simulator_ruined": {
+      "tile_size": [
+        3,
+        3
+      ]
+    },
+    "v_small_reactor": {},
+    "v_smartstorage_m": {},
+    "v_solarpanel_01_m": {},
+    "v_solarpanel_01_s": {},
+    "v_spacedrop_1": {
+      "tile_size": [
+        1,
+        1
+      ]
+    },
+    "v_starterturret_adv_s": {
+      "flags": "ComponentFaceTarget"
+    },
+    "v_starterturret_drain_s": {},
+    "v_starterturret_green_s": {},
+    "v_starterturret_red_s": {},
+    "v_starterturret_s": {},
+    "v_storage_01_m": {},
+    "v_storage_01_s": {},
+    "v_storage_l": {},
+    "v_succulent_01": {
+      "flags": "IsStatic|RandomRotation | RandomTranslation | RandomScale"
+    },
+    "v_succulent_02": {
+      "flags": "IsStatic|RandomRotation | RandomTranslation | RandomScale | NoShadows"
+    },
+    "v_succulent_02_large": {
+      "flags": "IsStatic|RandomRotation | RandomTranslation | RandomScale"
+    },
+    "v_succulent_03": {
+      "flags": "IsStatic|RandomRotation | RandomTranslation | RandomScale"
+    },
+    "v_succulent_04": {
+      "flags": "IsStatic|RandomRotation | RandomTranslation | RandomScale"
+    },
+    "v_succulent_05_A": {
+      "flags": "IsStatic|RandomRotation | RandomTranslation | RandomScale"
+    },
+    "v_succulent_05_B": {
+      "flags": "IsStatic|RandomRotation | RandomTranslation | RandomScale"
+    },
+    "v_succulent_05_C": {
+      "flags": "IsStatic|RandomRotation | RandomTranslation | RandomScale"
+    },
+    "v_teleporter_01_l": {},
+    "v_transformer": {},
+    "v_transport_bot": {
+      "sockets": [
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ]
+    },
+    "v_transporter_01_m": {},
+    "v_transporter_01_m_ruined": {
+      "flags": "RandomRotation"
+    },
+    "v_tree_04_hero_01": {
+      "flags": "RandomRotation | RandomTranslation | RandomScale"
+    },
+    "v_tree_04_large_01": {
+      "flags": "RandomRotation | RandomTranslation | RandomScale"
+    },
+    "v_tree_04_large_01_ExtraLarge": {
+      "flags": "RandomRotation | RandomTranslation | RandomScale"
+    },
+    "v_tree_04_large_01_Larger": {
+      "flags": "RandomRotation | RandomTranslation | RandomScale"
+    },
+    "v_tree_04_Medium_01": {
+      "flags": "RandomRotation | RandomTranslation | RandomScale"
+    },
+    "v_tree_04_Medium_02": {
+      "flags": "RandomRotation | RandomTranslation | RandomScale"
+    },
+    "v_tree_04_Medium_03": {
+      "flags": "RandomRotation | RandomTranslation | RandomScale"
+    },
+    "v_tree_04_small_01": {
+      "flags": "RandomRotation | RandomTranslation | RandomScale"
+    },
+    "v_tree_05_large": {
+      "flags": "RandomRotation | RandomScale"
+    },
+    "v_tree_05_medium": {
+      "flags": "RandomRotation | RandomScale"
+    },
+    "v_tree_05_small": {
+      "flags": "RandomRotation | RandomScale"
+    },
+    "v_tree2": {
+      "flags": "IsStatic|RandomRotation|RandomTranslation|RandomScale"
+    },
+    "v_tree2b": {
+      "flags": "IsStatic|RandomRotation|RandomTranslation|RandomScale"
+    },
+    "v_tree2b_x2": {
+      "flags": "IsStatic|RandomRotation|RandomTranslation|RandomScale"
+    },
+    "v_tree2i": {
+      "flags": "IsStatic|RandomRotation|RandomTranslation|RandomScale"
+    },
+    "v_tree2i_x2": {
+      "flags": "IsStatic|RandomRotation|RandomTranslation|RandomScale"
+    },
+    "v_tree4a": {
+      "flags": "IsStatic|RandomRotation|RandomTranslation|RandomScale"
+    },
+    "v_tree11a1": {
+      "flags": "IsStatic|RandomRotation|RandomTranslation|RandomScale"
+    },
+    "v_tree11a3": {
+      "flags": "IsStatic|RandomRotation|RandomTranslation|RandomScale"
+    },
+    "v_tree11a3_x2": {
+      "flags": "IsStatic|RandomRotation|RandomTranslation|RandomScale"
+    },
+    "v_tree12a1": {
+      "flags": "IsStatic|RandomRotation|RandomTranslation|RandomScale"
+    },
+    "v_tree12a2": {
+      "flags": "IsStatic|RandomRotation|RandomTranslation|RandomScale"
+    },
+    "v_tree12a3": {
+      "flags": "IsStatic|RandomRotation|RandomTranslation|RandomScale"
+    },
+    "v_tree12a5": {
+      "flags": "IsStatic|RandomRotation|RandomTranslation|RandomScale"
+    },
+    "v_trilobite1": {
+      "sockets": [
+        [
+          "",
+          "Internal"
+        ],
+        [
+          "",
+          "Internal"
+        ]
+      ],
+      "tile_size": [
+        1,
+        1
+      ]
+    },
+    "v_turret_m": {},
+    "v_uplink_m": {},
+    "v_virus_data": {},
+    "v_virus_decomposer_l": {},
+    "v_virus_research": {},
+    "v_virus_robot_antenna_03": {},
+    "v_virus_robot_generator": {},
+    "v_virus_robot_jammer": {},
+    "v_virus_robot_possess": {},
+    "v_virus_robot_turret_01": {
+      "flags": "ComponentFaceTarget"
+    },
+    "v_wall_bli0": {
+      "flags": "CanBePlacedOnSlopes|CanBePlacedOnCliffs"
+    },
+    "v_wall_bli1": {
+      "flags": "CanBePlacedOnSlopes|CanBePlacedOnCliffs"
+    },
+    "v_wall_bli2": {
+      "flags": "CanBePlacedOnSlopes|CanBePlacedOnCliffs"
+    },
+    "v_wall_bli3": {
+      "flags": "CanBePlacedOnSlopes|CanBePlacedOnCliffs"
+    },
+    "v_wall_bli4": {
+      "flags": "CanBePlacedOnSlopes|CanBePlacedOnCliffs"
+    },
+    "v_wall_bli5": {
+      "flags": "CanBePlacedOnSlopes|CanBePlacedOnCliffs"
+    },
+    "v_wall_vir0": {
+      "flags": "CanBePlacedOnSlopes|CanBePlacedOnCliffs"
+    },
+    "v_wall_vir1": {
+      "flags": "CanBePlacedOnSlopes|CanBePlacedOnCliffs"
+    },
+    "v_wall_vir2": {
+      "flags": "CanBePlacedOnSlopes|CanBePlacedOnCliffs"
+    },
+    "v_wall_vir3": {
+      "flags": "CanBePlacedOnSlopes|CanBePlacedOnCliffs"
+    },
+    "v_wall_vir4": {
+      "flags": "CanBePlacedOnSlopes|CanBePlacedOnCliffs"
+    },
+    "v_wall_vir5": {
+      "flags": "CanBePlacedOnSlopes|CanBePlacedOnCliffs"
+    },
+    "v_wall0": {
+      "flags": "CanBePlacedOnSlopes|CanBePlacedOnCliffs"
+    },
+    "v_wall1": {
+      "flags": "CanBePlacedOnSlopes|CanBePlacedOnCliffs"
+    },
+    "v_wall2": {
+      "flags": "CanBePlacedOnSlopes|CanBePlacedOnCliffs"
+    },
+    "v_wall3": {
+      "flags": "CanBePlacedOnSlopes|CanBePlacedOnCliffs"
+    },
+    "v_wall4": {
+      "flags": "CanBePlacedOnSlopes|CanBePlacedOnCliffs"
+    },
+    "v_wall5": {
+      "flags": "CanBePlacedOnSlopes|CanBePlacedOnCliffs"
+    },
+    "v_wind_turbine_l": {},
+    "v_wind_turbine_m": {},
+    "v_wire": {}
+  },
+  "instructions": {
+    "add": {
+      "name": "Add",
+      "desc": "Adds a number or coordinate to another number or coordinate",
+      "category": "Math",
+      "args": [
+        [
+          "in",
+          "To",
+          null,
+          "coord_num"
+        ],
+        [
+          "in",
+          "Num",
+          null,
+          "coord_num"
+        ],
+        [
+          "out",
+          "Result"
+        ]
+      ]
+    },
+    "build": {
+      "name": "Place Construction",
+      "desc": "Places a construction site for a specific structure",
+      "category": "Global",
+      "args": [
+        [
+          "in",
+          "Coordinate",
+          "Target location, or at currently location if not specified",
+          "coord_num",
+          true
+        ],
+        [
+          "in",
+          "Rotation",
+          "Building Rotation (0 to 3) (default 0)",
+          "num",
+          true
+        ],
+        [
+          "exec",
+          "Construction Failed",
+          "Where to continue if construction failed"
+        ]
+      ]
+    },
+    "call": {
+      "category": "Flow"
+    },
+    "can_produce": {
+      "name": "Can Produce",
+      "desc": "Returns if a unit can produce an item",
+      "category": "Global",
+      "args": [
+        [
+          "exec",
+          "Can Produce",
+          "Where to continue if the item can be produced"
+        ],
+        [
+          "in",
+          "Item",
+          "Production Item",
+          "item"
+        ],
+        [
+          "in",
+          "Component",
+          "Optional Component to check (if Component not equipped)",
+          "entity",
+          true
+        ]
+      ],
+      "exec_arg": [
+        1,
+        "Cannot Produce",
+        "Where to continue if the item cannot be produced"
+      ]
+    },
+    "check_altitude": {
+      "name": "Check Altitude",
+      "desc": "Divert program depending on location of a unit",
+      "category": "Unit",
+      "args": [
+        [
+          "in",
+          "Unit",
+          "The unit to check for (if not self)",
+          "entity",
+          true
+        ],
+        [
+          "exec",
+          "Valley",
+          "Where to continue if the unit is in a valley"
+        ],
+        [
+          "exec",
+          "Plateau",
+          "Where to continue if the unit is on a plateau"
+        ]
+      ],
+      "exec_arg": [
+        4,
+        "No Unit",
+        "No visible unit passed",
+        null,
+        true
+      ]
+    },
+    "check_battery": {
+      "name": "Check Battery",
+      "desc": "Checks the Battery level of a unit",
+      "category": "Unit",
+      "args": [
+        [
+          "exec",
+          "Full",
+          "Where to continue if battery power is fully recharged"
+        ],
+        [
+          "in",
+          "Unit",
+          "The unit to check for (if not self)",
+          "entity",
+          true
+        ]
+      ]
+    },
+    "check_blightness": {
+      "name": "Check Blightness",
+      "desc": "Divert program depending on location of a unit",
+      "category": "Unit",
+      "args": [
+        [
+          "in",
+          "Unit",
+          "The unit to check for (if not self)",
+          "entity",
+          true
+        ],
+        [
+          "exec",
+          "Blight",
+          "Where to continue if the unit is in the blight"
+        ]
+      ]
+    },
+    "check_grid_effeciency": {
+      "name": "Check Grid Efficiency",
+      "desc": "Checks the Efficiency of the power grid the unit is on",
+      "category": "Unit",
+      "args": [
+        [
+          "exec",
+          "Full",
+          "Where to continue if at full efficiency"
+        ],
+        [
+          "in",
+          "Unit",
+          "The unit to check for (if not self)",
+          "entity",
+          true
+        ]
+      ]
+    },
+    "check_health": {
+      "name": "Check Health",
+      "desc": "Check a units health",
+      "category": "Unit",
+      "args": [
+        [
+          "exec",
+          "Full",
+          "Where to continue if at full health"
+        ],
+        [
+          "in",
+          "Unit",
+          "The unit to check for (if not self)",
+          "entity",
+          true
+        ]
+      ]
+    },
+    "check_number": {
+      "name": "Compare Number",
+      "desc": "Divert program depending on number of Value and Compare",
+      "category": "Math",
+      "args": [
+        [
+          "exec",
+          "If Larger",
+          "Where to continue if Value is larger than Compare"
+        ],
+        [
+          "exec",
+          "If Smaller",
+          "Where to continue if Value is smaller than Compare"
+        ],
+        [
+          "in",
+          "Value",
+          "The value to check with",
+          "num"
+        ],
+        [
+          "in",
+          "Compare",
+          "The number to check against",
+          "num"
+        ]
+      ],
+      "exec_arg": [
+        1,
+        "If Equal",
+        "Where to continue if the numerical values are the same"
+      ]
+    },
+    "checkfreespace": {
+      "name": "Check space for item",
+      "desc": "Checks if free space is available for an item and amount",
+      "category": "Math",
+      "args": [
+        [
+          "exec",
+          "Can't Fit",
+          "Execution if it can't fit the item"
+        ],
+        [
+          "in",
+          "Item",
+          "Item and amount to check can fit",
+          "item_num"
+        ]
+      ]
+    },
+    "clear_research": {
+      "name": "Clear Research",
+      "desc": "Clears a research from queue, or entire queue if no tech passed",
+      "category": "Flow",
+      "args": [
+        [
+          "in",
+          "Tech",
+          "Tech to remove from research queue"
+        ]
+      ]
+    },
+    "combine_coordinate": {
+      "name": "Combine Coordinate",
+      "desc": "Returns a coordinate made from x and y values",
+      "category": "Math",
+      "args": [
+        [
+          "in",
+          "x",
+          null,
+          "any"
+        ],
+        [
+          "in",
+          "y",
+          null,
+          "any"
+        ],
+        [
+          "out",
+          "Result"
+        ]
+      ]
+    },
+    "combine_register": {
+      "name": "Combine Register",
+      "desc": "Combine to make a register from separate parameters",
+      "category": "Math",
+      "args": [
+        [
+          "in",
+          "Num"
+        ],
+        [
+          "in",
+          "Entity"
+        ],
+        [
+          "out",
+          "Register",
+          null,
+          "entity"
+        ],
+        [
+          "in",
+          "x",
+          null,
+          null,
+          true
+        ],
+        [
+          "in",
+          "y",
+          null,
+          null,
+          true
+        ]
+      ]
+    },
+    "compare_entity": {
+      "name": "Compare Entity",
+      "desc": "Compares Entities",
+      "category": "Flow",
+      "args": [
+        [
+          "exec",
+          "If Different",
+          "Where to continue if the entities differ"
+        ],
+        [
+          "in",
+          "Entity 1"
+        ],
+        [
+          "in",
+          "Entity 2"
+        ]
+      ],
+      "exec_arg": [
+        1,
+        "If Equal",
+        "Where to continue if the entities are the same"
+      ]
+    },
+    "compare_item": {
+      "name": "Compare Item",
+      "desc": "Compares Item or Unit type",
+      "category": "Flow",
+      "args": [
+        [
+          "exec",
+          "If Different",
+          "Where to continue if the types differ"
+        ],
+        [
+          "in",
+          "Value 1"
+        ],
+        [
+          "in",
+          "Value 2"
+        ]
+      ],
+      "exec_arg": [
+        1,
+        "If Equal",
+        "Where to continue if the types are the same"
+      ]
+    },
+    "connect": {
+      "name": "Connect",
+      "desc": "Connects Units from Logistics Network",
+      "category": "Unit"
+    },
+    "count_item": {
+      "name": "Count Items",
+      "desc": "Counts the number of the passed item in its inventory",
+      "category": "Unit",
+      "args": [
+        [
+          "in",
+          "Item",
+          "Item to count",
+          "item"
+        ],
+        [
+          "out",
+          "Result",
+          "Number of this item in inventory or empty if none exist"
+        ],
+        [
+          "in",
+          "Unit",
+          "The unit to check for (if not self)",
+          "entity",
+          true
+        ]
+      ]
+    },
+    "count_slots": {
+      "name": "Count Slots",
+      "desc": "Returns the number of slots in this unit of the given type",
+      "category": "Unit",
+      "args": [
+        [
+          "out",
+          "Result",
+          "Number of slots of this type"
+        ],
+        [
+          "in",
+          "Unit",
+          "The unit to check for (if not self)",
+          "entity",
+          true
+        ]
+      ]
+    },
+    "disable_transport_route": {
+      "name": "Disable Transport Route",
+      "desc": "Disable Unit to deliver on transport route",
+      "category": "Unit"
+    },
+    "disconnect": {
+      "name": "Disconnect",
+      "desc": "Disconnects Units from Logistics Network",
+      "category": "Unit"
+    },
+    "div": {
+      "name": "Divide",
+      "desc": "Divides a number or coordinate from another number or coordinate",
+      "category": "Math",
+      "args": [
+        [
+          "in",
+          "From",
+          null,
+          "coord_num"
+        ],
+        [
+          "in",
+          "Num",
+          null,
+          "coord_num"
+        ],
+        [
+          "out",
+          "Result"
+        ]
+      ]
+    },
+    "dodrop": {
+      "name": "Drop Off Items",
+      "desc": "Drop off items at a unit or destination\n\nIf a number is set it will drop off an amount to fill the target unit up to that amount\nIf unset it will try to drop off everything.",
+      "category": "Unit",
+      "args": [
+        [
+          "in",
+          "Destination",
+          "Unit or destination to bring items to",
+          "entity"
+        ],
+        [
+          "in",
+          "Item / Amount",
+          "Item and amount to drop off",
+          "item_num",
+          true
+        ]
+      ]
+    },
+    "domove": {
+      "name": "Move Unit",
+      "desc": "Moves to another unit or within a range of another unit",
+      "category": "Move",
+      "args": [
+        [
+          "in",
+          "Target",
+          "Unit to move to, the number specifies the range in which to be in",
+          "entity"
+        ]
+      ]
+    },
+    "domove_async": {
+      "name": "Move Unit (Async)",
+      "desc": "Move to another unit while continuing the program",
+      "category": "Move",
+      "args": [
+        [
+          "in",
+          "Target",
+          "Unit to move to",
+          "entity"
+        ]
+      ]
+    },
+    "domove_range": {
+      "name": "*Move Unit (Range)*",
+      "desc": "*DEPRECATED* Use Move Unit",
+      "category": "Move",
+      "args": [
+        [
+          "in",
+          "Target",
+          "Unit to move to, the number specifies the range in which to be in",
+          "entity"
+        ]
+      ]
+    },
+    "dopickup": {
+      "name": "Pick Up Items",
+      "desc": "Picks up a specific number of items from an entity\n\nWill try to pick up the specified amount, if no amount\nis specified it will try to pick up everything.",
+      "category": "Unit",
+      "args": [
+        [
+          "in",
+          "Source",
+          "Unit to take items from",
+          "entity"
+        ],
+        [
+          "in",
+          "Item / Amount",
+          "Item and amount to pick up",
+          "item_num",
+          true
+        ]
+      ]
+    },
+    "enable_transport_route": {
+      "name": "Enable Transport Route",
+      "desc": "Enable Unit to deliver on transport route",
+      "category": "Unit"
+    },
+    "equip_component": {
+      "name": "Equip Component",
+      "desc": "Equips a component if it exists",
+      "category": "Unit",
+      "args": [
+        [
+          "exec",
+          "No Component",
+          "If you don't current hold the requested component"
+        ],
+        [
+          "in",
+          "Component",
+          "Component to equip",
+          "comp"
+        ],
+        [
+          "in",
+          "Slot index",
+          "Individual slot to equip component from",
+          "num",
+          true
+        ]
+      ]
+    },
+    "exit": {
+      "name": "Exit",
+      "desc": "Stops execution of the behavior",
+      "category": "Flow",
+      "exec_arg": false
+    },
+    "faction_item_amount": {
+      "name": "Faction Item Amount",
+      "desc": "Counts the number of the passed item in your logistics network",
+      "category": "Global",
+      "args": [
+        [
+          "in",
+          "Item",
+          "Item to count",
+          "item"
+        ],
+        [
+          "out",
+          "Result",
+          "Number of this item in your faction"
+        ],
+        [
+          "exec",
+          "None",
+          "Execution path when none of this item exists in your faction"
+        ]
+      ]
+    },
+    "for_entities_in_range": {
+      "name": "Loop Entities (Range)",
+      "desc": "Performs code for all entities in visibility range of the unit",
+      "category": "Flow",
+      "args": [
+        [
+          "in",
+          "Range",
+          "Range (up to units visibility range)",
+          "num"
+        ],
+        [
+          "in",
+          "Filter",
+          "Filter to check",
+          "radar"
+        ],
+        [
+          "in",
+          "Filter",
+          "Second Filter",
+          "radar",
+          true
+        ],
+        [
+          "in",
+          "Filter",
+          "Third Filter",
+          "radar",
+          true
+        ],
+        [
+          "out",
+          "Entity",
+          "Current Entity"
+        ],
+        [
+          "exec",
+          "Done",
+          "Finished looping through all entities in range"
+        ]
+      ]
+    },
+    "for_inventory_item": {
+      "name": "Loop Inventory Slots",
+      "desc": "Loops through Inventory",
+      "category": "Flow",
+      "args": [
+        [
+          "out",
+          "Inventory",
+          "Item Inventory"
+        ],
+        [
+          "exec",
+          "Done",
+          "Finished loop"
+        ],
+        [
+          "out",
+          "Reserved Stack",
+          "Items reserved for outgoing order or recipe",
+          "num",
+          true
+        ],
+        [
+          "out",
+          "Unreserved Stack",
+          "Items available",
+          "num",
+          true
+        ],
+        [
+          "out",
+          "Reserved Space",
+          "Space reserved for an incoming order",
+          "num",
+          true
+        ],
+        [
+          "out",
+          "Unreserved Space",
+          "Remaining space",
+          "num",
+          true
+        ]
+      ]
+    },
+    "for_recipe_ingredients": {
+      "name": "Loop Recipe Ingredients",
+      "desc": "Loops through Ingredients",
+      "category": "Flow",
+      "args": [
+        [
+          "in",
+          "Recipe",
+          null,
+          "item"
+        ],
+        [
+          "out",
+          "Ingredient",
+          "Recipe Ingredient"
+        ],
+        [
+          "exec",
+          "Done",
+          "Finished loop"
+        ]
+      ]
+    },
+    "for_research": {
+      "name": "Loop Research",
+      "desc": "Performs code for all researchable tech",
+      "category": "Flow",
+      "args": [
+        [
+          "out",
+          "Tech",
+          "Researchable Tech"
+        ],
+        [
+          "exec",
+          "Done",
+          "Finished looping through all researchable tech"
+        ]
+      ]
+    },
+    "for_signal": {
+      "name": "*Loop Signal*",
+      "desc": "*DEPRECATED* Use Loop Signal (Match) instead",
+      "category": "Flow",
+      "args": [
+        [
+          "in",
+          "Signal",
+          "Signal"
+        ],
+        [
+          "out",
+          "Entity",
+          "Entity with signal"
+        ],
+        [
+          "exec",
+          "Done",
+          "Finished looping through all entities with signal"
+        ]
+      ]
+    },
+    "for_signal_match": {
+      "name": "Loop Signal (Match)",
+      "desc": "Loops through all units with a signal of similar type",
+      "category": "Flow",
+      "args": [
+        [
+          "in",
+          "Signal",
+          "Signal"
+        ],
+        [
+          "out",
+          "Entity",
+          "Entity with signal"
+        ],
+        [
+          "out",
+          "Signal",
+          "Found signal",
+          "entity",
+          true
+        ],
+        [
+          "exec",
+          "Done",
+          "Finished looping through all entities with signal"
+        ]
+      ]
+    },
+    "gather_information": {
+      "name": "Gather Information",
+      "desc": "Collect information for running the auto base controller",
+      "category": "AutoBase",
+      "args": [
+        [
+          "in",
+          "Range",
+          "Range of operation",
+          "num"
+        ]
+      ]
+    },
+    "get_battery": {
+      "name": "Get Battery",
+      "desc": "Gets the value of the Battery level as a percent",
+      "category": "Math",
+      "args": [
+        [
+          "out",
+          "Result"
+        ]
+      ]
+    },
+    "get_closest_entity": {
+      "name": "Get Closest Entity",
+      "desc": "Gets the closest visible entity matching a filter",
+      "category": "Unit",
+      "args": [
+        [
+          "in",
+          "Filter",
+          "Filter to check",
+          "radar"
+        ],
+        [
+          "in",
+          "Filter",
+          "Second Filter",
+          "radar",
+          true
+        ],
+        [
+          "in",
+          "Filter",
+          "Third Filter",
+          "radar",
+          true
+        ],
+        [
+          "out",
+          "Output",
+          "Entity"
+        ]
+      ]
+    },
+    "get_comp_reg": {
+      "name": "Get from Component",
+      "desc": "Reads a value from a component register",
+      "category": "Math",
+      "args": [
+        [
+          "in",
+          "Component/Index",
+          "Component and register number to set",
+          "comp_num"
+        ],
+        [
+          "out",
+          "Value"
+        ],
+        [
+          "in",
+          "Group/Index",
+          "Component group index if multiple are equipped",
+          "num",
+          true
+        ]
+      ]
+    },
+    "get_distance": {
+      "name": "Distance",
+      "desc": "Returns distance to a unit",
+      "category": "Global",
+      "args": [
+        [
+          "in",
+          "Target",
+          "Target unit",
+          "entity"
+        ],
+        [
+          "out",
+          "Distance",
+          "Unit and its distance in the numerical part of the value"
+        ],
+        [
+          "in",
+          "Unit",
+          "The unit to measure from (if not self)",
+          "entity",
+          true
+        ]
+      ]
+    },
+    "get_entity_at": {
+      "name": "Get Entity At",
+      "desc": "Gets the best matching entity at a coordinate",
+      "category": "Math",
+      "args": [
+        [
+          "in",
+          "Coordinate",
+          "Coordinate to get Entity from",
+          "coord_num"
+        ],
+        [
+          "out",
+          "Result"
+        ]
+      ]
+    },
+    "get_first_locked_0": {
+      "name": "Get First Locked Id",
+      "desc": "Gets the first item where the locked slot exists but there is no item in it",
+      "category": "Unit",
+      "args": [
+        [
+          "out",
+          "Item",
+          "The first locked item id with no item"
+        ]
+      ]
+    },
+    "get_grid_effeciency": {
+      "name": "Get Grid Efficiency",
+      "desc": "Gets the value of the Grid Efficiency as a percent",
+      "category": "Math",
+      "args": [
+        [
+          "out",
+          "Result"
+        ]
+      ]
+    },
+    "get_health": {
+      "name": "Get Health",
+      "desc": "Gets a units health as a percentage, current and max",
+      "category": "Math",
+      "args": [
+        [
+          "in",
+          "Entity",
+          "Entity to check",
+          "entity"
+        ],
+        [
+          "out",
+          "Percent",
+          "Percentage of health remaining"
+        ],
+        [
+          "out",
+          "Current",
+          "Value of health remaining",
+          null,
+          true
+        ],
+        [
+          "out",
+          "Max",
+          "Value of maximum health",
+          null,
+          true
+        ]
+      ]
+    },
+    "get_ingredients": {
+      "name": "Get Ingredients",
+      "desc": "Returns the ingredients required to produce an item",
+      "category": "Global",
+      "args": [
+        [
+          "in",
+          "Product",
+          null,
+          "item"
+        ],
+        [
+          "out",
+          "Out 1",
+          "First Ingredient"
+        ],
+        [
+          "out",
+          "Out 2",
+          "Second Ingredient"
+        ],
+        [
+          "out",
+          "Out 3",
+          "Third Ingredient"
+        ]
+      ]
+    },
+    "get_inventory_item": {
+      "name": "First Item",
+      "desc": "Reads the first item in your inventory",
+      "category": "Unit",
+      "args": [
+        [
+          "out",
+          "Item"
+        ],
+        [
+          "exec",
+          "No Items",
+          "No items in inventory"
+        ]
+      ]
+    },
+    "get_inventory_item_index": {
+      "name": "Get Inventory Item",
+      "desc": "Reads the item contained in the specified slot index",
+      "category": "Unit",
+      "args": [
+        [
+          "in",
+          "Index",
+          "Slot index",
+          "num"
+        ],
+        [
+          "out",
+          "Item"
+        ],
+        [
+          "exec",
+          "No Item",
+          "Item not found"
+        ]
+      ]
+    },
+    "get_location": {
+      "name": "Get Location",
+      "desc": "Gets location of a a seen entity",
+      "category": "Global",
+      "args": [
+        [
+          "in",
+          "Entity",
+          "Entity to get coordinates of",
+          "entity"
+        ],
+        [
+          "out",
+          "Coord",
+          "Coordinate of entity"
+        ]
+      ]
+    },
+    "get_max_stack": {
+      "name": "Get Max Stack",
+      "desc": "Returns the amount an item can stack to",
+      "category": "Flow",
+      "args": [
+        [
+          "in",
+          "Item",
+          "Item to count",
+          "item_num"
+        ],
+        [
+          "out",
+          "Max Stack",
+          "Max Stack"
+        ]
+      ]
+    },
+    "get_research": {
+      "name": "Get Research",
+      "desc": "Returns the first active research tech",
+      "category": "Flow",
+      "args": [
+        [
+          "out",
+          "Tech",
+          "First active research"
+        ]
+      ]
+    },
+    "get_resource_item": {
+      "name": "Resource Type",
+      "desc": "Gets the resource type from an resource node",
+      "category": "Global",
+      "args": [
+        [
+          "in",
+          "Resource Node",
+          "Resource Node",
+          "entity"
+        ],
+        [
+          "out",
+          "Resource",
+          "Resource Type"
+        ],
+        [
+          "exec",
+          "Not Resource",
+          "Continue here if it wasn't a resource node"
+        ]
+      ]
+    },
+    "get_resource_num": {
+      "name": "Get Resource Num",
+      "desc": "Gets the amount of resource",
+      "category": "Math",
+      "args": [
+        [
+          "in",
+          "Resource",
+          "Resource Node to check",
+          "entity"
+        ],
+        [
+          "out",
+          "Result"
+        ]
+      ]
+    },
+    "get_self": {
+      "name": "Get Self",
+      "desc": "Gets the value of the Unit executing the behavior",
+      "category": "Math",
+      "args": [
+        [
+          "out",
+          "Result"
+        ]
+      ]
+    },
+    "get_stability": {
+      "name": "Get Stability",
+      "desc": "Gets the current world stability",
+      "category": "Global",
+      "args": [
+        [
+          "out",
+          "Number",
+          "Stability"
+        ]
+      ]
+    },
+    "get_type": {
+      "name": "Get Type",
+      "desc": "Gets the type from an item or entity",
+      "category": "Global",
+      "args": [
+        [
+          "in",
+          "Item/Entity"
+        ],
+        [
+          "out",
+          "Type"
+        ]
+      ]
+    },
+    "getfreespace": {
+      "name": "Get space for item",
+      "desc": "Returns how many of the input item can fit in the inventory",
+      "category": "Math",
+      "args": [
+        [
+          "in",
+          "Item",
+          "Item to check can fit",
+          "item"
+        ],
+        [
+          "out",
+          "Result",
+          "Number of a specific item that can fit on a unit"
+        ],
+        [
+          "in",
+          "Unit",
+          "The unit to check (if not self)",
+          "entity",
+          true
+        ]
+      ]
+    },
+    "gethome": {
+      "name": "Get Home",
+      "desc": "Gets the factions home unit",
+      "category": "Global",
+      "args": [
+        [
+          "out",
+          "Result",
+          "Factions home unit"
+        ]
+      ]
+    },
+    "gettrust": {
+      "name": "Get Trust",
+      "desc": "Gets the trust level of the unit towards you",
+      "category": "Global",
+      "args": [
+        [
+          "exec",
+          "Ally",
+          "Target unit considers you an ally"
+        ],
+        [
+          "exec",
+          "Neutral",
+          "Target unit considers you neutral"
+        ],
+        [
+          "exec",
+          "Enemy",
+          "Target unit considers you an enemy"
+        ],
+        [
+          "in",
+          "Unit",
+          "Target Unit",
+          "entity"
+        ]
+      ],
+      "exec_arg": [
+        1,
+        "No Unit",
+        "No Unit Passed"
+      ]
+    },
+    "have_item": {
+      "name": "Have Item",
+      "desc": "Checks if you have at least a specified amount of an item",
+      "category": "Flow",
+      "args": [
+        [
+          "in",
+          "Item",
+          "Item to count",
+          "item_num"
+        ],
+        [
+          "exec",
+          "Have Item",
+          "have the specified item"
+        ],
+        [
+          "in",
+          "Unit",
+          "The unit to check for (if not self)",
+          "entity",
+          true
+        ]
+      ]
+    },
+    "is_a": {
+      "name": "Is a",
+      "desc": "Compares if an item of entity is of a specific type",
+      "category": "Flow",
+      "args": [
+        [
+          "exec",
+          "If Different",
+          "Where to continue if the entities differ"
+        ],
+        [
+          "in",
+          "Item"
+        ],
+        [
+          "in",
+          "Type"
+        ]
+      ],
+      "exec_arg": [
+        1,
+        "If Equal",
+        "Where to continue if the entities are the same"
+      ]
+    },
+    "is_daynight": {
+      "name": "Is Day/Night",
+      "desc": "Divert program depending time of day",
+      "category": "Global",
+      "args": [
+        [
+          "exec",
+          "Day",
+          "Where to continue if it is nighttime"
+        ],
+        [
+          "exec",
+          "Night",
+          "Where to continue if it is daytime"
+        ]
+      ],
+      "exec_arg": false
+    },
+    "is_equipped": {
+      "name": "Is Equipped",
+      "desc": "Check if a specific component has been equipped",
+      "category": "Unit",
+      "args": [
+        [
+          "in",
+          "Component",
+          "Component to check",
+          "comp"
+        ],
+        [
+          "exec",
+          "Component Equipped",
+          "Where to continue if component is equipped"
+        ],
+        [
+          "out",
+          "Result",
+          "Returns how many instances of a component equipped on this Unit",
+          null,
+          true
+        ]
+      ]
+    },
+    "is_fixed": {
+      "name": "Is Fixed",
+      "desc": "Check if a specific item slot index is fixed",
+      "category": "Unit",
+      "args": [
+        [
+          "in",
+          "Slot index",
+          "Individual slot to check",
+          "num"
+        ],
+        [
+          "exec",
+          "Is Fixed",
+          "Where to continue if inventory slot is fixed"
+        ]
+      ]
+    },
+    "is_moving": {
+      "name": "Is Moving",
+      "desc": "Checks the movement state of an entity",
+      "category": "Unit",
+      "args": [
+        [
+          "exec",
+          "Not Moving",
+          "Where to continue if entity is not moving"
+        ],
+        [
+          "exec",
+          "Path Blocked",
+          "Where to continue if entity is path blocked"
+        ],
+        [
+          "exec",
+          "No Result",
+          "Where to continue if entity is out of visual range"
+        ],
+        [
+          "in",
+          "Unit",
+          "The unit to check (if not self)",
+          "entity",
+          true
+        ]
+      ],
+      "exec_arg": [
+        1,
+        "Moving",
+        "Where to continue if entity is moving"
+      ]
+    },
+    "is_same_grid": {
+      "name": "Is Same Grid",
+      "desc": "Checks if two entities are in the same power grid",
+      "category": "Unit",
+      "args": [
+        [
+          "in",
+          "Entity",
+          "First Entity",
+          "entity"
+        ],
+        [
+          "in",
+          "Entity",
+          "Second Entity",
+          "entity"
+        ],
+        [
+          "exec",
+          "Different",
+          "Different power grids"
+        ]
+      ],
+      "exec_arg": [
+        1,
+        "Same Grid",
+        "Where to continue if both entities are in the same power grid"
+      ]
+    },
+    "is_working": {
+      "name": "Is Working",
+      "desc": "Checks whether a particular component is currently working",
+      "category": "Math",
+      "args": [
+        [
+          "exec",
+          "Is Not Working",
+          "If the requested component is NOT currently working"
+        ],
+        [
+          "in",
+          "Component/Index",
+          "Component to get",
+          "comp_num"
+        ],
+        [
+          "in",
+          "Group/Index",
+          "Component group index if multiple are equipped",
+          "num",
+          true
+        ],
+        [
+          "out",
+          "Value",
+          "Returns the component ID currently working",
+          "entity",
+          true
+        ]
+      ]
+    },
+    "jump": {
+      "name": "Jump",
+      "desc": "Jumps execution to label with the same label id",
+      "category": "Flow",
+      "args": [
+        [
+          "in",
+          "Label",
+          "Label identifier",
+          "any"
+        ]
+      ]
+    },
+    "label": {
+      "name": "Label",
+      "desc": "Labels can be jumped to from anywhere in a behavior",
+      "category": "Flow",
+      "args": [
+        [
+          "in",
+          "Label",
+          "Label identifier",
+          "any"
+        ]
+      ]
+    },
+    "land": {
+      "name": "Land",
+      "desc": "Tells a satellite that has been launched to land",
+      "category": "Global"
+    },
+    "last": {
+      "name": "Break",
+      "desc": "Break out of a loop",
+      "category": "Flow",
+      "exec_arg": false
+    },
+    "launch": {
+      "name": "Launch",
+      "desc": "Launches a satellite if equipped on an AMAC",
+      "category": "Global"
+    },
+    "lock": {
+      "name": "Lock",
+      "desc": "Run one instruction at a time",
+      "category": "Flow"
+    },
+    "lock_slots": {
+      "name": "Fix Item Slots",
+      "desc": "Fix all storage slots or a specific item slot index",
+      "category": "Unit",
+      "args": [
+        [
+          "in",
+          "Item",
+          "Item type to try fixing to the slots",
+          "item_num"
+        ],
+        [
+          "in",
+          "Slot index",
+          "Individual slot to fix",
+          "num",
+          true
+        ]
+      ]
+    },
+    "lookat": {
+      "name": "Lookat",
+      "desc": "Turns the unit to look at a unit or a coordinate",
+      "category": "Global",
+      "args": [
+        [
+          "in",
+          "Target",
+          "Target unit or coordinate",
+          "coord"
+        ]
+      ]
+    },
+    "make_carrier": {
+      "name": "Make Carriers",
+      "desc": "Construct carrier bots for delivering orders or to use for other tasks",
+      "category": "AutoBase",
+      "args": [
+        [
+          "in",
+          "Carriers",
+          "Type and count of carriers to make",
+          "frame_num"
+        ],
+        [
+          "exec",
+          "If Working",
+          "Where to continue if the unit started working"
+        ]
+      ]
+    },
+    "make_miner": {
+      "name": "Make Miners",
+      "desc": "Construct and equip miner components on available carrier bots",
+      "category": "AutoBase",
+      "args": [
+        [
+          "in",
+          "Resource/Count",
+          "Resource type and number of miners to maintain",
+          "item_num"
+        ],
+        [
+          "exec",
+          "If Working",
+          "Where to continue if the unit started working"
+        ]
+      ]
+    },
+    "make_producer": {
+      "name": "Make Producer",
+      "desc": "Build and maintain dedicated production buildings",
+      "category": "AutoBase",
+      "args": [
+        [
+          "in",
+          "Item/Count",
+          "Item type and number of producers to maintain",
+          "item_num"
+        ],
+        [
+          "in",
+          "Component",
+          "Production component",
+          "comp"
+        ],
+        [
+          "in",
+          "Building",
+          "Building type to use as producer",
+          "frame"
+        ],
+        [
+          "in",
+          "Location",
+          "Location offset from self",
+          "coord"
+        ],
+        [
+          "exec",
+          "If Working",
+          "Where to continue if the unit started working"
+        ]
+      ]
+    },
+    "make_turret_bots": {
+      "name": "Make Turret Bots",
+      "desc": "Construct and equip turret components on available carrier bots",
+      "category": "AutoBase",
+      "args": [
+        [
+          "in",
+          "Number",
+          "Number of turret bots to maintain",
+          "num"
+        ],
+        [
+          "exec",
+          "If Working",
+          "Where to continue if the unit started working"
+        ]
+      ]
+    },
+    "match": {
+      "name": "Match",
+      "desc": "Filters the passed entity",
+      "category": "Unit",
+      "args": [
+        [
+          "in",
+          "Unit",
+          "Unit to Filter, defaults to Self",
+          "entity"
+        ],
+        [
+          "in",
+          "Filter",
+          "Filter to check",
+          "radar"
+        ],
+        [
+          "in",
+          "Filter",
+          "Second Filter",
+          "radar",
+          true
+        ],
+        [
+          "in",
+          "Filter",
+          "Third Filter",
+          "radar",
+          true
+        ],
+        [
+          "exec",
+          "Failed",
+          "Did not match filter"
+        ]
+      ]
+    },
+    "mine": {
+      "name": "Mine",
+      "desc": "Mines a single resource",
+      "category": "Component",
+      "args": [
+        [
+          "in",
+          "Resource",
+          "Resource to Mine",
+          "resource_num"
+        ],
+        [
+          "exec",
+          "Cannot Mine",
+          "Execution path if mining was unable to be performed"
+        ],
+        [
+          "exec",
+          "Full",
+          "Execution path if can't fit resource into inventory"
+        ]
+      ]
+    },
+    "modulo": {
+      "name": "Modulo",
+      "desc": "Get the remainder of a division",
+      "category": "Math",
+      "args": [
+        [
+          "in",
+          "Num",
+          null,
+          "coord_num"
+        ],
+        [
+          "in",
+          "By",
+          null,
+          "coord_num"
+        ],
+        [
+          "out",
+          "Result"
+        ]
+      ]
+    },
+    "move_east": {
+      "name": "Move East",
+      "desc": "Moves towards a tile East of the current location at the specified distance",
+      "category": "Move",
+      "args": [
+        [
+          "in",
+          "Number",
+          "Number of tiles to move East",
+          "num"
+        ]
+      ]
+    },
+    "move_north": {
+      "name": "Move North",
+      "desc": "Moves towards a tile North of the current location at the specified distance",
+      "category": "Move",
+      "args": [
+        [
+          "in",
+          "Number",
+          "Number of tiles to move North",
+          "num"
+        ]
+      ]
+    },
+    "move_south": {
+      "name": "Move South",
+      "desc": "Moves towards a tile South of the current location at the specified distance",
+      "category": "Move",
+      "args": [
+        [
+          "in",
+          "Number",
+          "Number of tiles to move South",
+          "num"
+        ]
+      ]
+    },
+    "move_west": {
+      "name": "Move West",
+      "desc": "Moves towards a tile West of the current location at the specified distance",
+      "category": "Move",
+      "args": [
+        [
+          "in",
+          "Number",
+          "Number of tiles to move West",
+          "num"
+        ]
+      ]
+    },
+    "moveaway_range": {
+      "name": "Move Away (Range)",
+      "desc": "Moves out of range of another unit",
+      "category": "Move",
+      "args": [
+        [
+          "in",
+          "Target",
+          "Unit to move away from",
+          "entity"
+        ]
+      ]
+    },
+    "mul": {
+      "name": "Multiply",
+      "desc": "Multiplies a number or coordinate from another number or coordinate",
+      "category": "Math",
+      "args": [
+        [
+          "in",
+          "To",
+          null,
+          "coord_num"
+        ],
+        [
+          "in",
+          "Num",
+          null,
+          "coord_num"
+        ],
+        [
+          "out",
+          "Result"
+        ]
+      ]
+    },
+    "nop": {
+      "name": "Invalid Instruction",
+      "desc": "Instruction has been removed, behavior needs to be updated",
+      "args": []
+    },
+    "notify": {
+      "name": "Notify",
+      "desc": "Triggers a faction notification",
+      "category": "Global",
+      "args": [
+        [
+          "in",
+          "Notify Value",
+          "Notification Value"
+        ]
+      ]
+    },
+    "order_to_shared_storage": {
+      "name": "Order to Shared Storage",
+      "desc": "Request Inventory to be sent to nearest shared storage with corresponding locked slots",
+      "category": "Unit"
+    },
+    "order_transfer": {
+      "name": "Order Transfer To",
+      "desc": "Transfers an Item to another Unit",
+      "category": "Unit",
+      "args": [
+        [
+          "in",
+          "Target",
+          "Target unit",
+          "entity"
+        ],
+        [
+          "in",
+          "Item",
+          "Item and amount to transfer",
+          "item_num"
+        ]
+      ]
+    },
+    "package_all": {
+      "name": "Package All",
+      "desc": "Tries to pack all packable units into items",
+      "category": "Unit",
+      "args": [
+        [
+          "in",
+          "Unit",
+          "The destination to try and pack (if not self)",
+          "entity",
+          true
+        ]
+      ]
+    },
+    "percent_value": {
+      "name": "Percent",
+      "desc": "Gives you the percent that value is of Max Value",
+      "category": "Global",
+      "args": [
+        [
+          "in",
+          "Value",
+          "Value to check"
+        ],
+        [
+          "in",
+          "Max Value",
+          "Max Value to get percentage of"
+        ],
+        [
+          "out",
+          "Number",
+          "Percent"
+        ]
+      ]
+    },
+    "ping": {
+      "name": "Pings a Unit",
+      "desc": "Plays the Ping effect and notifies other players",
+      "category": "Global",
+      "args": [
+        [
+          "in",
+          "Target",
+          "Target unit",
+          "entity"
+        ]
+      ]
+    },
+    "produce": {
+      "name": "Produce Unit",
+      "desc": "Sets a production component to produce a blueprint",
+      "category": "Global"
+    },
+    "read_radio": {
+      "name": "Read Radio",
+      "desc": "Reads the Radio signal on a specified band",
+      "category": "Unit",
+      "args": [
+        [
+          "in",
+          "Band",
+          "The band to check for"
+        ],
+        [
+          "out",
+          "Result",
+          "Value of the radio signal"
+        ]
+      ]
+    },
+    "read_signal": {
+      "name": "Read Signal",
+      "desc": "Reads the Signal register of another unit",
+      "category": "Unit",
+      "args": [
+        [
+          "in",
+          "Unit",
+          "The owned unit to check for",
+          "entity"
+        ],
+        [
+          "out",
+          "Result",
+          "Value of units Signal register"
+        ]
+      ]
+    },
+    "readkey": {
+      "name": "Read Key",
+      "desc": "Attempts to reads the internal key of the unit",
+      "category": "Global",
+      "args": [
+        [
+          "in",
+          "Frame",
+          "Structure to read the key for",
+          "entity"
+        ],
+        [
+          "out",
+          "Key",
+          "Number key of structure"
+        ]
+      ]
+    },
+    "remap_value": {
+      "name": "Remap",
+      "desc": "Remaps a value between two ranges",
+      "category": "Global",
+      "args": [
+        [
+          "in",
+          "Value",
+          "Value to Remap"
+        ],
+        [
+          "in",
+          "Input Low",
+          "Low value for input"
+        ],
+        [
+          "in",
+          "Input High",
+          "High value for input"
+        ],
+        [
+          "in",
+          "Target Low",
+          "Low value for target"
+        ],
+        [
+          "in",
+          "Target high",
+          "High value for target"
+        ],
+        [
+          "out",
+          "Result",
+          "Remapped value"
+        ]
+      ]
+    },
+    "request_item": {
+      "name": "Request Item",
+      "desc": "Requests an item if it doesn't exist in the inventory",
+      "category": "Unit",
+      "args": [
+        [
+          "in",
+          "Item",
+          "Item and amount to order",
+          "item_num"
+        ]
+      ]
+    },
+    "request_wait": {
+      "name": "Request Wait",
+      "desc": "Requests an item and waits until it exists in inventory",
+      "category": "Unit",
+      "args": [
+        [
+          "in",
+          "Item",
+          "Item and amount to order",
+          "item_num"
+        ]
+      ]
+    },
+    "scan": {
+      "name": "Radar",
+      "desc": "Scan for the closest unit that matches the filters",
+      "category": "Component",
+      "args": [
+        [
+          "in",
+          "Filter 1",
+          "First filter",
+          "radar"
+        ],
+        [
+          "in",
+          "Filter 2",
+          "Second filter",
+          "radar"
+        ],
+        [
+          "in",
+          "Filter 3",
+          "Third filter",
+          "radar"
+        ],
+        [
+          "out",
+          "Result"
+        ],
+        [
+          "exec",
+          "No Result",
+          "Execution path if no results are found"
+        ]
+      ]
+    },
+    "scout": {
+      "name": "Scout",
+      "desc": "Moves in a scouting pattern around the factions home location",
+      "category": "Move"
+    },
+    "select_nearest": {
+      "name": "Select Nearest",
+      "desc": "Branches based on which unit is closer, optional branches for closer unit",
+      "category": "Flow",
+      "args": [
+        [
+          "exec",
+          "A",
+          "A is nearer (or equal)"
+        ],
+        [
+          "exec",
+          "B",
+          "B is nearer"
+        ],
+        [
+          "in",
+          "Unit A",
+          null,
+          "entity"
+        ],
+        [
+          "in",
+          "Unit B",
+          null,
+          "entity"
+        ],
+        [
+          "out",
+          "Closest",
+          "Closest unit",
+          null,
+          true
+        ]
+      ]
+    },
+    "separate_coordinate": {
+      "name": "Separate Coordinate",
+      "desc": "Split a coordinate into x and y values",
+      "category": "Math",
+      "args": [
+        [
+          "in",
+          "Coordinate",
+          null,
+          "coord_num"
+        ],
+        [
+          "out",
+          "x"
+        ],
+        [
+          "out",
+          "y"
+        ]
+      ]
+    },
+    "separate_register": {
+      "name": "Separate Register",
+      "desc": "Split a register into separate parameters",
+      "category": "Math",
+      "args": [
+        [
+          "in",
+          "Register",
+          null,
+          "entity"
+        ],
+        [
+          "out",
+          "Num"
+        ],
+        [
+          "out",
+          "Entity",
+          null,
+          null,
+          true
+        ],
+        [
+          "out",
+          "ID",
+          null,
+          null,
+          true
+        ],
+        [
+          "out",
+          "x",
+          null,
+          null,
+          true
+        ],
+        [
+          "out",
+          "y",
+          null,
+          null,
+          true
+        ]
+      ]
+    },
+    "serve_construction": {
+      "name": "Serve Construction",
+      "desc": "Produce materials needed in construction sites",
+      "category": "AutoBase",
+      "args": [
+        [
+          "exec",
+          "If Working",
+          "Where to continue if the unit started working"
+        ]
+      ]
+    },
+    "set_comp_reg": {
+      "name": "Set to Component",
+      "desc": "Writes a value into a component register",
+      "category": "Math",
+      "args": [
+        [
+          "in",
+          "Value",
+          null,
+          "any"
+        ],
+        [
+          "in",
+          "Component/Index",
+          "Component and register number to set",
+          "comp_num"
+        ],
+        [
+          "in",
+          "Group/Index",
+          "Component group index if multiple are equipped",
+          "num",
+          true
+        ]
+      ]
+    },
+    "set_number": {
+      "name": "Set Number",
+      "desc": "Sets the numerical/coordinate part of a value",
+      "category": "Math",
+      "args": [
+        [
+          "in",
+          "Value"
+        ],
+        [
+          "in",
+          "Num/Coord",
+          null,
+          "coord_num"
+        ],
+        [
+          "out",
+          "To"
+        ]
+      ]
+    },
+    "set_reg": {
+      "name": "Copy",
+      "desc": "Copy a value to a frame register, parameter or variable",
+      "category": "Math",
+      "args": [
+        [
+          "in",
+          "Value",
+          null,
+          "any"
+        ],
+        [
+          "out",
+          "Target"
+        ]
+      ]
+    },
+    "set_research": {
+      "name": "Set Research",
+      "desc": "Returns the first active research tech",
+      "category": "Flow",
+      "args": [
+        [
+          "in",
+          "Tech",
+          "First active research",
+          "tech"
+        ]
+      ]
+    },
+    "set_signpost": {
+      "name": "Set Signpost",
+      "desc": "Set the signpost to specific text",
+      "category": "Component"
+    },
+    "shutdown": {
+      "name": "Turn Off",
+      "desc": "Shuts down the power of the Unit",
+      "category": "Unit"
+    },
+    "solve": {
+      "name": "Solve Explorable",
+      "desc": "Attempt to solve explorable with inventory items",
+      "category": "Unit",
+      "args": [
+        [
+          "in",
+          "Target",
+          "Explorable to solve",
+          "entity"
+        ],
+        [
+          "out",
+          "Missing",
+          "Missing repair item, scanner component or Unpowered"
+        ],
+        [
+          "exec",
+          "Failed",
+          "Missing item, component or power to scan"
+        ]
+      ]
+    },
+    "sort_storage": {
+      "name": "Sort Storage",
+      "desc": "Sorts Storage Containers on Unit",
+      "category": "Unit"
+    },
+    "stop": {
+      "name": "Stop Unit",
+      "desc": "Stop movement and abort what is currently controlling the entities movement",
+      "category": "Move"
+    },
+    "sub": {
+      "name": "Subtract",
+      "desc": "Subtracts a number or coordinate from another number or coordinate",
+      "category": "Math",
+      "args": [
+        [
+          "in",
+          "From",
+          null,
+          "coord_num"
+        ],
+        [
+          "in",
+          "Num",
+          null,
+          "coord_num"
+        ],
+        [
+          "out",
+          "Result"
+        ]
+      ]
+    },
+    "switch": {
+      "name": "Switch",
+      "desc": "Filters the passed entity",
+      "category": "Unit",
+      "args": [
+        [
+          "in",
+          "Unit",
+          "Unit to Filter, defaults to Self",
+          "entity"
+        ],
+        [
+          "in",
+          "Case 1",
+          "Case 1",
+          "radar"
+        ],
+        [
+          "exec",
+          "1",
+          "Case 1"
+        ],
+        [
+          "in",
+          "Case 2",
+          "Case 2",
+          "radar",
+          true
+        ],
+        [
+          "exec",
+          "2",
+          "Case 2",
+          null,
+          true
+        ],
+        [
+          "in",
+          "Case 3",
+          "Case 3",
+          "radar",
+          true
+        ],
+        [
+          "exec",
+          "3",
+          "Case 3",
+          null,
+          true
+        ],
+        [
+          "in",
+          "Case 4",
+          "Case 4",
+          "radar",
+          true
+        ],
+        [
+          "exec",
+          "4",
+          "Case 4",
+          null,
+          true
+        ],
+        [
+          "in",
+          "Case 5",
+          "Case 5",
+          "radar",
+          true
+        ],
+        [
+          "exec",
+          "5",
+          "Case 5",
+          null,
+          true
+        ]
+      ],
+      "exec_arg": [
+        1,
+        "Default",
+        "Did not match filter"
+      ]
+    },
+    "turnon": {
+      "name": "Turn On",
+      "desc": "Turns on the power of the Unit",
+      "category": "Unit"
+    },
+    "unequip_component": {
+      "name": "Unequip Component",
+      "desc": "Unequips a component if it exists",
+      "category": "Unit",
+      "args": [
+        [
+          "exec",
+          "No Component",
+          "If you don't current hold the requested component or slot was empty"
+        ],
+        [
+          "in",
+          "Component",
+          "Component to unequip",
+          "comp"
+        ],
+        [
+          "in",
+          "Slot index",
+          "Individual slot to try to unequip component from",
+          "num",
+          true
+        ]
+      ]
+    },
+    "unit_type": {
+      "name": "Unit Type",
+      "desc": "Divert program depending on unit type",
+      "category": "Flow",
+      "args": [
+        [
+          "in",
+          "Unit",
+          "The unit to check",
+          "entity"
+        ],
+        [
+          "exec",
+          "Building",
+          "Where to continue if the entity is a building"
+        ],
+        [
+          "exec",
+          "Bot",
+          "Where to continue if the entity is a bot"
+        ],
+        [
+          "exec",
+          "Construction",
+          "Where to continue if the entity is a construction site",
+          null,
+          true
+        ]
+      ],
+      "exec_arg": [
+        5,
+        "No Unit",
+        "No visible unit passed",
+        null,
+        true
+      ]
+    },
+    "unlock": {
+      "name": "Unlock",
+      "desc": "Run as many instructions as possible. Use wait instructions to throttle execution.",
+      "category": "Flow"
+    },
+    "unlock_slots": {
+      "name": "Unfix Item Slots",
+      "desc": "Unfix all inventory slots or a specific item slot index",
+      "category": "Unit",
+      "args": [
+        [
+          "in",
+          "Slot index",
+          "Individual slot to unfix",
+          "num",
+          true
+        ]
+      ]
+    },
+    "unpackage_all": {
+      "name": "Unpackage All",
+      "desc": "Tries to unpack all packaged items",
+      "category": "Unit",
+      "args": [
+        [
+          "in",
+          "Unit",
+          "The destination to try and unpack (if not self)",
+          "entity",
+          true
+        ]
+      ]
+    },
+    "value_type": {
+      "name": "Data type switch",
+      "desc": "Switch based on type of value",
+      "category": "Flow",
+      "args": [
+        [
+          "in",
+          "Data",
+          "Data to test"
+        ],
+        [
+          "exec",
+          "Item",
+          "Item Type"
+        ],
+        [
+          "exec",
+          "Entity",
+          "Entity Type"
+        ],
+        [
+          "exec",
+          "Component",
+          "Component Type"
+        ],
+        [
+          "exec",
+          "Tech",
+          "Tech Type",
+          null,
+          true
+        ],
+        [
+          "exec",
+          "Value",
+          "Information Value Type",
+          null,
+          true
+        ],
+        [
+          "exec",
+          "Coord",
+          "Coordinate Value Type",
+          null,
+          true
+        ]
+      ],
+      "exec_arg": [
+        1,
+        "No Match",
+        "Where to continue if there is no match"
+      ]
+    },
+    "wait": {
+      "name": "Wait Ticks",
+      "desc": "Pauses execution of the behavior until 1 or more ticks later (5 ticks=1 second)",
+      "category": "Flow",
+      "args": [
+        [
+          "in",
+          "Time",
+          "Number of ticks to wait",
+          "num"
+        ]
+      ]
+    }
+  },
+  "techs": {
+    "t_adv_drones": {
+      "name": "Advanced Drones"
+    },
+    "t_anomaly_heart": {
+      "name": "Anomaly Heart"
+    },
+    "t_anomaly_technology": {
+      "name": "Anomaly Technology"
+    },
+    "t_assembly": {
+      "name": "Research Uplink"
+    },
+    "t_blight_control": {
+      "name": "Simulation Control"
+    },
+    "t_blight_conversion": {
+      "name": "Magnification"
+    },
+    "t_blight_magnifier": {
+      "name": "Conversion"
+    },
+    "t_blight_plasma": {
+      "name": "Plasma Concentration"
+    },
+    "t_blight_power": {
+      "name": "Blight Power"
+    },
+    "t_blight_protection": {
+      "name": "Blight Stability"
+    },
+    "t_blight_research": {
+      "name": "Blight Research"
+    },
+    "t_blight_shield": {
+      "name": "Blight Shield"
+    },
+    "t_blight_terraformer": {
+      "name": "Blight Terraformer"
+    },
+    "t_blight_visibility": {
+      "name": "Blight Visibility"
+    },
+    "t_defense2": {
+      "name": "Scanner Tech"
+    },
+    "t_energy_folding": {
+      "name": "Energy Folding"
+    },
+    "t_energy_form": {
+      "name": "Energy Form"
+    },
+    "t_energy_manipulation": {
+      "name": "Energy Manipulation"
+    },
+    "t_exoskeletons": {
+      "name": "Exoskeletons"
+    },
+    "t_extractor": {
+      "name": "Extraction"
+    },
+    "t_fusion_generator": {
+      "name": "Fusion Generator"
+    },
+    "t_grass_terraformer": {
+      "name": "Basic Terraformer"
+    },
+    "t_hacking_tool": {
+      "name": "Hacking"
+    },
+    "t_human_intel": {
+      "name": "Human Intel"
+    },
+    "t_human_technology": {
+      "name": "Human Technology"
+    },
+    "t_humanproduction": {
+      "name": "Production"
+    },
+    "t_ldframe": {
+      "name": "Matrix Frames"
+    },
+    "t_obsidian_maniputalion": {
+      "name": "Obsidian Manipulation"
+    },
+    "t_particle_forge": {
+      "name": "Particle Forge"
+    },
+    "t_phase": {
+      "name": "Phasing"
+    },
+    "t_power_cores": {
+      "name": "Human Science"
+    },
+    "t_power_units": {
+      "name": "Power Units"
+    },
+    "t_power0": {
+      "name": "Basic Power"
+    },
+    "t_power1": {
+      "name": "Expanded Power"
+    },
+    "t_power2": {
+      "name": "Power Storage"
+    },
+    "t_power5": {
+      "name": "Power Source"
+    },
+    "t_power10": {
+      "name": "Power Transference"
+    },
+    "t_power11": {
+      "name": "Power Upgrade"
+    },
+    "t_power12": {
+      "name": "Power Field"
+    },
+    "t_power21": {
+      "name": "Power Cell"
+    },
+    "t_research1": {
+      "name": "Gateway Technology"
+    },
+    "t_research2": {
+      "name": "Supercomputing"
+    },
+    "t_resim_tech": {
+      "name": "Resimulation"
+    },
+    "t_robot_tech_basic": {
+      "name": "C0rrup7ed D4tabas3"
+    },
+    "t_robotics_virus_discovery": {
+      "name": "Virus Discovery"
+    },
+    "t_robotics0": {
+      "name": "Robotics Production"
+    },
+    "t_robotics2": {
+      "name": "Matrix Technology"
+    },
+    "t_robotics3": {
+      "name": "Ultra-tech Framework"
+    },
+    "t_robotics4": {
+      "name": "Quantum Robotics"
+    },
+    "t_robotics10": {
+      "name": "Basic Robotics"
+    },
+    "t_robots_alien_discovery": {
+      "name": "Alien Discovery"
+    },
+    "t_robots_alien_research": {
+      "name": "Alien Technology"
+    },
+    "t_robots_antivirus": {
+      "name": "Total Protection"
+    },
+    "t_robots_blight_discovery": {
+      "name": "Blight Discovery"
+    },
+    "t_robots_disable": {
+      "name": "Virus Wipe"
+    },
+    "t_robots_human_discovery": {
+      "name": "Human Discovery"
+    },
+    "t_robots_recycling": {
+      "name": "Hive"
+    },
+    "t_robots_virus": {
+      "name": "Virus Research"
+    },
+    "t_robots_virus_bug_attacks": {
+      "name": "Bug Attacks"
+    },
+    "t_robots_virus_bugs": {
+      "name": "Virus Waveform"
+    },
+    "t_robots_virus_cryto": {
+      "name": "Virus Crypto"
+    },
+    "t_robots_virus_cure": {
+      "name": "Virus Cure"
+    },
+    "t_robots_virus_jamming": {
+      "name": "Virus Infection"
+    },
+    "t_robots_virus_possession": {
+      "name": "Bug Possession"
+    },
+    "t_robots_virus_vaccine": {
+      "name": "Virus Vaccine"
+    },
+    "t_satellites": {
+      "name": "Satellites"
+    },
+    "t_shuttles": {
+      "name": "Shuttles"
+    },
+    "t_signals1": {
+      "name": "Basic Signals"
+    },
+    "t_signals2": {
+      "name": "Behaviors"
+    },
+    "t_signals3": {
+      "name": "Nanobots"
+    },
+    "t_storage1": {
+      "name": "Advanced Logistics"
+    },
+    "t_storage2": {
+      "name": "Automation"
+    },
+    "t_storage3": {
+      "name": "Stockpile"
+    },
+    "t_storage4": {
+      "name": "Drone Storage"
+    },
+    "t_structures1": {
+      "name": "Basic Structures"
+    },
+    "t_structures2": {
+      "name": "Advanced Materials"
+    },
+    "t_structures4": {
+      "name": "Advanced Structures"
+    },
+    "t_structures5": {
+      "name": "Epic Structures"
+    },
+    "t_teleportation": {
+      "name": "Teleportation"
+    },
+    "t_the_simulator": {
+      "name": "The Simulator"
+    }
+  },
+  "update_mapping": {
+    "c_analyzer_scannable": "c_explorable_scannable",
+    "c_behavior_transfer": "c_behavior",
+    "v_base2x2A": "v_base2x2a",
+    "v_laterite_node2": "v_laterite_small1",
+    "v_base2x2E": "v_base2x2e",
+    "c_virus_generator": "c_virus_possessor",
+    "f_building2x2B": "f_building2x2b",
+    "t_robots_blight": "t_robots_blight_discovery",
+    "f_building2x2D": "f_building2x2d",
+    "v_base2x2D": "v_base2x2d",
+    "c_large_capacitor": "c_medium_capacitor",
+    "v_base2x2C": "v_base2x2c",
+    "f_building3x2": "f_building3x2a",
+    "c_behavior_countremain": "c_behavior",
+    "v_foundation_adv": "v_foundation",
+    "c_ai_gitch_buildling": "c_disappear_empty",
+    "f_building2x2A": "f_building2x2a",
+    "f_trilobyte01": "f_trilobyte1",
+    "v_laterite_node1": "v_laterite_medium1",
+    "c_storage": "c_medium_storage",
+    "v_base2x2B": "v_base2x2b",
+    "f_building2x2E": "f_building2x2e",
+    "c_behavior_notify": "c_behavior",
+    "c_nineclicks": "c_explorable_nineclicks",
+    "c_behavior_requestor": "c_behavior",
+    "f_explorable_alien": "f_explorable",
+    "v_foundation_basic": "v_foundation",
+    "f_building2x2C": "f_building2x2c"
+  }
+}

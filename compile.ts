@@ -5,6 +5,7 @@ import {MethodInfo, methods} from "./methods";
 import {Code} from "./ir/code";
 import {Arg, Instruction, Label, LiteralValue, RegRef, Stop, StringLiteral, VariableRef,} from "./ir/instruction";
 import {generateAsm} from "./decompile/disasm";
+import {getDataById} from "./data";
 
 // Some arbitrary things to use for dynamic jump labels
 const dynamicLabels = [
@@ -603,7 +604,7 @@ class Compiler {
       }
       return dest;
     } else if (ts.isStringLiteral(e)) {
-      const value = new LiteralValue({ id: e.text });
+      const value = new LiteralValue({ id: getDataById(e.text)?.id ?? e.text  });
       if (dest) {
         this.#emit(
           methods.setReg,
@@ -820,7 +821,7 @@ class Compiler {
 
       if (e.arguments.length === 1) {
         return new LiteralValue({
-          id: a
+          id: getDataById(a)?.id ?? a
         })
       }
 
@@ -830,7 +831,7 @@ class Compiler {
       }
 
       return new LiteralValue({
-        id: a,
+        id: getDataById(a)?.id ?? a,
         num: b
       });
     },

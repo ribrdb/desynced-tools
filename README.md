@@ -33,6 +33,8 @@ The output filename will be the input with ".asm" added.
 
 Checkout out the code from https://github.com/ribrdb/desynced-tools
 
+First run `npm install` to install dependencies, then run `npm run generate` to generate required code.
+
 ## Web demo
 To build the web demo:
  - `npm run esbuild`

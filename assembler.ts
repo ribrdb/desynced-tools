@@ -21,7 +21,7 @@ import {
   TRUE,
 } from "./ir/instruction";
 import { Code, Pass, reversePass } from "./ir/code";
-import { MethodInfo, methods } from "./methods";
+import { MethodInfo, ops } from "./methods";
 import { Behavior, splitProgram } from "./ir/behavior";
 
 interface SubInfo {
@@ -48,13 +48,6 @@ class LabelInfo {
   return(label: string) {
     this.returnLabels.add(label);
   }
-}
-
-const ops: {
-  [key: string]: MethodInfo;
-} = {};
-for (const op of Object.values(methods)) {
-  ops[op.id] = op;
 }
 
 const numberLiteralPattern = String.raw`-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?`;
