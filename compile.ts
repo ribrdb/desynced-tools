@@ -815,7 +815,7 @@ class Compiler {
       const a = this.parseBuiltinArg(e.arguments[0]);
 
       if (typeof a !== 'string') {
-        this.#error(`Unsupported argument type for argument 2: (${ts.SyntaxKind[e.arguments[0].kind]})`, e.arguments[0]);
+        this.#error(`Unsupported argument type for argument 1: (${ts.SyntaxKind[e.arguments[0].kind]})`, e.arguments[0]);
       }
 
       if (e.arguments.length === 1) {
