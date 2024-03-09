@@ -660,6 +660,12 @@ type Frame =
   | "f_human_explorable_5x5_a"
   | "f_carrier_bot";
 type FrameNum = Frame | number | { id: Frame; num: number };
+
+declare function coord(x: number, y: number): Value;
+declare function value(id: Comp, num?: number): Value;
+declare function value(id: Item, num?: number): Value;
+declare function value(id: Resource, num?: number): Value;
+declare function value(id: Frame, num?: number): Value;
 `;
 
 fs.writeFileSync("behavior.d.ts", dtsContents);
