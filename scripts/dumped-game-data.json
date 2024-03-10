@@ -510,7 +510,8 @@
       "visual": "v_alien_soldier",
       "slots": {
         "storage": 2
-      }
+      },
+      "start_disconnected": true
     },
     "f_alien_time_egg": {
       "name": "Time Egg",
@@ -526,7 +527,8 @@
       "visual": "v_empty_alien",
       "slots": {
         "storage": 4
-      }
+      },
+      "start_disconnected": true
     },
     "f_amac": {
       "name": "AMAC",
@@ -571,7 +573,8 @@
       "visual": "v_bot_1l_a",
       "slots": {
         "storage": 8
-      }
+      },
+      "start_disconnected": true
     },
     "f_bot_1m_a": {
       "name": "Cub",
@@ -580,7 +583,8 @@
       "visual": "v_bot_1m_a",
       "slots": {
         "storage": 2
-      }
+      },
+      "start_disconnected": true
     },
     "f_bot_1m_b": {
       "name": "Hauler",
@@ -588,7 +592,8 @@
       "visual": "v_bot_1m_b",
       "slots": {
         "storage": 4
-      }
+      },
+      "start_disconnected": true
     },
     "f_bot_1m_c": {
       "name": "Mark V",
@@ -596,7 +601,8 @@
       "visual": "v_bot_1m_c",
       "slots": {
         "storage": 4
-      }
+      },
+      "start_disconnected": true
     },
     "f_bot_1m1s": {
       "name": "Hound",
@@ -605,7 +611,8 @@
       "visual": "v_bot_1m1s_a",
       "slots": {
         "storage": 4
-      }
+      },
+      "start_disconnected": true
     },
     "f_bot_1s_a": {
       "name": "Worker",
@@ -614,7 +621,8 @@
       "visual": "v_bot_1s_a",
       "slots": {
         "storage": 1
-      }
+      },
+      "start_disconnected": true
     },
     "f_bot_1s_adw": {
       "name": "Engineer",
@@ -623,7 +631,8 @@
       "visual": "v_bot_1s_adw",
       "slots": {
         "storage": 2
-      }
+      },
+      "start_disconnected": true
     },
     "f_bot_1s_as": {
       "name": "Scout",
@@ -632,7 +641,8 @@
       "visual": "v_bot_1s_as",
       "slots": {
         "storage": 4
-      }
+      },
+      "start_disconnected": true
     },
     "f_bot_1s_b": {
       "name": "Dashbot",
@@ -641,7 +651,8 @@
       "visual": "v_bot_1s_b",
       "slots": {
         "storage": 2
-      }
+      },
+      "start_disconnected": true
     },
     "f_bot_2m_as": {
       "name": "Command Center",
@@ -650,7 +661,8 @@
       "visual": "v_bot_2m_as",
       "slots": {
         "storage": 8
-      }
+      },
+      "start_disconnected": true
     },
     "f_bot_2s": {
       "name": "Twinbot",
@@ -659,7 +671,8 @@
       "visual": "v_bot_2s_a",
       "slots": {
         "storage": 4
-      }
+      },
+      "start_disconnected": true
     },
     "f_bug_hive": {
       "name": "Bug Hive",
@@ -903,7 +916,8 @@
       "visual": "v_carrier_bot",
       "slots": {
         "storage": 1
-      }
+      },
+      "start_disconnected": false
     },
     "f_charcharosaurus1": {
       "name": "Gigakaiju",
@@ -1016,7 +1030,8 @@
       "visual": "v_flyer_bot",
       "slots": {
         "storage": 1
-      }
+      },
+      "start_disconnected": true
     },
     "f_flyer_m": {
       "name": "Shuttle Bot",
@@ -1082,7 +1097,8 @@
       "visual": "v_human_buggy",
       "slots": {
         "anomaly": 1
-      }
+      },
+      "start_disconnected": true
     },
     "f_human_explorer_broken": {
       "name": "Human Explorer (Broken)",
@@ -1099,7 +1115,8 @@
       "slots": {
         "anomaly": 1,
         "storage": 2
-      }
+      },
+      "start_disconnected": true
     },
     "f_human_flyer": {
       "name": "Human Flyer",
@@ -1108,7 +1125,8 @@
       "visual": "v_human_flyer",
       "slots": {
         "storage": 2
-      }
+      },
+      "start_disconnected": true
     },
     "f_human_foundation": {
       "name": "Human Foundation",
@@ -1128,7 +1146,8 @@
       "visual": "v_human_miner",
       "slots": {
         "storage": 1
-      }
+      },
+      "start_disconnected": true
     },
     "f_human_tank": {
       "name": "Human Tank",
@@ -1137,7 +1156,8 @@
       "visual": "v_human_tank",
       "slots": {
         "storage": 0
-      }
+      },
+      "start_disconnected": true
     },
     "f_landingpod": {
       "name": "Command Center",
@@ -1252,7 +1272,8 @@
       "visual": "v_transport_bot",
       "slots": {
         "storage": 12
-      }
+      },
+      "start_disconnected": true
     },
     "f_trilobyte1": {
       "name": "Trilobyte",
@@ -1260,7 +1281,8 @@
       "visual": "v_trilobite1",
       "slots": {
         "storage": 1
-      }
+      },
+      "start_disconnected": true
     },
     "f_wall": {
       "name": "Wall",

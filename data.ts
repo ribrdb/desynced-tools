@@ -41,7 +41,8 @@ const frames = load<{
   flags?: string;
   size?: string;
   visual?: string;
-  slots?: Record<string, number>
+  slots?: Record<string, number>,
+  start_disconnected?: boolean,
 }>(data["frames"]);
 
 export type Frame = NonNullable<(typeof frames)[number]>;
