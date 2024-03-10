@@ -7,8 +7,8 @@ type Element = Source & { id: string };
 
 function load<S extends Source>(
   data: Record<string, S>,
-): Array<S & Element> {
-  const loaded: Array<S & Element> = [];
+): Record<string, S & Element> {
+  const loaded: Record<string, S & Element> = {};
 
   for (const id in data) {
     const item = {
@@ -16,7 +16,7 @@ function load<S extends Source>(
       id,
     };
 
-    loaded.push(item);
+    loaded[id] = item;
 
     if (item.id in allById) {
       throw new Error("Duplicate item id: " + item.id);
@@ -24,8 +24,6 @@ function load<S extends Source>(
 
     allById[item.id] = item;
   }
-
-  loaded.sort((a,b) => a.id.localeCompare(b.id));
 
   return loaded;
 }

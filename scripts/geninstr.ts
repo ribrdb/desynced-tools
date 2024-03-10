@@ -374,8 +374,13 @@ function quote(str: string) {
   return JSON.stringify(str);
 }
 
-function toEnum<T extends GameData>(data: Array<T>): string {
-  return data.map(e => {
+function toEnum<T extends GameData>(data: Array<T> | Record<string, T>, fn?: (item: T) => boolean): string {
+  const filter = fn ?? (() => true);
+  if(!Array.isArray(data)) {
+    data = Object.values(data);
+  }
+
+  return data.filter(filter).map(e => {
    return `  | ${quote(e.id)}`
   }).join("\n");
 }
@@ -441,21 +446,21 @@ type NumOrPair<T> = T | number | {
 };
 
 type Color =
-${toEnum(gameData.values.filter(e => e.tag === "color"))};
+${toEnum(gameData.values, e => e.tag === "color")};
 type ColorNum = NumOrPair<Color>;
 
 type Extra =
-${toEnum(gameData.values.filter(e => e.tag === "value"))};
+${toEnum(gameData.values, e => e.tag === "value")};
 type ExtraNum = NumOrPair<Extra>;
 
 type RadarFilter =
   | Resource
-${toEnum(gameData.values.filter(e => e.tag === "entityfilter"))};
+${toEnum(gameData.values, e => e.tag === "entityfilter")};
 
 type Item =
   | Comp
   | Resource
-${toEnum(gameData.items.filter(item => item.tag !== "resource"))};
+${toEnum(gameData.items, item => item.tag !== "resource")};
 type ItemNum = NumOrPair<Item>;
 
 type Comp =
@@ -463,7 +468,7 @@ ${toEnum(gameData.components)};
 type CompNum = NumOrPair<Comp>;
 
 type Resource =
-${toEnum(gameData.items.filter(item => item.tag === "resource"))};
+${toEnum(gameData.items, item => item.tag === "resource")};
 type ResourceNum = NumOrPair<Resource>;
 
 type Frame =
