@@ -6,7 +6,15 @@ export interface Pass {
 }
 
 export class Code {
-    code: Instruction[] = [];
+    code: Instruction[];
+
+    constructor(code: Instruction[] = []) {
+        this.code = code;
+    }
+
+    clone(): Code {
+        return new Code(this.code.map(instr => instr.clone()));
+    }
 
     add(instr: Instruction) {
         this.code.push(instr);
