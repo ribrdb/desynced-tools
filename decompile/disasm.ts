@@ -37,9 +37,9 @@ export class Disassembler {
   constructor(obj: RawBlueprint|RawBehavior) {
     this.#label("main");
     if ("frame" in obj) {
-      this.blueprint(obj as RawBlueprint);
+      this.blueprint(obj);
     } else {
-      this.mainBehavior = obj as RawBehavior;
+      this.mainBehavior = obj;
     }
     this.#doExtras();
   }
@@ -282,7 +282,7 @@ export function RenderAssembly(output: string[]): Pass {
     if (instr.text) {
       args.push(`$txt=${JSON.stringify(instr.text)}`);
     }
-    if (instr.sub?.type === "label") {
+    if (instr.sub) {
       args.push(`$sub=:${instr.sub.label}`);
     }
     if (instr.c != null) {

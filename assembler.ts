@@ -120,7 +120,7 @@ export function assemble(
 
   const assembler = new Assembler(program);
 
-  if (program.main[0]?.op == ".blueprint") {
+  if (program.main.code[0]?.op == ".blueprint") {
     return assembler.assembleBlueprint();
   }
   return assembler.assembleBehavior();
@@ -134,14 +134,15 @@ class Assembler {
   }
 
   assembleBlueprint(): RawBlueprint {
-    const frame = this.program.main[0].args[0];
-    if (typeof frame != "string") {
+    const frame = this.program.main.code[0].args[0];
+    if (frame?.type !== "value" || frame.value.id == null) {
       throw new Error(
         `Blueprint frame must be a string at line ${this.program.main[0].lineno}`
       );
     }
     const bp: RawBlueprint = {
-      frame,
+      frame: frame.value.id,
+      disconnected: false,
     };
     this.program.main.apply((inst) => {
       switch (inst.op) {
@@ -149,10 +150,10 @@ class Assembler {
           bp.name = str(inst, inst.args[0]!);
           break;
         case ".powered_down":
-          bp.powered_down = bool(inst.args[0]);
+          bp.powered_down = true;
           break;
         case ".disconnected":
-          bp.disconnected = bool(inst.args[0]);
+          delete bp.disconnected;
           break;
         case ".logistics":
           bp.logistics ??= {};
@@ -196,6 +197,7 @@ class Assembler {
             const p = new Assembler({
               ...this.program,
               main: behavior,
+              mainLabel: code.label
             }).assembleBehavior();
             bp.components.push([ctype, num(inst, index), p]);
           } else {
@@ -882,8 +884,8 @@ function resolveLabelsPass(
             const method = ops[instr.op];
             if(value > 0) {
               let isWrite;
-              if(instr.sub?.type === 'resolvedSub') {
-                const behavior = resolveBehavior(instr.sub.index);
+              if (instr.resolvedSub) {
+                const behavior = resolveBehavior(instr.resolvedSub.index);
                 isWrite = behavior?.parameters?.[vi] ?? false;
               } else {
                 isWrite = typeof method.out === "number" ? method.out === vi : method.out?.includes(vi) ?? false;
@@ -917,10 +919,8 @@ function addSpecialOptions(
     ds.txt = instr.text;
   }
   if (instr.sub) {
-    if (instr.sub.type === "label") {
-      instr.sub = resolveSub(instr.sub.label);
-    }
-    ds.sub = instr.sub?.index;
+    instr.resolvedSub = resolveSub(instr.sub.label);
+    ds.sub = instr.resolvedSub?.index;
   }
   if (instr.bp) {
     if (instr.bp.type === "label") {
