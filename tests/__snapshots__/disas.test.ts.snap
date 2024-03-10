@@ -1,12 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`bp_default_disconnected.txt 1`] = `
-"main:
-  .blueprint	f_bot_1m_a
-  .name	powered_on_disconnected
-  .disconnected	"
-`;
-
 exports[`bp_multi_behavior.txt 1`] = `
 "main:
   .blueprint	f_building1x1d

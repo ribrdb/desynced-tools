@@ -188,7 +188,7 @@ class Assembler {
           const [index, id, code] = inst.args;
           const ctype = str(inst, id);
           if (code?.type === "label") {
-            const behavior = this.program.others.get(code.label);
+            const behavior = this.program.others.get(code.label) ?? this.program.subs.get(code.label);
             if (!behavior) {
               throw new Error(
                 `Behavior ${code.label} not found at line ${inst.lineno}`
@@ -218,10 +218,10 @@ class Assembler {
     const behaviors: Map<number, RawBehavior> = new Map();
     // Assemble subroutines in reverse call order so parameter rw flags can be propagated
     for (const sub of Array.from(this.subs.values()).reverse()) {
-      behaviors.set(sub.label, this.assembleSub(sub.instructions, behaviors));
+      behaviors.set(sub.label, this.assembleSub(sub.instructions.clone(), behaviors));
     }
 
-    const main: RawBehavior = this.assembleSub(this.program.main, behaviors);
+    const main: RawBehavior = this.assembleSub(this.program.main.clone(), behaviors);
     if (behaviors.size > 0) {
       // Reverse back to original call order
       main.subs = Array.from(behaviors.values()).reverse();
@@ -276,7 +276,8 @@ class Assembler {
   resolveBp(bpName: string) {
     const prog = {
       ...this.program,
-      main: this.program.bps.get(bpName)!,
+      main: (this.program.bps.get(bpName) ?? (this.program.mainLabel === bpName ? this.program.main : undefined))!,
+      mainLabel: bpName,
     };
     if (!prog.main) {
       throw new Error(`Blueprint ${bpName} not found.`);

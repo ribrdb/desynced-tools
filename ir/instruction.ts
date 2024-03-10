@@ -30,7 +30,7 @@ export class NodeRef {
   constructor(public nodeIndex: number) {}
 }
 
-const regNums = {
+export const regNums = {
   nil: 0,
   goto: -1,
   store: -2,
@@ -140,6 +140,22 @@ export class Instruction {
   ny?: number;
 
   constructor(readonly op: string, public args: (Arg | undefined)[]) {}
+
+  clone(): Instruction {
+    const clone = new Instruction(this.op, [...this.args]);
+    clone.next = this.next;
+    clone.text = this.text;
+    clone.c = this.c;
+    clone.sub = this.sub;
+    clone.resolvedSub = this.resolvedSub;
+    clone.bp = this.bp;
+    clone.comment = this.comment;
+    clone.labels = [...this.labels];
+    clone.lineno = this.lineno;
+    clone.nx = this.nx
+    clone.ny = this.ny;
+    return clone;
+  }
 
   forArgs(
     indexes: number[] | undefined,
