@@ -375,7 +375,7 @@ function buildLabels(prog: Code) {
         if (!labels.has(arg.nodeIndex)) {
           labels.set(arg.nodeIndex, `label${labels.size}`);
         }
-        inst[index] = labels.get(arg.nodeIndex)!;
+        inst.args[index] = new Label(labels.get(arg.nodeIndex)!);
       }
     });
   });

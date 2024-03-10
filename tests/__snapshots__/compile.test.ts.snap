@@ -74,22 +74,22 @@ exports[`literals.ts 1`] = `
   .name	"foo"
   .pname	p1, "v"
   set_reg	5, A
-  check_battery	nil, A
+  check_battery	:label0, A
 label0:
   set_reg	nil, p1
-  check_battery	nil, p1
+  check_battery	:label1, p1
 label1:
   set_reg	1, p1
-  check_battery	nil, p1
+  check_battery	:label2, p1
 label2:
   set_reg	c_battery, p1
-  check_battery	nil, p1
+  check_battery	:label3, p1
 label3:
   set_reg	c_small_relay@2, p1
-  check_battery	nil, p1
+  check_battery	:label4, p1
 label4:
   set_reg	10 20, p1
-  check_battery	nil, p1
+  check_battery	:label5, p1
 label5:
   set_number	p1, 30, p1
   count_item	c_battery, p1
@@ -223,7 +223,7 @@ exports[`rng.ts 1`] = `
   check_number	:l0, :l1, p3, 0
   jump	:l1
 l1:
-  faction_item_amount	metalore, p3, nil
+  faction_item_amount	metalore, p3, :label0
 label0:
   jump	:l0
 l0:
