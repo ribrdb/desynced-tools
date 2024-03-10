@@ -17,6 +17,7 @@ import {
   StringLiteral,
   TRUE,
 } from "../ir/instruction";
+import {gameData} from "../data";
 
 interface RawValue {
   id?: string;
@@ -52,6 +53,8 @@ export class Disassembler {
   }
 
   blueprint(obj: RawBlueprint) {
+    const frame = gameData.frames[obj.frame];
+
     this.#emit(".blueprint", obj.frame);
     if (obj.name) {
       this.#emit(".name", obj.name);
@@ -59,7 +62,7 @@ export class Disassembler {
     if (obj.powered_down) {
       this.#emit(".powered_down");
     }
-    if (obj.disconnected) {
+    if (obj.disconnected ?? frame?.start_disconnected) {
       this.#emit(".disconnected");
     }
     if (obj.logistics) {

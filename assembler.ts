@@ -153,7 +153,7 @@ class Assembler {
           bp.powered_down = true;
           break;
         case ".disconnected":
-          delete bp.disconnected;
+          bp.disconnected = true;
           break;
         case ".logistics":
           bp.logistics ??= {};
