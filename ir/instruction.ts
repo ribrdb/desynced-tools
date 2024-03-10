@@ -130,7 +130,8 @@ export class Instruction {
   next?: Label | NodeRef | Stop;
   text?: string;
   c?: number;
-  sub?: Label | ResolvedSub;
+  sub?: Label;
+  resolvedSub?: ResolvedSub;
   bp?: Label;
   comment?: string;
   labels: string[] = [];
