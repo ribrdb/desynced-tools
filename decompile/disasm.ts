@@ -169,7 +169,7 @@ export class Disassembler {
     } else if (raw.c != null) {
       inst.c = raw.c;
     } else if (raw.bp) {
-      inst.bp = new Label(`bp${this.bps.length}`);
+      inst.bp = new Label(`bp${this.bps.length + 1}`);
       if (typeof raw.bp == "string") {
         raw.bp = DesyncedStringToObject("DSB" + raw.bp) as RawBlueprint;
       }
@@ -217,25 +217,35 @@ export class Disassembler {
     }
 
     let subOffset = 0;
-    this.extraBehaviors.forEach((behavior, i) => {
-      let mainName = `behavior${i + 1}`;
+    let extraBehaviorIndex = 0;
+    let blueprintIndex = 0;
 
-      this.#label(mainName);
-      this.#emit(".behavior");
-      this.disasemble(behavior, mainName, subOffset);
+    do {
+      for(; extraBehaviorIndex < this.extraBehaviors.length; extraBehaviorIndex++) {
+        const behavior = this.extraBehaviors[extraBehaviorIndex];
+        if (!behavior) continue;
 
-      behavior.subs?.forEach((sub, i) => {
-        this.#label(`sub${i + subOffset + 1}`);
-        this.#emit(".sub");
-        this.disasemble(sub, mainName, subOffset);
-      });
-      subOffset += behavior.subs?.length || 0;
-    });
+        let mainName = `behavior${extraBehaviorIndex + 1}`;
 
-    this.bps.forEach((bp, i) => {
-      this.#label(`bp${i + 1}`);
-      this.blueprint(bp);
-    });
+        this.#label(mainName);
+        this.#emit(".behavior");
+        this.disasemble(behavior, mainName, subOffset);
+
+        behavior.subs?.forEach((sub, i) => {
+          this.#label(`sub${i + subOffset + 1}`);
+          this.#emit(".sub");
+          this.disasemble(sub, mainName, subOffset);
+        });
+
+        subOffset += behavior.subs?.length || 0;
+      }
+
+      for(; blueprintIndex < this.bps.length; blueprintIndex++) {
+        const bp = this.bps[blueprintIndex];
+        this.#label(`bp${blueprintIndex + 1}`);
+        this.blueprint(bp);
+      }
+    } while (extraBehaviorIndex < this.extraBehaviors.length);
   }
 
   #label(label: string) {
