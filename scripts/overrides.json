@@ -318,21 +318,18 @@
     "txt": true
   },
   "compare_entity": {
-    "type": "operator",
     "conditions": {
       "next": true,
       "If Different": false
     }
   },
   "compare_item": {
-    "type": "operator",
     "conditions": {
       "next": true,
       "If Different": false
     }
   },
   "check_number": {
-    "type": "operator",
     "conditions": {
       "next": "=",
       "If Larger": ">",
