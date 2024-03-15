@@ -1536,9 +1536,12 @@ function resolveVariables(inst:Instruction) {
 
 const nilReg = new RegRef(0);
 
-export const CompilerOptions = {
+export const CompilerOptions: ts.CompilerOptions = {
   lib: ["lib.es2023.d.ts"],
   target: ts.ScriptTarget.ES2022,
+  moduleResolution: ts.ModuleResolutionKind.NodeNext,
+  module: ts.ModuleKind.NodeNext,
+  noEmit: true,
 };
 
 export function compileProgram(program: ts.Program): string {

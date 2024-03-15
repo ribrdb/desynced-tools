@@ -119,9 +119,9 @@ function parseAssembly(code: string): Code {
   return code1;
 }
 
-export async function assemble(
+export function assemble(
   code: string
-): Promise<RawBehavior | RawBlueprint> {
+): RawBehavior | RawBlueprint {
   let instructions = parseAssembly(code);
   const program: Behavior = splitProgram(instructions);
 
