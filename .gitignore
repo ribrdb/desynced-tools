@@ -3,6 +3,12 @@ website/compiler.js
 website/bundle.out.js
 website/monaco-editor-0.45.0
 
+# Generated files
+behavior.d.ts
+behavior_dts.ts
+methods.ts
+decompile/dsinstr.ts
+
 # Logs
 logs
 *.log
