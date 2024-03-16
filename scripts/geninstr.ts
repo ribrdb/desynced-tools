@@ -422,7 +422,10 @@ for (const op of Object.values(methods)) {
 );
 
 const dtsContents = `
-type Value = number & {
+type Value = number & BaseValue;
+interface Number extends BaseValue {}
+
+interface BaseValue {
 ${dtsProps.join("\n")}
 
 ${dtsMethods.join("\n")}
