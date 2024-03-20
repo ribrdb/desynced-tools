@@ -10,6 +10,9 @@
 import * as fs from "fs";
 import { gameData, GameData } from "../data";
 import overrides from "./overrides.json";
+import {CompilerOptions} from "../compiler_options";
+import * as ts from "typescript";
+import path from "path";
 
 const dtsProps: string[] = [];
 const dtsMethods: string[] = [];
@@ -489,6 +492,16 @@ declare function value(id: Extra, num?: number): Value;
 
 fs.writeFileSync("behavior.d.ts", dtsContents);
 fs.writeFileSync("behavior_dts.ts", `export const behavior_dts = ${JSON.stringify(dtsContents)}`);
+
+const tsLibFiles = (() => {
+  const program = ts.createProgram(CompilerOptions.lib!, CompilerOptions);
+  const result = {};
+  for (const sourceFile of program.getSourceFiles()) {
+    result['/' + path.basename(sourceFile.fileName)] = sourceFile.text;
+  }
+  return result;
+})();
+fs.writeFileSync("lib_dts.ts", `export const lib_dts = ${JSON.stringify(tsLibFiles, null, 2)}`);
 
 fs.writeFileSync(
   "decompile/dsinstr.ts",

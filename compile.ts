@@ -6,6 +6,8 @@ import {Code} from "./ir/code";
 import {Arg, Instruction, Label, LiteralValue, RegRef, Stop, StringLiteral, VariableRef,} from "./ir/instruction";
 import {generateAsm} from "./decompile/disasm";
 import {getDataById} from "./data";
+import {CompilerOptions} from "./compiler_options"
+export {CompilerOptions}
 
 // Some arbitrary things to use for dynamic jump labels
 const dynamicLabels = [
@@ -1536,14 +1538,6 @@ function resolveVariables(inst:Instruction) {
 }
 
 const nilReg = new RegRef(0);
-
-export const CompilerOptions: ts.CompilerOptions = {
-  lib: ["lib.es2023.d.ts"],
-  target: ts.ScriptTarget.ES2022,
-  moduleResolution: ts.ModuleResolutionKind.NodeNext,
-  module: ts.ModuleKind.NodeNext,
-  noEmit: true,
-};
 
 export function compileProgram(program: ts.Program): string {
   // TODO: ended up not using the typechecker. Should probably just parse
