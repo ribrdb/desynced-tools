@@ -30,7 +30,7 @@
 </div>
 <script src="monaco-editor-0.45.0/min/vs/loader.js"></script>
 <script type="module">
-  import * as ds from "./bundle.out.js";
+  import {behavior_dts, asmSyntax} from "./bundle.out.js";
   const compilerPromise = import("./compiler.js");
   /** @type {HTMLSelectElement} */
   const fileSelect = document.getElementById("file");
@@ -38,7 +38,7 @@
   require.config({ paths: { vs: "monaco-editor-0.45.0/min/vs" } });
   require(["vs/editor/editor.main"], function () {
     monaco.languages.register({ id: "dsbehavior" });
-    monaco.languages.setMonarchTokensProvider("dsbehavior", ds.asmSyntax);
+    monaco.languages.setMonarchTokensProvider("dsbehavior", asmSyntax);
     monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
       target: monaco.languages.typescript.ScriptTarget.ESNext,
       lib: ["lib.es2023.d.ts"],
@@ -47,13 +47,13 @@
     });
     const behaviorFilename = "ts:behavior.d.ts";
     monaco.languages.typescript.typescriptDefaults.addExtraLib(
-      ds.behavior_dts,
+      behavior_dts,
       behaviorFilename
     );
     // When resolving definitions and references, the editor will try to use created models.
     // Creating a model for the library allows "peek definition/references" commands to work with the library.
     monaco.editor.createModel(
-      ds.behavior_dts,
+      behavior_dts,
       "typescript",
       monaco.Uri.parse(behaviorFilename)
     );
@@ -154,9 +154,12 @@ label6:
           break;
         case "paste":
           try {
-          const text = await navigator.clipboard.readText();
-          const obj = ds.DesyncedStringToObject(text);
-          const asm = new ds.Disassembler(obj).code();
+          const [text, compiler] = await Promise.all([
+              navigator.clipboard.readText(),
+              compilerPromise
+          ]);
+          const obj = compiler.DesyncedStringToObject(text);
+          const asm = new compiler.Disassembler(obj).code();
           const model = monaco.editor.createModel(
             asm, "dsbehavior", `ts:paste${++pasteCount}.asm`
           )
@@ -181,17 +184,19 @@ label6:
       const model = editor.getModel();
       const isAssembly = model.getLanguageId() === "dsbehavior";
       const code = model.getValue(monaco.editor.EndOfLinePreference.LF);
+      const compiler = await compilerPromise;
+
       let asm;
       if (isAssembly) {
         asm = code;
       } else {
-        const compiler = await compilerPromise;
         const prog = compiler.makeProgram(code);
         asm = compiler.compileProgram(prog);
       }
-      const obj = ds.assemble(asm);
+
+      const obj = compiler.assemble(asm);
       const type = obj.frame ? "B" : "C";
-      const text = ds.ObjectToDesyncedString(obj, type);
+      const text = compiler.ObjectToDesyncedString(obj, type);
       try {
         await navigator.clipboard.writeText(text);
         alert("Copied to clipboard");
