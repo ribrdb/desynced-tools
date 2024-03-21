@@ -1,6 +1,7 @@
 dist
 website/compiler.js
 website/bundle.out.js
+website/*.js.map
 website/monaco-editor-0.45.0
 
 # Generated files
