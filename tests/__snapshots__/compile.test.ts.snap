@@ -38,6 +38,36 @@ l0:
   .ret	"
 `;
 
+exports[`inlining.ts 1`] = `
+"foo:
+  .name	"foo"
+  .pname	p1, "p1"
+  set_reg	77, A
+  add	896, A, B
+  set_reg	8, nil
+  notify	9
+  notify	891
+  notify	A
+  notify	144
+  mul	B, 5, D
+  notify	D
+  set_reg	9, C
+  check_health	:l1, p1
+  jump	:l2
+l1:
+  set_reg	10, C
+  jump	:l0
+l2:
+  set_reg	11, C
+  jump	:l0
+l0:
+  notify	C
+  mul	-15 -10, 3, E
+  domove	E
+  domove	-15 -10
+  .ret	"
+`;
+
 exports[`literals.ts 1`] = `
 "foo:
   .name	"foo"
@@ -137,14 +167,14 @@ l1:
 label0:
   jump	:l0
 l0:
-  mul	17364, p3, D
-  add	D, 1, C
-  modulo	C, 65521, p3
+  mul	17364, p3, C
+  add	C, 1, D
+  modulo	D, 65521, p3
   .pname	p4
   .out	p4
-  mul	A, p3, F
-  div	F, 65521, E
-  add	E, p2, p4
+  mul	A, p3, E
+  div	E, 65521, F
+  add	F, p2, p4
   .ret	
   .ret	"
 `;

@@ -101,6 +101,20 @@ class VariableScope {
     return this.get(name);
   }
 
+  name(name: string, variable: Variable): Variable {
+    if (this.namedVariables.has(name)) {
+      throw new Error("Name already in use in scope: " + name);
+    }
+
+    this.namedVariables.set(name, variable);
+    const anonymousIndex = this.anonymousVariables.indexOf(variable);
+    if (anonymousIndex > -1) {
+      this.anonymousVariables.splice(anonymousIndex, 1);
+    }
+
+    return variable;
+  }
+
   get(name: string, reg?: RegRef): Variable {
     if (!this.has(name)) {
       this.namedVariables.set(name, new Variable(reg));
@@ -683,6 +697,8 @@ class Compiler {
     } else if (ts.isPrefixUnaryExpression(e)) {
       if(e.operator == ts.SyntaxKind.PlusToken) {
         return this.compileExpr(e.operand, dest);
+      } else if (e.operator == ts.SyntaxKind.MinusToken) {
+        return this.compileExpr(ts.factory.createBinaryExpression(ts.factory.createNumericLiteral(0), ts.SyntaxKind.MinusToken, e.operand));
       } else {
         this.#error(`unsupported prefix expression ${e.kind} ${ts.SyntaxKind[e.kind]}`, e);
       }
@@ -773,7 +789,49 @@ class Compiler {
   }
 
   compileNumOp(e: ts.BinaryExpression, dest?: Variable) {
-    const args = [e.left, e.right];
+    const leftArg = this.compileExpr(e.left);
+    const rightArg = this.compileExpr(e.right);
+
+    const getNum = (v: Variable) => v.reg?.type === "value" && v.reg.value.num;
+    const isNum = (v: unknown): v is number => typeof v === 'number';
+
+    const leftLiteral = getNum(leftArg);
+    const rightLiteral = getNum(rightArg);
+
+    literalOp: if (isNum(leftLiteral) && isNum(rightLiteral)) {
+      let value: number;
+      switch (e.operatorToken.kind) {
+        case ts.SyntaxKind.PlusToken:
+          value = leftLiteral + rightLiteral;
+          break;
+        case ts.SyntaxKind.MinusToken:
+          value = leftLiteral - rightLiteral;
+          break;
+        case ts.SyntaxKind.AsteriskToken:
+          value = leftLiteral * rightLiteral;
+          break;
+        case ts.SyntaxKind.SlashToken:
+          value = leftLiteral / rightLiteral;
+          break;
+        case ts.SyntaxKind.PercentToken:
+          value = leftLiteral % rightLiteral;
+          break;
+        default:
+          break literalOp;
+      }
+
+      if (dest) {
+        this.#emit(
+            methods.setReg,
+            new LiteralValue({num: value}),
+            this.ref(dest, VariableOperations.Write)
+        );
+        return dest;
+      } else {
+        return new Variable(new LiteralValue({num: value}));
+      }
+    }
+
     let name: string;
     switch (e.operatorToken.kind) {
       case ts.SyntaxKind.PlusToken:
@@ -794,17 +852,22 @@ class Compiler {
       default:
         this.#error(`unsupported binary expression ${e.operatorToken.kind}`, e);
     }
-    return this.compileResolvedCall(e, name, undefined, args, [dest]);
+    return this.compileResolvedCall(e, name, undefined, [leftArg, rightArg], [dest]);
   }
 
   parseBuiltinArg(arg: ts.Expression) {
-    if (ts.isStringLiteral(arg)) {
-      return arg.text;
-    } else if(ts.isNumericLiteral(arg)) {
-      return Number(arg.text);
-    } else {
-      this.#error(`Unsupported argument type: ${ts.SyntaxKind[arg.kind]}`, arg);
+    const value = this.compileExpr(arg);
+
+    if(value.reg?.type === 'value') {
+      const v = value.reg.value;
+      if (v.num != null) {
+        return v.num;
+      } else if (v.id != null) {
+        return v.id;
+      }
     }
+
+    this.#error(`Unsupported argument type: ${ts.SyntaxKind[arg.kind]}`, arg);
   };
 
   builtins: Record<string, (e: ts.CallExpression) => LiteralValue> = {
@@ -895,10 +958,24 @@ class Compiler {
   }
 
   compileResolvedCall(
+      refNode: ts.Node,
+      name: string,
+      thisArg?: ts.Expression,
+      rawArgs?: Array<ts.Expression>,
+      outs?: (Variable | undefined)[]
+  ): Variable;
+  compileResolvedCall(
+      refNode: ts.Node,
+      name: string,
+      thisArg?: Variable,
+      rawArgs?: Array<Variable>,
+      outs?: (Variable | undefined)[]
+  ): Variable;
+  compileResolvedCall(
     refNode: ts.Node,
     name: string,
-    thisArg?: ts.Expression,
-    rawArgs: Array<ts.Expression> = [],
+    thisArg?: ts.Expression | Variable,
+    rawArgs: Array<ts.Expression | Variable> = [],
     outs: (Variable | undefined)[] = []
   ): Variable {
     let dest = outs[0] || (outs[0] = this.#temp());
@@ -927,23 +1004,44 @@ class Compiler {
 
     const inst = new Instruction(info.id, []);
 
-    const hasTxt =
-      info.special == "txt" && rawArgs[0] && ts.isStringLiteral(rawArgs[0]);
-    const txtArg = hasTxt && (rawArgs.shift() as ts.StringLiteral).text;
+    const getTxt = (v: ts.Expression | Variable | undefined) => {
+      if (v != null && isVar(v)) {
+        return v.reg?.type === "value" ? v.reg.value.id : undefined;
+      } else if (v != null && ts.isStringLiteral(v)) {
+        return v.text;
+      } else {
+        return undefined;
+      }
+    }
+
+    const txtArg = info.special == "txt" && getTxt(rawArgs[0]);
+    if (txtArg) {
+      rawArgs.shift();
+    }
 
     info.in
       ?.filter(v => info.thisArg !== v)
       .forEach((v, i) => {
-        args[v] = rawArgs[i] ? this.compileExpr(rawArgs[i]) : nilReg;
+        const rawArg = rawArgs[i];
+        if (isVar(rawArg)) {
+          args[v] = rawArg;
+        } else if (rawArg) {
+          args[v] = this.compileExpr(rawArg);
+        } else {
+          args[v] = nilReg;
+        }
       });
     if (info.thisArg != null) {
       if (
         info.autoSelf &&
         thisArg &&
+        !isVar(thisArg) &&
         ts.isIdentifier(thisArg) &&
         thisArg.text == "self"
       ) {
         args[info.thisArg] = nilReg;
+      } else if (isVar(thisArg)) {
+        args[info.thisArg] = thisArg;
       } else {
         args[info.thisArg] = thisArg ? this.compileExpr(thisArg) : nilReg;
       }
@@ -1370,9 +1468,16 @@ class Compiler {
 
   compileVarDecl(s: ts.VariableDeclarationList) {
     s.declarations.forEach((decl: ts.VariableDeclaration) => {
+      const isConst = (ts.getCombinedNodeFlags(decl) & ts.NodeFlags.BlockScoped) === ts.NodeFlags.Const;
+
       if (decl.initializer) {
         if (ts.isIdentifier(decl.name)) {
-          this.compileExpr(decl.initializer, this.newVariable(decl.name));
+          if (isConst) {
+            const value = this.compileExpr(decl.initializer);
+            this.currentScope.scope.name(decl.name.text, this.ref(value, VariableOperations.Write));
+          } else {
+            this.compileExpr(decl.initializer, this.newVariable(decl.name));
+          }
         } else if (ts.isArrayBindingPattern(decl.name)) {
           if (ts.isCallExpression(decl.initializer)) {
             const outs = decl.name.elements.map((el) => {
@@ -1520,7 +1625,7 @@ class Variable {
   }
 }
 function isVar(t: unknown): t is Variable {
-  return (t as Variable).type === VariableSymbol;
+  return (t as Variable)?.type === VariableSymbol;
 }
 
 function resolveVariables(inst:Instruction) {
