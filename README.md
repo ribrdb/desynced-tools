@@ -38,5 +38,5 @@ First run `npm install` to install dependencies, then run `npm run generate` to 
 ## Web demo
 To build the web demo:
  - `npm run esbuild`
- - Extract the monaco 0.45.0 distribution into website/monaco-0.45.0/
+ - Extract the monaco 0.45.0 distribution into website/monaco-editor-0.45.0/
    https://registry.npmjs.org/monaco-editor/-/monaco-editor-0.45.0.tgz
