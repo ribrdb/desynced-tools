@@ -42,6 +42,8 @@
     monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
       target: monaco.languages.typescript.ScriptTarget.ESNext,
       lib: ["lib.es2023.d.ts"],
+      moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
+      module: monaco.languages.typescript.ModuleKind.ESNext
     });
     const behaviorFilename = "ts:behavior.d.ts";
     monaco.languages.typescript.typescriptDefaults.addExtraLib(
@@ -184,10 +186,10 @@ label6:
         asm = code;
       } else {
         const compiler = await compilerPromise;
-        const prog = await compiler.makeProgram(code);
-        asm = await compiler.compileProgram(prog);
+        const prog = compiler.makeProgram(code);
+        asm = compiler.compileProgram(prog);
       }
-      const obj = await ds.assemble(asm);
+      const obj = ds.assemble(asm);
       const type = obj.frame ? "B" : "C";
       const text = ds.ObjectToDesyncedString(obj, type);
       let copied = false;

@@ -3,18 +3,17 @@ import * as tsvfs from "@typescript/vfs";
 import * as ts from "typescript";
 import { CompilerOptions, compileProgram } from "./compile.js";
 import { behavior_dts } from "./behavior_dts.js";
+import { lib_dts } from "./lib_dts.js";
 export { CompilerOptions, compileProgram };
 
-export async function makeProgram(
+export function makeProgram(
   tsCode: string,
   compilerOptions = CompilerOptions
 ) {
-  const fsMap = await tsvfs.createDefaultMapFromCDN(
-    compilerOptions,
-    ts.version,
-    true,
-    ts
-  );
+  const fsMap = new Map<string, string>();
+  for(const lib in lib_dts) {
+    fsMap.set(lib, lib_dts[lib]);
+  }
   fsMap.set("index.ts", tsCode);
   fsMap.set("behavior.d.ts", behavior_dts);
 
