@@ -192,18 +192,11 @@ label6:
       const obj = ds.assemble(asm);
       const type = obj.frame ? "B" : "C";
       const text = ds.ObjectToDesyncedString(obj, type);
-      let copied = false;
-      if (navigator.userActivation.isActive) {
-        try {
+      try {
         await navigator.clipboard.writeText(text);
-        copied = true;
         alert("Copied to clipboard");
-        } catch {}
-      } 
-      if (!copied) {
-        txtModel.setValue(text);
-        editor.setModel(txtModel);
-        editor.setSelection(txtModel.getFullModelRange());
+      } catch {
+        prompt("Behavior string:", text);
       }
     });
   });
