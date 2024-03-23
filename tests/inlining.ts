@@ -7,6 +7,8 @@ export function foo(p1: Value) {
     const c3 = 5 + c2 + v1;
     let vUnused = 8;
 
+    p1 = -1;
+
     notify(c1);
     notify(c2);
     notify(v1);

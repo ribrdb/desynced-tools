@@ -45,6 +45,7 @@ exports[`inlining.ts 1`] = `
   set_reg	77, A
   add	896, A, B
   set_reg	8, nil
+  set_reg	-1, p1
   notify	9
   notify	891
   notify	A
