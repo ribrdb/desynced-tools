@@ -5,6 +5,9 @@ import { CompilerOptions, compileProgram } from "./compile.js";
 import { behavior_dts } from "./behavior_dts.js";
 import { lib_dts } from "./lib_dts.js";
 export { CompilerOptions, compileProgram };
+export { DesyncedStringToObject, ObjectToDesyncedString } from "./dsconvert.js";
+export { Disassembler } from "./decompile/disasm.js";
+export { assemble } from "./assembler";
 
 export function makeProgram(
   tsCode: string,
