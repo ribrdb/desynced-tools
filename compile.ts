@@ -700,7 +700,7 @@ class Compiler {
       if(e.operator == ts.SyntaxKind.PlusToken) {
         return this.compileExpr(e.operand, dest);
       } else if (e.operator == ts.SyntaxKind.MinusToken) {
-        return this.compileExpr(ts.factory.createBinaryExpression(ts.factory.createNumericLiteral(0), ts.SyntaxKind.MinusToken, e.operand));
+        return this.compileExpr(ts.factory.createBinaryExpression(ts.factory.createNumericLiteral(0), ts.SyntaxKind.MinusToken, e.operand), dest);
       } else {
         this.#error(`unsupported prefix expression ${e.kind} ${ts.SyntaxKind[e.kind]}`, e);
       }
