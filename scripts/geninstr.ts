@@ -79,6 +79,7 @@ interface GenInfo {
   inArgs: [number, ...ArgInfo][];
   outArgs: [number, ...ArgInfo][];
   execArgs: [number, ...ArgInfo][];
+  firstArgControlFlow?: boolean;
 }
 
 interface CompileInfo {
@@ -91,6 +92,7 @@ interface CompileInfo {
   loop?: boolean;
   special?: "txt" | "bp";
   c?: number;
+  firstArgControlFlow?: boolean;
 }
 
 const instructions = gameData.instructions as unknown as {
@@ -229,6 +231,9 @@ function generateCompile(genInfo: GenInfo) {
   } else if (genInfo.outArgs.length > 1) {
     info.out = genInfo.outArgs.map((v) => v[0]);
   }
+  if(genInfo.firstArgControlFlow) {
+    info.firstArgControlFlow = true;
+  }
   compileInfos[genInfo.js] = info;
 }
 
@@ -339,21 +344,30 @@ ${indent}`;
 }
 
 function makeConditionType(genInfo: GenInfo, returnType: string): string {
-  if (genInfo.outArgs.length > 0) {
-    return `${returnType} | undefined`;
-  }
   const values = [...Object.values(genInfo.conditions!)];
+  let conditionType: string;
   if (values.every((v) => typeof v == "boolean")) {
-    return "boolean";
+    conditionType = "boolean";
+  } else {
+    conditionType = values
+      .filter((v) => typeof v === "string")
+      .map((v) => `"${v}"`)
+      .join(" | ");
+    if (values.some((v) => typeof v !== "string")) {
+      conditionType = `${conditionType} | undefined`;
+    }
   }
-  returnType = values
-    .filter((v) => typeof v === "string")
-    .map((v) => `"${v}"`)
-    .join(" | ");
-  if (values.some((v) => typeof v !== "string")) {
-    return `${returnType} | undefined`;
+
+  if (genInfo.outArgs.length > 0) {
+    if(genInfo.firstArgControlFlow) {
+      returnType = returnType.replace(/^\[|\]$/g, "");
+      return `[${conditionType}, ${returnType}]`;
+    } else {
+      return `${returnType} | undefined`;
+    }
+  } else {
+    return conditionType;
   }
-  return returnType;
 }
 
 function uniqify(params: ParamInfo[]) {
@@ -408,6 +422,7 @@ fs.writeFileSync(
   special?: 'txt'|'bp';
   c?: number;
   sub?: string;
+  firstArgControlFlow?: boolean;
 }
 export const methods: { [key: string]: MethodInfo } = ${JSON.stringify(
     compileInfos,
@@ -522,6 +537,7 @@ interface InstrInfo {
   outArgs?: number[];
   execArgs?: number[];
   optional?: number;
+  firstArgControlFlow?: boolean;
 }
 export const instructions:{[key:string]:InstrInfo} = ${JSON.stringify(
     decompileInfos,
