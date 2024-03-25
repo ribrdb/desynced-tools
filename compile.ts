@@ -447,9 +447,8 @@ class Compiler {
       return socket[1] as SocketSize
     });
 
-    const registerLinks: Array<{ from: number, to: string } | { from: string, to: number }> = [];
-    const registerLinkFroms: Record<string, Array<number>> = {};
-    const registerLinkTos: Record<string, Array<number>> = {};
+    const registerLinks: Array<{ from: number, to: string | number, node: ts.Node }> = [];
+    const registerNames: Map<string, number> = new Map();
     const registerValues: Record<string, LiteralValue> = {};
     const updateLinks = (registerNum: number, item: ParsedLiteral | undefined) => {
       if (!item) return;
@@ -464,30 +463,50 @@ class Compiler {
           registerValues[registerNum] = new LiteralValue({num: link.value});
         } else if (typeof link.value != "object") {
           this.#error(`Invalid link type: ${ts.SyntaxKind[link.node.kind]}`, link.node);
-        } else if ('to' in link.value) {
-          for (const to of link.value['to'] as unknown as string[]) {
-            registerLinkTos[to] ??= [];
-            registerLinkTos[to].push(registerNum);
-
-            registerLinks.push({
-              from: registerNum,
-              to: to
-            });
-          }
-        } else if ('from' in link.value) {
-          for (const from of link.value['from'] as unknown as string[]) {
-            registerLinkFroms[from] ??= [];
-            registerLinkFroms[from].push(registerNum);
-
-            registerLinks.push({
-              from: from,
-              to: registerNum
-            });
-          }
         } else if ('id' in link.value || 'num' in link.value) {
           registerValues[registerNum] = new LiteralValue(link.value);
         } else {
-          this.#error(`Invalid link type: ${ts.SyntaxKind[link.node.kind]}`, link.node);
+          const name: ParsedLiteral = link.value['name'];
+          if(name != null) {
+            if(typeof name.value !== 'string') {
+              this.#error("name must be string", name.node);
+            }
+
+            if(registerNames.has(name.value)) {
+              this.#error(`Duplicate register name: ${name}`, name.node);
+            }
+
+            registerNames.set(name.value, registerNum);
+          }
+
+          const value = link.value['value'];
+          if(value != null) {
+            if(typeof value.value === 'string') {
+              registerValues[registerNum] = new LiteralValue({id: value.value});
+            } else if (typeof value.value === 'number') {
+              registerValues[registerNum] = new LiteralValue({num: value.value});
+            } else if ('id' in value.value || 'num' in value.value) {
+              registerValues[registerNum] = new LiteralValue(value.value);
+            } else {
+              this.#error("Invalid link value type", value.node);
+            }
+          }
+
+          const to = link.value['to'];
+          if(to != null) {
+            const tos: ParsedLiteral[] = Array.isArray(to.value) ? to.value : [to];
+            for(const to of tos) {
+              if(typeof to.value !== "string" && typeof to.value !== "number") {
+                this.#error("Invalid to link type", to.node);
+              }
+
+              registerLinks.push({
+                from: registerNum,
+                to: to.value,
+                node: to.node,
+              });
+            }
+          }
         }
       }
     }
@@ -640,35 +659,24 @@ class Compiler {
 
     const resolvedLinks = new Set<string>();
     for (const registerLink of registerLinks) {
-      const resolveLink = (linkNames: Record<string, Array<number>>, arg: number | string): number[] => {
-        if (typeof arg === 'number') {
-          return [arg];
+      let to: number;
+      if(typeof registerLink.to === 'number') {
+        to = registerLink.to;
+      } else {
+        if(!registerNames.has(registerLink.to)) {
+          this.#error(`Unknown register name: ${registerLink.to}`, registerLink.node);
         }
-
-        if (arg in regNums) {
-          return [Math.abs(regNums[arg])];
-        }
-
-        if (arg in linkNames) {
-          return linkNames[arg];
-        }
-
-        throw new Error("Unknown link argument: " + arg);
+        to = registerNames.get(registerLink.to)!;
       }
 
-      for (let from of resolveLink(registerLinkTos, registerLink.from)) {
-        for (let to of resolveLink(registerLinkFroms, registerLink.to)) {
-          // Emit each link pair once
-          const linkId = `${from}|${to}`;
-          if (resolvedLinks.has(linkId)) continue;
-          resolvedLinks.add(linkId);
+      const linkId = `${registerLink.from}|${to}`;
+      if (resolvedLinks.has(linkId)) continue;
+      resolvedLinks.add(linkId);
 
-          this.#rawEmit(".link",
-              new LiteralValue({num: to}),
-              new LiteralValue({num: from})
-          );
-        }
-      }
+      this.#rawEmit(".link",
+          new LiteralValue({num: to}),
+          new LiteralValue({num: registerLink.from})
+      );
     }
   }
 
@@ -729,7 +737,17 @@ class Compiler {
 
               if (call.arguments.length > argIdx) {
                 const arg = call.arguments[argIdx];
-                links = this.#parseLiteral(arg, handlers);
+                links = this.#parseLiteral(arg, {
+                  ...handlers,
+                  identifier: (identifier, handlers) => {
+                    if(identifier.text in regNums) {
+                      return Math.abs(regNums[identifier.text]);
+                    }
+
+                    return handlers.identifier?.(identifier, handlers)
+                        ?? this.#error(`Unsupported identifier: ${identifier.text}`, identifier);
+                  }
+                });
 
                 argIdx++;
               }

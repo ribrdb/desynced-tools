@@ -35,13 +35,13 @@ exports[`blueprint_with_behavior.ts 1`] = `
   .component	5, c_internal_storage
   .component	6, c_behavior, :fnBotFactory
   .link	13, 5
-  .link	5, 12
   .link	3, 6
-  .link	7, 11
   .link	15, 8
-  .link	8, 14
   .link	3, 9
+  .link	7, 11
   .link	10, 11
+  .link	5, 12
+  .link	8, 14
 
 
 fnBotFactory:
@@ -82,6 +82,10 @@ l11:
 fnBot1:
   .sub	
   .name	"fnBot1"
+  .pname	p1, "p1"
+  .pname	p2, "p2"
+  .pname	p3, "p3"
+  .pname	p4, "p4"
   notify	$txt="Hello World"
   .ret	
 
@@ -96,6 +100,11 @@ bpBot1:
   .component	1, c_power_transmitter
   .component	3, c_behavior, :fnBot1
   .reg	2, c_power_transmitter
+  .reg	5, metalore@1
+  .reg	6, metalore@2
+  .reg	7, metalore
+  .reg	8, 3
+  .link	1, 7
 
 
 bpBot2:

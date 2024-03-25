@@ -454,10 +454,10 @@ const bpComponents = Array.from(gameData.componentsByJsName.keys()).sort(natural
 
   const jsName = component.componentJsName;
   const linkArgsArray = "[" + (component.registers ?? []).map(register => {
-    return register.read_only ? "ToLinkArg?" : "FromToLinkArg?";
+    return register.read_only ? "ReadOnlyLinkArg?" : "LinkArg?";
   }).join(", ") + "]";
   const linkArgsObject = "{" + (component.registers ?? []).map((register, index) => {
-    return index + "?: " + (register.read_only ? "ToLinkArg" : "FromToLinkArg");
+    return index + "?: " + (register.read_only ? "ReadOnlyLinkArg" : "LinkArg");
   }).join(", ") + "}";
   let componentType = `${component.attachment_size}Component`
 
@@ -541,10 +541,12 @@ ${dtsMethods.join("\n")}
 ${dtsFunctions.join("\n")}
 
 declare const self: Value;
-declare var goto: Value;
-declare var store: Value;
-declare var visual: Value;
-declare var signal: Value;
+
+type BuiltinRegisterValue<N extends number = number> = Value & { regNum: N };
+declare var goto: BuiltinRegisterValue<1>;
+declare var store: BuiltinRegisterValue<2>;
+declare var visual: BuiltinRegisterValue<3>;
+declare var signal: BuiltinRegisterValue<4>;
 
 type AnyId = Item | Frame | RadarFilter | Color | Extra;
 type AnyValue = Coord | ItemNum | FrameNum | RadarFilter | ColorNum | ExtraNum;
@@ -594,15 +596,10 @@ declare function value(id: Frame, num?: number): Value;
 declare function value(id: Color, num?: number): Value;
 declare function value(id: Extra, num?: number): Value;
 
-type FromLink = { from: string[] };
-type ToLink = { to: string[] };
-declare function from(...links: string[]): FromLink;
-declare function to(...links: string[]): ToLink;
-
-type LinkValue = Value | AnyId | number;
-type FromLinkArg = FromLink | LinkValue | FromLink[];
-type ToLinkArg = ToLink | LinkValue | (ToLink | LinkValue)[];
-type FromToLinkArg = FromLinkArg | ToLinkArg | (FromLink | ToLink)[];
+type LinkArgValue = Value | AnyId | number;
+type LinkArgToValue = string | BuiltinRegisterValue;
+type ReadOnlyLinkArg = { to?: (LinkArgToValue | LinkArgToValue[]) };
+type LinkArg = (ReadOnlyLinkArg & { name?: string, value?: LinkArgValue }) | LinkArgValue;
 
 declare class Blueprint {
     type: 'blueprint';
@@ -643,10 +640,10 @@ type BlueprintArgs<I, S, M, L> = {
         highPriority?: boolean,
         construction?: boolean,
     },
-    signal?: FromToLinkArg,
-    visual?: FromToLinkArg,
-    store?: FromToLinkArg,
-    goto?: FromToLinkArg,
+    signal?: LinkArg,
+    visual?: LinkArg,
+    store?: LinkArg,
+    goto?: LinkArg,
     internal?: I,
     small?: S,
     medium?: M,
@@ -658,7 +655,7 @@ declare namespace component {
     /**
     * Behavior Controller
     */
-    function behaviorController<T extends (...arg: Value[]) => void>(behavior?: T, links?: Record<string | number, FromToLinkArg> | Array<FromToLinkArg>): InternalComponent;
+    function behaviorController<T extends (...arg: Value[]) => void>(behavior?: T, links?: Record<string | number, LinkArg> | Array<LinkArg>): InternalComponent;
 ${bpComponents.join("\n")}
 }
 
