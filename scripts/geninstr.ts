@@ -629,17 +629,15 @@ type LargeComponentArg = LargeComponent | MediumComponent | SmallComponent | Int
 type BlueprintArgs<I, S, M, L> = {
     name?: string,
     power?: boolean,
-    logistics?: {
-        connected?: boolean,
-        channels?: Array<number>
-        transportRoute?: boolean,
-        requester?: boolean,
-        supplier?: boolean,
-        deliver?: boolean,
-        itemTransporterOnly?: boolean,
-        highPriority?: boolean,
-        construction?: boolean,
-    },
+    connected?: boolean,
+    channels?: Array<number>
+    transportRoute?: boolean,
+    requester?: boolean,
+    supplier?: boolean,
+    deliver?: boolean,
+    itemTransporterOnly?: boolean,
+    highPriority?: boolean,
+    construction?: boolean,
     signal?: LinkArg,
     visual?: LinkArg,
     store?: LinkArg,

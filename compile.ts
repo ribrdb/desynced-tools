@@ -381,16 +381,24 @@ class Compiler {
 
     const parsedBlueprint: {
       name?: ParsedLiteral,
-      logistics?: ParsedLiteral,
       power?: ParsedLiteral,
-      internal?: ParsedLiteral,
-      small?: ParsedLiteral,
-      medium?: ParsedLiteral,
-      large?: ParsedLiteral,
+      connected?: ParsedLiteral,
+      channels?: ParsedLiteral,
+      transportRoute?: ParsedLiteral,
+      requester?: ParsedLiteral,
+      supplier?: ParsedLiteral,
+      deliver?: ParsedLiteral,
+      itemTransporterOnly?: ParsedLiteral,
+      highPriority?: ParsedLiteral,
+      construction?: ParsedLiteral,
       signal?: ParsedLiteral,
       visual?: ParsedLiteral,
       store?: ParsedLiteral,
       goto?: ParsedLiteral,
+      internal?: ParsedLiteral,
+      small?: ParsedLiteral,
+      medium?: ParsedLiteral,
+      large?: ParsedLiteral,
       locks?: ParsedLiteral
     } = this.parseBlueprint(blueprintArg) as any;
     if (parsedBlueprint == null || typeof parsedBlueprint !== 'object') {
@@ -405,33 +413,28 @@ class Compiler {
       this.#rawEmit(".powered_down");
     }
 
-    const logistics = parsedBlueprint.logistics?.value;
-    if (logistics != null && (typeof logistics !== 'object' || Array.isArray(logistics))) {
-      this.#error("Blueprint logistics must be object", parsedBlueprint.logistics!.node);
-    }
-
-    if (!(logistics?.connected?.value ?? !frame.start_disconnected)) {
+    if (!(parsedBlueprint?.connected?.value ?? !frame.start_disconnected)) {
       this.#rawEmit(".disconnected");
     }
 
-    if (logistics?.channels?.value != null) {
-      if (!Array.isArray(logistics.channels.value)) {
-        this.#error("Blueprint logistics channels must be array", logistics.channels.node);
+    if (parsedBlueprint?.channels?.value != null) {
+      if (!Array.isArray(parsedBlueprint.channels.value)) {
+        this.#error("Blueprint logistics channels must be array", parsedBlueprint.channels.node);
       }
 
-      const logisticChannels = logistics.channels.value.map(v => v.value);
+      const logisticChannels = parsedBlueprint.channels.value.map(v => v.value);
       for (let i = 1; i <= 4; i++) {
         this.#rawEmit(".logistics", new StringLiteral(`channel_${i}`), logisticChannels.includes(i) ? TRUE : FALSE);
       }
     }
 
     const processLogisticsBoolean = (key: string, name: string = key) => {
-      if (logistics?.[key]?.value != null) {
-        if (typeof logistics[key].value !== "boolean") {
-          this.#error(`Blueprint ${key} must be boolean`, logistics[key].node);
+      if (parsedBlueprint?.[key]?.value != null) {
+        if (typeof parsedBlueprint[key].value !== "boolean") {
+          this.#error(`Blueprint ${key} must be boolean`, parsedBlueprint[key].node);
         }
 
-        this.#rawEmit(".logistics", new StringLiteral(name), logistics[key].value ? TRUE : FALSE);
+        this.#rawEmit(".logistics", new StringLiteral(name), parsedBlueprint[key].value ? TRUE : FALSE);
       }
     }
 
