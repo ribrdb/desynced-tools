@@ -604,9 +604,6 @@ type FromLinkArg = FromLink | LinkValue | FromLink[];
 type ToLinkArg = ToLink | LinkValue | (ToLink | LinkValue)[];
 type FromToLinkArg = FromLinkArg | ToLinkArg | (FromLink | ToLink)[];
 
-// foo(v1: Value, v2: Value) -> [FromToLinkArg?, FromToLinkArg?]
-type BehaviorFromToLinkArgs<T> = Partial<{ [K in keyof T]: FromToLinkArg }> | Record<number | string, FromToLinkArg>;
-
 declare class Blueprint {
     type: 'blueprint';
 }
@@ -661,7 +658,7 @@ declare namespace component {
     /**
     * Behavior Controller
     */
-    function behaviorController<T extends (...arg: Value[]) => void>(behavior?: T, links?: BehaviorFromToLinkArgs<Parameters<T>>): InternalComponent;
+    function behaviorController<T extends (...arg: Value[]) => void>(behavior?: T, links?: Record<string | number, FromToLinkArg> | Array<FromToLinkArg>): InternalComponent;
 ${bpComponents.join("\n")}
 }
 
