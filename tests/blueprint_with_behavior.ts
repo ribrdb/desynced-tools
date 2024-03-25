@@ -2,15 +2,15 @@ export const bpBuilding1 = blueprint.building2x1_2M_1({
     name: "Bot Factory",
     medium: [
         component.roboticsAssembler([
-            [to("active1"), from("craft1")],
-            to("visual"),
-            from("targetLocation")
+            {name: "craft1", to: "active1"},
+            {to: visual},
+            {name: "targetLocation1"}
         ]),
         component.roboticsAssembler({
             // Register links can use also use number-keyed objects
-            0: [to("active2"), from("craft2")],
-            1: to("visual"),
-            2: from("targetLocation")
+            0: {name: "craft2", to: "active2"},
+            1: {to: visual},
+            2: {name: "targetLocation2"}
         })
     ],
     internal: [
@@ -19,11 +19,11 @@ export const bpBuilding1 = blueprint.building2x1_2M_1({
         component.internalStorage(),
         component.behaviorController(fnBotFactory, {
             // Behavior component links can use parameter names
-            targetLocation: to("targetLocation"),
-            active1: from("active1"),
-            active2: from("active2"),
-            craft1: to("craft1"),
-            craft2: to("craft2")
+            targetLocation: {to: ["targetLocation1", "targetLocation2"]},
+            active1: {name: "active1"},
+            active2: {name: "active2"},
+            craft1: {to: "craft1"},
+            craft2: {to: "craft2"}
         }),
     ]
 });
@@ -57,11 +57,16 @@ const bpBot1 = blueprint.cub({
         // Empty slot
         null,
         // Nested behaviors
-        component.behaviorController(fnBot1)
+        component.behaviorController(fnBot1, [
+            value("metalore", 1),
+            { value: value("metalore", 2), to: goto },
+            { value: "metalore" },
+            3
+        ])
     ]
 });
 
-function fnBot1() {
+function fnBot1(p1: Value, p2: Value, p3: Value, p4: Value) {
     notify("Hello World");
 }
 
