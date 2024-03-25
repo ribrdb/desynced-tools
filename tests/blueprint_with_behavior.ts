@@ -20,8 +20,6 @@ export const bpBuilding1 = blueprint.building2x1_2M_1({
         component.behaviorController(fnBotFactory, {
             // Behavior component links can use parameter names
             targetLocation: {to: ["targetLocation1", "targetLocation2"]},
-            active1: {name: "active1"},
-            active2: {name: "active2"},
             craft1: {to: "craft1"},
             craft2: {to: "craft2"}
         }),
