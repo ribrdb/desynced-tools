@@ -508,13 +508,24 @@ const dtsBlueprintFns = Array.from(gameData.framesByJsName.keys()).sort(naturalS
     slotDoc ? `Slots: ${slotDoc}` : null
   ].filter(l => l != null).map(l => `   * ${l}`).join("\n");
 
+  const makeComponentTypeTuple = (key: keyof typeof socketCounts) => {
+    const count = socketCounts[key];
+    const parts: string[] = [];
+
+    for(let i = 0; i < count; i++) {
+      parts.push(`${key}ComponentArg?`);
+    }
+
+    return `[${parts.join(', ')}]`;
+  };
+
   const jsName = frame.frameJsName;
 
   return `
   /**
 ${docLines}
    */
-  function ${jsName}(blueprint: BlueprintArgs<${socketCounts['Internal']}, ${socketCounts['Small']}, ${socketCounts['Medium']}, ${socketCounts['Large']}>): Blueprint;`;
+  function ${jsName}(blueprint: BlueprintArgs<${makeComponentTypeTuple('Internal')}, ${makeComponentTypeTuple('Small')}, ${makeComponentTypeTuple('Medium')}, ${makeComponentTypeTuple('Large')}>): Blueprint;`;
 }).filter(f => f != null);
 
 const dtsContents = `
@@ -596,10 +607,6 @@ type FromToLinkArg = FromLinkArg | ToLinkArg | (FromLink | ToLink)[];
 // foo(v1: Value, v2: Value) -> [FromToLinkArg?, FromToLinkArg?]
 type BehaviorFromToLinkArgs<T> = Partial<{ [K in keyof T]: FromToLinkArg }> | Record<number | string, FromToLinkArg>;
 
-// https://stackoverflow.com/a/52490977
-type Tuple<T, N extends number> = N extends N ? number extends N ? T[] : _TupleOf<T, N, []> : never;
-type _TupleOf<T, N extends number, R extends unknown[]> = R['length'] extends N ? R : _TupleOf<T, N, [T, ...R]>;
-
 declare class Blueprint {
     type: 'blueprint';
 }
@@ -625,7 +632,7 @@ type SmallComponentArg = SmallComponent | InternalComponent;
 type MediumComponentArg = MediumComponent | SmallComponent | InternalComponent;
 type LargeComponentArg = LargeComponent | MediumComponent | SmallComponent | InternalComponent;
 
-type BlueprintArgs<I extends number, S extends number, M extends number, L extends number> = {
+type BlueprintArgs<I, S, M, L> = {
     name?: string,
     power?: boolean,
     logistics?: {
@@ -643,10 +650,10 @@ type BlueprintArgs<I extends number, S extends number, M extends number, L exten
     visual?: FromToLinkArg,
     store?: FromToLinkArg,
     goto?: FromToLinkArg,
-    internal?: Partial<Tuple<InternalComponentArg, I>>,
-    small?: Partial<Tuple<SmallComponentArg, S>>,
-    medium?: Partial<Tuple<MediumComponentArg, M>>,
-    large?: Partial<Tuple<LargeComponentArg, L>>,
+    internal?: I,
+    small?: S,
+    medium?: M,
+    large?: L,
     locks?: Array<AnyId | boolean | null | undefined>,
 };
 
