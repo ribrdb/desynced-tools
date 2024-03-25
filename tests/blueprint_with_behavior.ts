@@ -46,10 +46,8 @@ function fnBotFactory(
 const bpBot1 = blueprint.cub({
     name: "Example Bot 1",
     visual: "c_power_transmitter",
-    logistics: {
-        connected: true,
-        channels: [2, 4]
-    },
+    connected: true,
+    channels: [2, 4],
     medium: [
         component.powerTransmitter()
     ],
@@ -72,12 +70,10 @@ function fnBot1(p1: Value, p2: Value, p3: Value, p4: Value) {
 
 const bpBot2 = blueprint.markV({
     name: "Example Bot 2",
-    logistics: {
-        connected: false,
-        deliver: false,
-        construction: false,
-        transportRoute: true,
-    },
+    connected: false,
+    deliver: false,
+    construction: false,
+    transportRoute: true,
     medium: [
         component.mediumStorage()
     ],
