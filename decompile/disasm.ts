@@ -17,6 +17,7 @@ import {
   StringLiteral,
   TRUE,
 } from "../ir/instruction";
+import {gameData} from "../data";
 
 interface RawValue {
   id?: string;
@@ -37,9 +38,9 @@ export class Disassembler {
   constructor(obj: RawBlueprint|RawBehavior) {
     this.#label("main");
     if ("frame" in obj) {
-      this.blueprint(obj as RawBlueprint);
+      this.blueprint(obj);
     } else {
-      this.mainBehavior = obj as RawBehavior;
+      this.mainBehavior = obj;
     }
     this.#doExtras();
   }
@@ -52,6 +53,8 @@ export class Disassembler {
   }
 
   blueprint(obj: RawBlueprint) {
+    const frame = gameData.frames[obj.frame];
+
     this.#emit(".blueprint", obj.frame);
     if (obj.name) {
       this.#emit(".name", obj.name);
@@ -59,7 +62,7 @@ export class Disassembler {
     if (obj.powered_down) {
       this.#emit(".powered_down");
     }
-    if (obj.disconnected) {
+    if (obj.disconnected ?? frame?.start_disconnected) {
       this.#emit(".disconnected");
     }
     if (obj.logistics) {
@@ -166,7 +169,7 @@ export class Disassembler {
     } else if (raw.c != null) {
       inst.c = raw.c;
     } else if (raw.bp) {
-      inst.bp = new Label(`bp${this.bps.length}`);
+      inst.bp = new Label(`bp${this.bps.length + 1}`);
       if (typeof raw.bp == "string") {
         raw.bp = DesyncedStringToObject("DSB" + raw.bp) as RawBlueprint;
       }
@@ -214,25 +217,35 @@ export class Disassembler {
     }
 
     let subOffset = 0;
-    this.extraBehaviors.forEach((behavior, i) => {
-      let mainName = `behavior${i + 1}`;
+    let extraBehaviorIndex = 0;
+    let blueprintIndex = 0;
 
-      this.#label(mainName);
-      this.#emit(".behavior");
-      this.disasemble(behavior, mainName, subOffset);
+    do {
+      for(; extraBehaviorIndex < this.extraBehaviors.length; extraBehaviorIndex++) {
+        const behavior = this.extraBehaviors[extraBehaviorIndex];
+        if (!behavior) continue;
 
-      behavior.subs?.forEach((sub, i) => {
-        this.#label(`sub${i + subOffset + 1}`);
-        this.#emit(".sub");
-        this.disasemble(sub, mainName, subOffset);
-      });
-      subOffset += behavior.subs?.length || 0;
-    });
+        let mainName = `behavior${extraBehaviorIndex + 1}`;
 
-    this.bps.forEach((bp, i) => {
-      this.#label(`bp${i + 1}`);
-      this.blueprint(bp);
-    });
+        this.#label(mainName);
+        this.#emit(".behavior");
+        this.disasemble(behavior, mainName, subOffset);
+
+        behavior.subs?.forEach((sub, i) => {
+          this.#label(`sub${i + subOffset + 1}`);
+          this.#emit(".sub");
+          this.disasemble(sub, mainName, subOffset);
+        });
+
+        subOffset += behavior.subs?.length || 0;
+      }
+
+      for(; blueprintIndex < this.bps.length; blueprintIndex++) {
+        const bp = this.bps[blueprintIndex];
+        this.#label(`bp${blueprintIndex + 1}`);
+        this.blueprint(bp);
+      }
+    } while (extraBehaviorIndex < this.extraBehaviors.length);
   }
 
   #label(label: string) {
@@ -282,7 +295,7 @@ export function RenderAssembly(output: string[]): Pass {
     if (instr.text) {
       args.push(`$txt=${JSON.stringify(instr.text)}`);
     }
-    if (instr.sub?.type === "label") {
+    if (instr.sub) {
       args.push(`$sub=:${instr.sub.label}`);
     }
     if (instr.c != null) {
@@ -362,7 +375,7 @@ function buildLabels(prog: Code) {
         if (!labels.has(arg.nodeIndex)) {
           labels.set(arg.nodeIndex, `label${labels.size}`);
         }
-        inst[index] = labels.get(arg.nodeIndex)!;
+        inst.args[index] = new Label(labels.get(arg.nodeIndex)!);
       }
     });
   });
