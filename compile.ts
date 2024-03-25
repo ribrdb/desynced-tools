@@ -452,7 +452,9 @@ class Compiler {
 
     const registerLinks: Array<{ from: number, to: string | number, node: ts.Node }> = [];
     const registerNames: Map<string, number> = new Map();
-    const registerValues: Record<string, LiteralValue> = {};
+    const duplicateBehaviorControllerParameterNames: Set<string> = new Set();
+    const behaviorControllerParameterNames: Map<string, number> = new Map();
+    const registerValues: Record<number, LiteralValue> = {};
     const updateLinks = (registerNum: number, item: ParsedLiteral | undefined) => {
       if (!item) return;
       const linkAsArray = Array.isArray(item.value) ? item.value : [item];
@@ -558,7 +560,7 @@ class Compiler {
 
       const behavior = component.value['behavior'] as ParsedLiteral;
       let componentRegisters: Array<{}>;
-      let componentRegisterNames: Record<string, number> = {};
+      const componentRegisterNames: Map<string, number> = new Map();
       if (behavior != null) {
         // If the component has a behavior then look up the subroutine to get register (parameter) count
         if ((typeof behavior.value !== 'string' || !this.subs.has(behavior.value))) {
@@ -573,7 +575,16 @@ class Compiler {
             this.#error("Parameter name must be identifier", parameter);
           }
 
-          componentRegisterNames[parameter.name.text] = parameterIndex;
+          const parameterName = parameter.name.text;
+          componentRegisterNames.set(parameterName, parameterIndex);
+          if (!duplicateBehaviorControllerParameterNames.has(parameterName)) {
+            if (behaviorControllerParameterNames.has(parameterName)) {
+              behaviorControllerParameterNames.delete(parameterName);
+              duplicateBehaviorControllerParameterNames.add(parameterName);
+            } else {
+              behaviorControllerParameterNames.set(parameterName, registerIndex + parameterIndex);
+            }
+          }
         }
       } else {
         // Otherwise the componentData will tell us how many registers this component has
@@ -594,7 +605,7 @@ class Compiler {
         } else if (typeof links.value === 'object') {
           for (const key in links.value) {
             const item = links.value[key];
-            const linkIndex = componentRegisterNames[key] ?? key;
+            const linkIndex = componentRegisterNames.get(key) ?? key;
             const linkIndexNum = Number(linkIndex);
             if (isNaN(linkIndexNum) || linkIndexNum < 0) {
               this.#error(`Socket links object keys must be positive numbers`, links.node);
@@ -666,10 +677,12 @@ class Compiler {
       if(typeof registerLink.to === 'number') {
         to = registerLink.to;
       } else {
-        if(!registerNames.has(registerLink.to)) {
+        const resolvedTo = registerNames.get(registerLink.to) ?? behaviorControllerParameterNames.get(registerLink.to);
+        if (resolvedTo == null) {
           this.#error(`Unknown register name: ${registerLink.to}`, registerLink.node);
         }
-        to = registerNames.get(registerLink.to)!;
+
+        to = resolvedTo;
       }
 
       const linkId = `${registerLink.from}|${to}`;
