@@ -126,6 +126,42 @@ l3:
   .ret	"
 `;
 
+exports[`multi_file.ts 1`] = `
+"foo:
+  .name	"foo"
+  .pname	p1, "rngState"
+  call	100, 1, p1, $sub=:rng
+  .ret	
+
+
+rng:
+  .sub	
+  .name	"rng"
+  .pname	p1, "max"
+  .pname	p2, "min"
+  .pname	p3, "state"
+  unlock	
+  sub	p1, p2, B
+  add	B, 1, A
+  check_number	:l0, :l1, p3, 0
+  jump	:l1
+l1:
+  faction_item_amount	metalore, p3, nil
+label0:
+  jump	:l0
+l0:
+  mul	17364, p3, C
+  add	C, 1, D
+  modulo	D, 65521, p3
+  .pname	p4
+  .out	p4
+  mul	A, p3, E
+  div	E, 65521, F
+  add	F, p2, p4
+  .ret	
+  .ret	"
+`;
+
 exports[`nested_sub.ts 1`] = `
 "foo:
   .name	"foo"

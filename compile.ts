@@ -46,26 +46,46 @@ const dynamicLabels = [
   "v_idle",
 ];
 
-function compileFile(f: ts.SourceFile): string {
+function findParent<N extends ts.Node>(n: ts.Node, predicate: (n: ts.Node) => n is N): N | undefined {
+  let parent = n.parent;
+  while(parent != null && !predicate(parent)) {
+    parent = parent.parent;
+  }
+  return parent as N;
+}
+
+function compileFile(mainFileName: string, sourceFiles: ts.SourceFile[]): string {
   const c = new Compiler();
-  f.statements.forEach((n) => {
-    if (ts.isFunctionDeclaration(n)) {
-      let subName = (n.name as ts.Identifier).text;
-      if (c.subs.has(subName)) {
-        throw new Error("sub ${subName} declared multiple times");
+  sourceFiles.forEach(f => {
+    f.statements.forEach((n) => {
+      if (ts.isFunctionDeclaration(n)) {
+        let subName = (n.name as ts.Identifier).text;
+        if (c.subs.has(subName)) {
+          throw new Error("sub ${subName} declared multiple times");
+        }
+        c.subs.set(subName, n);
+      } else if (ts.isImportDeclaration(n)) {
+        // Import statements are ignored. Currently all functions in all files share the same global namespace.
+      } else {
+        throw new Error(`unsupported node ${n.kind} ${ts.SyntaxKind[n.kind]}`);
       }
-      c.subs.set(subName, n);
-    } else {
-      throw new Error(`unsupported node ${n.kind} ${ts.SyntaxKind[n.kind]}`);
-    }
+    });
   });
+
+  let mainSub: ts.FunctionDeclaration | null = null;
   for (const sub of c.subs.values()) {
-    if (isMainFunction(sub)) {
+    if (isExported(sub) && findParent(sub, ts.isSourceFile)?.fileName === mainFileName) {
+      mainSub = sub;
       c.compileBehavior(sub, true);
     }
   }
+
+  if (mainSub == null) {
+    throw new Error("at least one function must be exported in main file");
+  }
+
   for (const sub of c.subs.values()) {
-    if (!isMainFunction(sub)) {
+    if (sub !== mainSub) {
       c.compileBehavior(sub, false);
     }
   }
@@ -208,7 +228,7 @@ class FunctionScope {
   }
 }
 
-function isMainFunction(f: ts.FunctionDeclaration): boolean {
+function isExported(f: ts.FunctionDeclaration): boolean {
   return (
     f.modifiers?.some((m) => m.kind === ts.SyntaxKind.ExportKeyword) || false
   );
@@ -1651,7 +1671,7 @@ function resolveVariables(inst:Instruction) {
 
 const nilReg = new RegRef(0);
 
-export function compileProgram(program: ts.Program): string {
+export function compileProgram(mainFileName: string, program: ts.Program): string {
   // TODO: ended up not using the typechecker. Should probably just parse
   // to reduce bundle size.
   ts.getPreEmitDiagnostics(program).forEach((diagnostic) => {
@@ -1673,16 +1693,26 @@ export function compileProgram(program: ts.Program): string {
       );
     }
   });
+
+  const rootFileNames = program.getRootFileNames();
+  const files: ts.SourceFile[] = [];
   for (const f of program.getSourceFiles()) {
     if (!f.fileName.endsWith(".d.ts")) {
-      f.fileName.substring(0, f.fileName.length - 3);
-      try {
-        return compileFile(f);
-      } catch (ex) {
-        console.error(ex);
+      // f.fileName.substring(0, f.fileName.length - 3);
+      if (rootFileNames.includes(f.fileName)) {
+        files.unshift(f);
+      } else {
+        files.push(f);
       }
     }
   }
+
+  try {
+    return compileFile(mainFileName.replace(/\\/g, "/"), files);
+  } catch (ex) {
+    console.error(ex);
+  }
+
   throw new Error("No source file found");
 }
 

@@ -15,7 +15,7 @@ Promise.all([
     };
 
     function compile(filename: string, program: ts.SemanticDiagnosticsBuilderProgram) {
-        const asm = compileProgram(program.getProgram());
+        const asm = compileProgram(filename, program.getProgram());
 
         const dir = dirname(filename);
         const asmFilename = dir + "/out/" + basename(filename) + ".asm";

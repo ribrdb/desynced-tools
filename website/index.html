@@ -191,7 +191,7 @@ label6:
         asm = code;
       } else {
         const prog = compiler.makeProgram(code);
-        asm = compiler.compileProgram(prog);
+        asm = compiler.compileProgram("index.ts", prog);
       }
 
       const obj = compiler.assemble(asm);

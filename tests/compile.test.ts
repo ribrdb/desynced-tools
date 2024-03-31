@@ -14,7 +14,7 @@ for (const filename of globSync(`${__dirname}/*.ts`)) {
       types: [],
       ...CompilerOptions,
     });
-    const asm = compileProgram(program);
+    const asm = compileProgram(filename, program);
     expect(asm).toMatchSnapshot();
   });
 }
