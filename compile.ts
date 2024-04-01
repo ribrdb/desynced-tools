@@ -69,63 +69,8 @@ function findParent<N extends ts.Node>(n: ts.Node, predicate: (n: ts.Node) => n 
 
 function compileFile(mainFileName: string, sourceFiles: ts.SourceFile[]): string {
   const c = new Compiler();
-  sourceFiles.forEach(f => {
-    f.statements.forEach((n) => {
-      if (ts.isFunctionDeclaration(n)) {
-        let subName = (n.name as ts.Identifier).text;
-        if (c.subs.has(subName)) {
-          throw new Error("sub ${subName} declared multiple times");
-        }
-        c.subs.set(subName, n);
-      } else if (ts.isVariableStatement(n)) {
-        if (n.declarationList.declarations.length == 0) {
-          throw new Error(`unsupported node ${n.kind} ${ts.SyntaxKind[n.kind]}`);
-        } else {
-          for (const declaration of n.declarationList.declarations) {
-            if (!ts.isIdentifier(declaration.name)) {
-              throw new Error(`unsupported node ${declaration.name} ${ts.SyntaxKind[declaration.name.kind]}`);
-            }
 
-            if (!declaration.initializer) {
-              throw new Error(`unsupported variable node ${declaration} without initializer`);
-            }
-
-            if (!ts.isCallExpression(declaration.initializer) || !ts.isPropertyAccessExpression(declaration.initializer.expression)) {
-              throw new Error(`unsupported node ${ts.SyntaxKind[declaration.initializer.kind]}`);
-            }
-
-            let thisArg = declaration.initializer.expression.expression;
-            if (!ts.isIdentifier(thisArg)) {
-              throw new Error(`unsupported node ${ts.SyntaxKind[thisArg.kind]}`);
-            }
-
-            if (thisArg.text === "blueprint") {
-              const blueprintName = declaration.name.text;
-              const frameName = declaration.initializer.expression.name.text;
-              const frame = gameData.framesByJsName.get(frameName);
-
-              if (frame == null) {
-                throw new Error("Unknown frame: " + frameName);
-              }
-
-              c.blueprints.set(blueprintName, {
-                name: blueprintName,
-                statement: n,
-                frame: frame.id,
-                initializer: declaration.initializer
-              })
-            } else {
-              throw new Error(`unsupported top-level function call: ${thisArg.text}`);
-            }
-          }
-        }
-      } else if (ts.isImportDeclaration(n)) {
-        // Import statements are ignored. Currently all functions in all files share the same global namespace.
-      } else {
-        throw new Error(`unsupported node ${n.kind} ${ts.SyntaxKind[n.kind]}`);
-      }
-    });
-  });
+  sourceFiles.forEach(f => c.addSourceFile(f));
 
   let main: { sub: ts.FunctionDeclaration } | { blueprint: BlueprintDeclaration } | null = null;
   for (const sub of c.subs.values()) {
@@ -331,7 +276,73 @@ class Compiler {
   currentScope: FunctionScope = new FunctionScope();
   haveBehavior = false;
 
-  constructor() {}
+  addSourceFile(f: ts.SourceFile) {
+    f.statements.forEach((n) => {
+      if (ts.isFunctionDeclaration(n)) {
+        let subName = (n.name as ts.Identifier).text;
+        if (this.subs.has(subName)) {
+          this.#error("sub ${subName} declared multiple times", n);
+        }
+        this.subs.set(subName, n);
+      } else if (ts.isVariableStatement(n)) {
+        if (n.declarationList.declarations.length > 0) {
+          for (const declaration of n.declarationList.declarations) {
+            if(this.#extractBlueprint(n, declaration)) {
+              continue;
+            }
+
+            this.#error(`unsupported declaration: ${declaration}`, declaration);
+          }
+        } else {
+          this.#error(`unsupported node ${ts.SyntaxKind[n.kind]}`, n);
+        }
+      } else if (ts.isImportDeclaration(n)) {
+        // Import statements are ignored. Currently all functions in all files share the same global namespace.
+      } else {
+        this.#error(`unsupported node ${ts.SyntaxKind[n.kind]}`, n);
+      }
+    });
+  }
+
+  #extractBlueprint(statement: ts.VariableStatement, declaration: ts.VariableDeclaration): boolean {
+    if (!ts.isIdentifier(declaration.name)) {
+      return false;
+    }
+
+    if (!declaration.initializer) {
+      return false;
+    }
+
+    if (!ts.isCallExpression(declaration.initializer) || !ts.isPropertyAccessExpression(declaration.initializer.expression)) {
+      return false;
+    }
+
+    let thisArg = declaration.initializer.expression.expression;
+    if (!ts.isIdentifier(thisArg)) {
+      return false;
+    }
+
+    if (thisArg.text === "blueprint") {
+      const blueprintName = declaration.name.text;
+      const frameName = declaration.initializer.expression.name.text;
+      const frame = gameData.framesByJsName.get(frameName);
+
+      if (frame == null) {
+        this.#error(`Unknown frame: ${frameName}`, declaration.initializer.expression.name);
+      }
+
+      this.blueprints.set(blueprintName, {
+        name: blueprintName,
+        statement: statement,
+        frame: frame.id,
+        initializer: declaration.initializer
+      })
+
+      return true;
+    }
+
+    return false;
+  }
 
   setupNewScope() {
     this.currentScope = new FunctionScope();
