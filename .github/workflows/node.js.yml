@@ -5,13 +5,12 @@ name: Node.js CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     strategy:
@@ -20,31 +19,32 @@ jobs:
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - run: npm ci
-    - run: npm run generate
-    - name: Archive generated files
-      uses: actions/upload-artifact@v4
-      with:
-        name: generated-files-${{ matrix.node-version }}
-        path: |
-          behavior.d.ts
-          behavior_dts.ts
-          methods.ts
-          decompile/dsinstr.ts
-    - run: npm test
-    - run: npm run build --if-present
-    - run: npm run esbuild
-    - name: Archive build files
-      uses: actions/upload-artifact@v4
-      with:
-        name: build-files-${{ matrix.node-version }}
-        path: |
-          dist
-          website/bundle.out.js
-          website/compiler.js
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+      - run: npm ci
+      - run: npx prettier --check .
+      - run: npm run generate
+      - name: Archive generated files
+        uses: actions/upload-artifact@v4
+        with:
+          name: generated-files-${{ matrix.node-version }}
+          path: |
+            behavior.d.ts
+            behavior_dts.ts
+            methods.ts
+            decompile/dsinstr.ts
+      - run: npm test
+      - run: npm run build --if-present
+      - run: npm run esbuild
+      - name: Archive build files
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-files-${{ matrix.node-version }}
+          path: |
+            dist
+            website/bundle.out.js
+            website/compiler.js
