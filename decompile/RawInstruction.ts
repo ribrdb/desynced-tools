@@ -7,7 +7,7 @@ export interface RawInstruction {
   [key: number]: unknown;
   c?: number;
   txt?: string;
-  bp?: string|RawBlueprint;
+  bp?: string | RawBlueprint;
   sub?: number;
   nx?: number;
   ny?: number;

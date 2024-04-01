@@ -5,7 +5,7 @@ export class LiteralValue {
       num?: number;
       id?: string;
       coord?: { x: number; y: number };
-    }
+    },
   ) {}
 
   stringValue() {
@@ -97,7 +97,7 @@ export class ResolvedSub {
   constructor(public index: number) {}
 }
 
-export class VariableRef<T=unknown> {
+export class VariableRef<T = unknown> {
   readonly type = "variableRef";
   constructor(public variable: T) {}
 }
@@ -113,7 +113,7 @@ export type Arg =
   | VariableRef;
 
 export function isId(
-  value: Arg | undefined
+  value: Arg | undefined,
 ): value is LiteralValue & { value: { id: string } } {
   return value?.type == "value" && typeof value.value.id === "string";
 }
@@ -139,7 +139,10 @@ export class Instruction {
   nx?: number;
   ny?: number;
 
-  constructor(readonly op: string, public args: (Arg | undefined)[]) {}
+  constructor(
+    readonly op: string,
+    public args: (Arg | undefined)[],
+  ) {}
 
   clone(): Instruction {
     const clone = new Instruction(this.op, [...this.args]);
@@ -152,14 +155,14 @@ export class Instruction {
     clone.comment = this.comment;
     clone.labels = [...this.labels];
     clone.lineno = this.lineno;
-    clone.nx = this.nx
+    clone.nx = this.nx;
     clone.ny = this.ny;
     return clone;
   }
 
   forArgs(
     indexes: number[] | undefined,
-    f: (arg: Arg | undefined, i: number) => void
+    f: (arg: Arg | undefined, i: number) => void,
   ) {
     if (indexes == null) {
       return;

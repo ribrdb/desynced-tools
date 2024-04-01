@@ -47,16 +47,18 @@
     }
   },
   "select_nearest": {
-    "aliases":[{
-      "js": "nearerThan",
-      "type": "method",
-      "thisArg": 2,
-      "conditions": {
-        "A": true,
-        "B": false
-      },
-      "outArgs": []
-    }],
+    "aliases": [
+      {
+        "js": "nearerThan",
+        "type": "method",
+        "thisArg": 2,
+        "conditions": {
+          "A": true,
+          "B": false
+        },
+        "outArgs": []
+      }
+    ],
     "type": "operator"
   },
   "is_same_grid": {
@@ -303,7 +305,7 @@
       }
     ]
   },
-  "dopickup":{
+  "dopickup": {
     "js": "pickup",
     "optional": 1
   },

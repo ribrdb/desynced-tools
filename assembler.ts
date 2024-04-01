@@ -1,11 +1,10 @@
 // Copyright 2023 Ryan Brown
-
-import { instructions } from "./decompile/dsinstr";
 import { RawBehavior } from "./decompile/RawBehavior";
 import { RawBlueprint } from "./decompile/RawBlueprint";
 import { RawInstruction } from "./decompile/RawInstruction";
-import { binaryInsert } from "binary-insert";
-import binarySearch from "binary-search";
+import { instructions } from "./decompile/dsinstr";
+import { Behavior, splitProgram } from "./ir/behavior";
+import { Code, Pass, reversePass } from "./ir/code";
 import {
   Arg,
   FALSE,
@@ -20,9 +19,9 @@ import {
   STOP,
   TRUE,
 } from "./ir/instruction";
-import { Code, Pass, reversePass } from "./ir/code";
 import { MethodInfo, ops } from "./methods";
-import { Behavior, splitProgram } from "./ir/behavior";
+import { binaryInsert } from "binary-insert";
+import binarySearch from "binary-search";
 
 interface SubInfo {
   label: number;
@@ -54,7 +53,7 @@ const numberLiteralPattern = String.raw`-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d
 const numberLiteralExactPattern = new RegExp(`^${numberLiteralPattern}$`);
 const itemNumPattern = new RegExp(`^(\\w+)@(${numberLiteralPattern})$`);
 const coordPattern = new RegExp(
-  `^(${numberLiteralPattern})\\s+(${numberLiteralPattern})$`
+  `^(${numberLiteralPattern})\\s+(${numberLiteralPattern})$`,
 );
 
 function parseAssembly(code: string): Code {
@@ -73,7 +72,7 @@ function parseAssembly(code: string): Code {
         let key = `$s${strings.size}`;
         strings.set(key, JSON.parse(s));
         return key;
-      }
+      },
     );
     const commentStart = line.indexOf(";");
     if (commentStart >= 0) {
@@ -112,9 +111,7 @@ function parseAssembly(code: string): Code {
   return code1;
 }
 
-export function assemble(
-  code: string
-): RawBehavior | RawBlueprint {
+export function assemble(code: string): RawBehavior | RawBlueprint {
   let instructions = parseAssembly(code);
   const program: Behavior = splitProgram(instructions);
 
@@ -137,7 +134,7 @@ class Assembler {
     const frame = this.program.main.code[0].args[0];
     if (frame?.type !== "value" || frame.value.id == null) {
       throw new Error(
-        `Blueprint frame must be a string at line ${this.program.main[0].lineno}`
+        `Blueprint frame must be a string at line ${this.program.main[0].lineno}`,
       );
     }
     const bp: RawBlueprint = {
@@ -164,7 +161,7 @@ class Assembler {
           const regNo = num(inst, inst.args[0]);
           if (inst.args[1]?.type !== "value") {
             throw new Error(
-              `Register value must be a value at line ${inst.lineno}`
+              `Register value must be a value at line ${inst.lineno}`,
             );
           }
           bp.regs[regNo] = inst.args[1].value;
@@ -188,16 +185,18 @@ class Assembler {
           const [index, id, code] = inst.args;
           const ctype = str(inst, id);
           if (code?.type === "label") {
-            const behavior = this.program.others.get(code.label) ?? this.program.subs.get(code.label);
+            const behavior =
+              this.program.others.get(code.label) ??
+              this.program.subs.get(code.label);
             if (!behavior) {
               throw new Error(
-                `Behavior ${code.label} not found at line ${inst.lineno}`
+                `Behavior ${code.label} not found at line ${inst.lineno}`,
               );
             }
             const p = new Assembler({
               ...this.program,
               main: behavior,
-              mainLabel: code.label
+              mainLabel: code.label,
             }).assembleBehavior();
             bp.components.push([ctype, num(inst, index), p]);
           } else {
@@ -218,10 +217,16 @@ class Assembler {
     const behaviors: Map<number, RawBehavior> = new Map();
     // Assemble subroutines in reverse call order so parameter rw flags can be propagated
     for (const sub of Array.from(this.subs.values()).reverse()) {
-      behaviors.set(sub.label, this.assembleSub(sub.instructions.clone(), behaviors));
+      behaviors.set(
+        sub.label,
+        this.assembleSub(sub.instructions.clone(), behaviors),
+      );
     }
 
-    const main: RawBehavior = this.assembleSub(this.program.main.clone(), behaviors);
+    const main: RawBehavior = this.assembleSub(
+      this.program.main.clone(),
+      behaviors,
+    );
     if (behaviors.size > 0) {
       // Reverse back to original call order
       main.subs = Array.from(behaviors.values()).reverse();
@@ -251,7 +256,7 @@ class Assembler {
       behavior: result,
       labelInfo,
       resolveSub: this.resolveSub.bind(this),
-      resolveBehavior: label => behaviors.get(label),
+      resolveBehavior: (label) => behaviors.get(label),
       resolveBp: this.resolveBp.bind(this),
     });
     sub.apply(resolver);
@@ -276,7 +281,8 @@ class Assembler {
   resolveBp(bpName: string) {
     const prog = {
       ...this.program,
-      main: (this.program.bps.get(bpName) ?? (this.program.mainLabel === bpName ? this.program.main : undefined))!,
+      main: (this.program.bps.get(bpName) ??
+        (this.program.mainLabel === bpName ? this.program.main : undefined))!,
       mainLabel: bpName,
     };
     if (!prog.main) {
@@ -289,7 +295,7 @@ class Assembler {
 function findReferencedSubs(program: Behavior): Map<string, SubInfo> {
   const callgraph = {};
 
-  const pass: (name: string) => Pass = (name) => { 
+  const pass: (name: string) => Pass = (name) => {
     callgraph[name] ??= [];
 
     return (inst) => {
@@ -306,33 +312,33 @@ function findReferencedSubs(program: Behavior): Map<string, SubInfo> {
         if (!sub) {
           throw new Error(`Sub ${subName} not found at line ${inst.lineno}`);
         }
-        if(!(subName in callgraph)) {
+        if (!(subName in callgraph)) {
           sub.apply(pass(subName));
         }
       }
-    }
+    };
   };
 
   const mainLabel = program.mainLabel ?? "";
 
   program.main.apply(pass(mainLabel));
-  
+
   // Sort the subroutines in call order
   const sortedSubNames = bfsSort(callgraph, mainLabel);
 
   const result = new Map<string, SubInfo>();
   for (const subName of sortedSubNames) {
-    if(subName === mainLabel) continue;
+    if (subName === mainLabel) continue;
 
     const sub = program.subs.get(subName);
-    if(!sub) {
+    if (!sub) {
       throw new Error(`Sub ${subName} not found`);
     }
 
     result.set(subName, {
       name: subName,
       instructions: sub,
-      label: result.size + 1
+      label: result.size + 1,
     });
   }
 
@@ -347,11 +353,11 @@ function bfsSort<T>(graph: { [key: string]: string[] }, rootNode: string) {
 
   while (queue.length) {
     const next = queue.shift();
-    if(next == null) continue;
+    if (next == null) continue;
     result.push(next);
 
     for (const edge of graph[next]) {
-      if(!visited.has(edge)) {
+      if (!visited.has(edge)) {
         visited.add(edge);
         queue.push(edge);
       }
@@ -370,7 +376,7 @@ function parseArg(
   arg: string,
   methodInfo: MethodInfo | undefined,
   strings: Map<string, string>,
-  skipPush = false
+  skipPush = false,
 ): Arg | undefined {
   arg = arg.trim();
   let keyMatch = arg.match(/^\$(sub|txt|c|nx|ny|bp|next)=(.+)/);
@@ -426,7 +432,7 @@ function setKey(inst: Instruction, key: string, value: Arg) {
     case "next":
       if (value.type !== "label") {
         throw new Error(
-          `Invalid ${key}: ${JSON.stringify(value)} at line ${inst.lineno}`
+          `Invalid ${key}: ${JSON.stringify(value)} at line ${inst.lineno}`,
         );
       }
       inst[key] = value;
@@ -437,7 +443,7 @@ function setKey(inst: Instruction, key: string, value: Arg) {
         return;
       }
       throw new Error(
-        `Invalid txt: ${JSON.stringify(value)} at line ${inst.lineno}`
+        `Invalid txt: ${JSON.stringify(value)} at line ${inst.lineno}`,
       );
     case "c":
       if (value.type === "value" && value.value.num != null) {
@@ -445,7 +451,7 @@ function setKey(inst: Instruction, key: string, value: Arg) {
         return;
       }
       throw new Error(
-        `Invalid c: ${JSON.stringify(value)} at line ${inst.lineno}`
+        `Invalid c: ${JSON.stringify(value)} at line ${inst.lineno}`,
       );
     case "nx":
     case "ny":
@@ -455,7 +461,7 @@ function setKey(inst: Instruction, key: string, value: Arg) {
       }
   }
   throw new Error(
-    `Invalid ${key}: ${JSON.stringify(value)} at line ${inst.lineno}`
+    `Invalid ${key}: ${JSON.stringify(value)} at line ${inst.lineno}`,
   );
 }
 
@@ -464,7 +470,7 @@ function str(inst: Instruction, a: Arg | undefined) {
     return a.stringValue()!;
   }
   throw new Error(
-    `Expected string: ${JSON.stringify(a)} at line ${inst.lineno}`
+    `Expected string: ${JSON.stringify(a)} at line ${inst.lineno}`,
   );
 }
 
@@ -473,7 +479,7 @@ function num(inst: Instruction, a: Arg | undefined): number {
     return a.value.num;
   }
   throw new Error(
-    `Expected number: ${JSON.stringify(a)} at line ${inst.lineno}`
+    `Expected number: ${JSON.stringify(a)} at line ${inst.lineno}`,
   );
 }
 
@@ -516,7 +522,7 @@ function pseudoPass(behavior: RawBehavior, labelInfo: LabelInfo): Pass {
             reg.reg < 1
           ) {
             throw new Error(
-              `Unknown parameter register ${reg} at line ${instr.lineno}`
+              `Unknown parameter register ${reg} at line ${instr.lineno}`,
             );
           }
           behavior.pnames ??= [];
@@ -531,7 +537,7 @@ function pseudoPass(behavior: RawBehavior, labelInfo: LabelInfo): Pass {
             reg.reg < 1
           ) {
             throw new Error(
-              `Unknown parameter register ${reg} at line ${instr.lineno}`
+              `Unknown parameter register ${reg} at line ${instr.lineno}`,
             );
           }
           behavior.parameters ??= [];
@@ -541,12 +547,12 @@ function pseudoPass(behavior: RawBehavior, labelInfo: LabelInfo): Pass {
 
         default:
           throw new Error(
-            `Unknown pseudo instruction ${instr.op} at line ${instr.lineno}`
+            `Unknown pseudo instruction ${instr.op} at line ${instr.lineno}`,
           );
       }
       if (instr.next?.type === "nodeRef") {
         throw new Error(
-          `Unexpected type of "instr.next". Labels should not be resolved`
+          `Unexpected type of "instr.next". Labels should not be resolved`,
         );
       }
       if (instr.next !== undefined) {
@@ -564,7 +570,7 @@ function pseudoPass(behavior: RawBehavior, labelInfo: LabelInfo): Pass {
 function replaceJump(code: Code, ip: number, target: Label | Stop | NodeRef) {
   if (target.type === "nodeRef") {
     throw new Error(
-      `Unexpected type of "target". Labels should not be resolved`
+      `Unexpected type of "target". Labels should not be resolved`,
     );
   }
   if (ip == 0) {
@@ -593,7 +599,7 @@ function removeNopPass(labelInfo: LabelInfo): Pass {
     if (instr.next !== undefined) {
       if (instr.next.type === "nodeRef") {
         throw new Error(
-          `Unexpected type of "instr.next". Labels should not be resolved`
+          `Unexpected type of "instr.next". Labels should not be resolved`,
         );
       }
       const next: Label | Stop = instr.next;
@@ -698,7 +704,7 @@ function removeDeadCode(code: Code, labelInfo: LabelInfo) {
           code.code.splice(i, 1);
           codeIsStable = false;
         }
-      })
+      }),
     );
   }
 }
@@ -730,24 +736,23 @@ function reorderCode(code: Code, labelInfo: LabelInfo) {
 
   code.code = [...newOrder].map((i) => code.code[i]);
 
-  function add (n: number) {
+  function add(n: number) {
     if (unprocessed.has(n)) {
       binaryInsert(toProcess, n, (a, b) => b - a);
       unprocessed.delete(n);
     }
-  };
+  }
   function addLast(n: number) {
     toProcess.push(n);
     unprocessed.delete(n);
-  };
+  }
 
   function controlFlow() {
-
     while (toProcess.length > 0) {
       const i = toProcess.pop()!;
       if (newOrder.has(i)) continue;
       newOrder.add(i);
-  
+
       const resolve = (a: Arg | undefined): number | undefined => {
         if (a === undefined) return i + 1;
         if (a.type === "nodeRef") return a.nodeIndex;
@@ -760,18 +765,18 @@ function reorderCode(code: Code, labelInfo: LabelInfo) {
           return labelIPs.get(label);
         }
       };
-  
+
       const instr = code.code[i];
       const info = instructions[instr.op];
       instr.forArgs(info?.execArgs, (arg) => {
         const resolved = resolve(arg);
         if (resolved != null) add(resolved);
       });
-      
+
       if (info?.terminates) {
         continue;
       }
-  
+
       const next = resolve(instr.next);
       if (next != null) {
         if (next == i + 1) {
@@ -791,14 +796,14 @@ function resolveLabelsPass(
     behavior,
     resolveBp,
     resolveSub,
-    resolveBehavior
+    resolveBehavior,
   }: {
     labelInfo: LabelInfo;
     behavior: RawBehavior;
     resolveBp: (s: string) => RawBlueprint | undefined;
     resolveSub: (s: string) => ResolvedSub | undefined;
     resolveBehavior: (label: number) => RawBehavior | undefined;
-  }
+  },
 ): Pass {
   const labelMap = new Map<string, number | false>();
   code.apply((instr, i) => {
@@ -829,7 +834,7 @@ function resolveLabelsPass(
         const resolved = labelMap.get(instr.next.label);
         if (resolved == null) {
           throw new Error(
-            `Unknown label ${instr.next} at line ${instr.lineno}`
+            `Unknown label ${instr.next} at line ${instr.lineno}`,
           );
         }
         if (resolved != i + 2) {
@@ -883,13 +888,16 @@ function resolveLabelsPass(
             value = v.reg;
 
             const method = ops[instr.op];
-            if(value > 0) {
+            if (value > 0) {
               let isWrite;
               if (instr.resolvedSub) {
                 const behavior = resolveBehavior(instr.resolvedSub.index);
                 isWrite = behavior?.parameters?.[vi] ?? false;
               } else {
-                isWrite = typeof method.out === "number" ? method.out === vi : method.out?.includes(vi) ?? false;
+                isWrite =
+                  typeof method.out === "number"
+                    ? method.out === vi
+                    : method.out?.includes(vi) ?? false;
               }
               behavior.parameters ??= [];
               behavior.parameters[value - 1] ||= isWrite;
@@ -911,7 +919,7 @@ function addSpecialOptions(
   instr: Instruction,
   ds: RawInstruction,
   resolveSub: (s: string) => ResolvedSub | undefined,
-  resolveBp: (s: string) => RawBlueprint | undefined
+  resolveBp: (s: string) => RawBlueprint | undefined,
 ) {
   if (instr.comment) {
     ds.cmt = instr.comment;

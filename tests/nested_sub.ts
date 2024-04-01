@@ -1,11 +1,11 @@
 export function foo() {
-    sub1();
+  sub1();
 }
 
 function sub1() {
-    sub2();
+  sub2();
 }
 
 function sub2() {
-    notify("hello world");
+  notify("hello world");
 }

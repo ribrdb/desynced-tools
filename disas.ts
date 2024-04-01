@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-import * as fs from "fs";
-import { DesyncedStringToObject } from "./dsconvert";
 import { Disassembler } from "./decompile/disasm";
+import { DesyncedStringToObject } from "./dsconvert";
+import * as fs from "fs";
 
 const code = fs.readFileSync(process.argv[2], "utf8");
 const codeObj = DesyncedStringToObject(code);

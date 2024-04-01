@@ -18,8 +18,11 @@ export interface RawBlueprint {
     channel_3?: boolean;
     channel_4?: boolean;
   };
-  regs?: Record<number, {id?: string, num?: number, coord?: {x: number, y: number}}>;
-  locks?: (string|boolean)[];
+  regs?: Record<
+    number,
+    { id?: string; num?: number; coord?: { x: number; y: number } }
+  >;
+  locks?: (string | boolean)[];
   links?: [number, number][];
-  components?: [type:string, slot:number, code?:RawBehavior][];
+  components?: [type: string, slot: number, code?: RawBehavior][];
 }

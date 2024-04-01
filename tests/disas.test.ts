@@ -1,8 +1,8 @@
-import * as fs from "fs";
-import { DesyncedStringToObject } from "../dsconvert";
 import { Disassembler } from "../decompile/disasm";
-import { globSync } from "glob";
+import { DesyncedStringToObject } from "../dsconvert";
 import { expect, test } from "@jest/globals";
+import * as fs from "fs";
+import { globSync } from "glob";
 import path from "path";
 
 for (const filename of globSync(`${__dirname}/*.txt`)) {
