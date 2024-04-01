@@ -1,11 +1,24 @@
 // Copyright 2023 Ryan Brown
 
 import * as ts from "typescript";
+import * as tsApiUtils from "ts-api-utils";
 import {MethodInfo, methods} from "./methods";
 import {Code} from "./ir/code";
-import {Arg, Instruction, Label, LiteralValue, RegRef, Stop, StringLiteral, VariableRef,} from "./ir/instruction";
+import {
+  Arg,
+  Instruction,
+  Label,
+  LiteralValue,
+  RegRef,
+  Stop,
+  StringLiteral,
+  VariableRef,
+  regNums,
+  TRUE,
+  FALSE,
+} from "./ir/instruction";
 import {generateAsm} from "./decompile/disasm";
-import {getDataById} from "./data";
+import {gameData, SocketSize} from "./data";
 import {CompilerOptions} from "./compiler_options"
 export {CompilerOptions}
 
@@ -56,39 +69,52 @@ function findParent<N extends ts.Node>(n: ts.Node, predicate: (n: ts.Node) => n 
 
 function compileFile(mainFileName: string, sourceFiles: ts.SourceFile[]): string {
   const c = new Compiler();
-  sourceFiles.forEach(f => {
-    f.statements.forEach((n) => {
-      if (ts.isFunctionDeclaration(n)) {
-        let subName = (n.name as ts.Identifier).text;
-        if (c.subs.has(subName)) {
-          throw new Error("sub ${subName} declared multiple times");
-        }
-        c.subs.set(subName, n);
-      } else if (ts.isImportDeclaration(n)) {
-        // Import statements are ignored. Currently all functions in all files share the same global namespace.
-      } else {
-        throw new Error(`unsupported node ${n.kind} ${ts.SyntaxKind[n.kind]}`);
-      }
-    });
-  });
 
-  let mainSub: ts.FunctionDeclaration | null = null;
+  sourceFiles.forEach(f => c.addSourceFile(f));
+
+  let main: { sub: ts.FunctionDeclaration } | { blueprint: BlueprintDeclaration } | null = null;
   for (const sub of c.subs.values()) {
     if (isExported(sub) && findParent(sub, ts.isSourceFile)?.fileName === mainFileName) {
-      mainSub = sub;
-      c.compileBehavior(sub, true);
+      if (main == null) {
+        main = {sub};
+      } else {
+        throw new Error("Only one declaration may be exported");
+      }
     }
   }
 
-  if (mainSub == null) {
-    throw new Error("at least one function must be exported in main file");
+  for (const blueprint of c.blueprints.values()) {
+    if (isExported(blueprint.statement) && findParent(blueprint.statement, ts.isSourceFile)?.fileName === mainFileName) {
+      if (main == null) {
+        main = {blueprint};
+      } else {
+        throw new Error("Only one declaration may be exported");
+      }
+    }
+  }
+
+  if (main == null) {
+    throw new Error("One declaration must be exported");
+  }
+
+  if ('sub' in main) {
+    c.compileBehavior(main.sub, true);
+  } else if ('blueprint' in main) {
+    c.compileBlueprint(main.blueprint, true);
   }
 
   for (const sub of c.subs.values()) {
-    if (sub !== mainSub) {
+    if (!('sub' in main) || main.sub !== sub) {
       c.compileBehavior(sub, false);
     }
   }
+
+  for (const blueprint of c.blueprints.values()) {
+    if (!('blueprint' in main) || main.blueprint !== blueprint) {
+      c.compileBlueprint(blueprint, false);
+    }
+  }
+
   return c.asm();
 }
 
@@ -228,21 +254,95 @@ class FunctionScope {
   }
 }
 
-function isExported(f: ts.FunctionDeclaration): boolean {
+function isExported(f: { modifiers?: ts.NodeArray<ts.ModifierLike> }): boolean {
   return (
     f.modifiers?.some((m) => m.kind === ts.SyntaxKind.ExportKeyword) || false
   );
 }
 
+type BlueprintDeclaration = {
+  name: string,
+  frame: string,
+  statement: ts.VariableStatement,
+  initializer: ts.CallExpression
+};
+
 class Compiler {
   labelCounter = 0;
   dynamicLabelCounter = 0;
   subs = new Map<string, ts.FunctionDeclaration>();
+  blueprints = new Map<string, BlueprintDeclaration>();
   functionScopes: FunctionScope[] = [];
   currentScope: FunctionScope = new FunctionScope();
   haveBehavior = false;
 
-  constructor() {}
+  addSourceFile(f: ts.SourceFile) {
+    f.statements.forEach((n) => {
+      if (ts.isFunctionDeclaration(n)) {
+        let subName = (n.name as ts.Identifier).text;
+        if (this.subs.has(subName)) {
+          this.#error("sub ${subName} declared multiple times", n);
+        }
+        this.subs.set(subName, n);
+      } else if (ts.isVariableStatement(n)) {
+        if (n.declarationList.declarations.length > 0) {
+          for (const declaration of n.declarationList.declarations) {
+            if(this.#extractBlueprint(n, declaration)) {
+              continue;
+            }
+
+            this.#error(`unsupported declaration: ${declaration}`, declaration);
+          }
+        } else {
+          this.#error(`unsupported node ${ts.SyntaxKind[n.kind]}`, n);
+        }
+      } else if (ts.isImportDeclaration(n)) {
+        // Import statements are ignored. Currently all functions in all files share the same global namespace.
+      } else {
+        this.#error(`unsupported node ${ts.SyntaxKind[n.kind]}`, n);
+      }
+    });
+  }
+
+  #extractBlueprint(statement: ts.VariableStatement, declaration: ts.VariableDeclaration): boolean {
+    if (!ts.isIdentifier(declaration.name)) {
+      return false;
+    }
+
+    if (!declaration.initializer) {
+      return false;
+    }
+
+    if (!ts.isCallExpression(declaration.initializer) || !ts.isPropertyAccessExpression(declaration.initializer.expression)) {
+      return false;
+    }
+
+    let thisArg = declaration.initializer.expression.expression;
+    if (!ts.isIdentifier(thisArg)) {
+      return false;
+    }
+
+    if (thisArg.text === "blueprint") {
+      const blueprintName = declaration.name.text;
+      const frameName = declaration.initializer.expression.name.text;
+      const frame = gameData.framesByJsName.get(frameName);
+
+      if (frame == null) {
+        this.#error(`Unknown frame: ${frameName}`, declaration.initializer.expression.name);
+      }
+
+      this.blueprints.set(blueprintName, {
+        name: blueprintName,
+        statement: statement,
+        frame: frame.id,
+        initializer: declaration.initializer
+      })
+
+      return true;
+    }
+
+    return false;
+  }
 
   setupNewScope() {
     this.currentScope = new FunctionScope();
@@ -263,6 +363,454 @@ class Compiler {
     }
     this.#rawEmit(".name", new StringLiteral(subName));
     this.compileInstructions(f);
+  }
+
+  compileBlueprint(blueprint: BlueprintDeclaration, isMain: boolean) {
+    this.setupNewScope();
+    this.#emitLabel(blueprint.name);
+
+    if (blueprint.initializer.arguments.length !== 1) {
+      this.#error(`Blueprint argument count must be 1`, blueprint.initializer);
+    }
+
+    const blueprintArg = blueprint.initializer.arguments[0];
+    if (!ts.isObjectLiteralExpression(blueprintArg)) {
+      this.#error(`Unsupported blueprint argument 1: ${ts.SyntaxKind[blueprintArg.kind]}`, blueprintArg)
+    }
+
+    const frame = gameData.frames.get(blueprint.frame) ?? gameData.frames.get(`f_${blueprint.frame}`);
+    if (frame == null || frame.visual == null) {
+      this.#error(`Unknown frame: ${blueprint.frame}`, blueprint.initializer);
+    }
+
+    const visual = gameData.visuals.get(frame.visual);
+    if (visual == null) {
+      this.#error(`Unknown visual ${frame.visual} of frame: ${frame.id}`, blueprint.initializer.arguments[0]);
+    }
+
+    this.#rawEmit(".blueprint", new LiteralValue({id: frame.id}));
+
+    const parsedBlueprint: {
+      name?: ParsedLiteral,
+      power?: ParsedLiteral,
+      connected?: ParsedLiteral,
+      channels?: ParsedLiteral,
+      transportRoute?: ParsedLiteral,
+      requester?: ParsedLiteral,
+      supplier?: ParsedLiteral,
+      deliver?: ParsedLiteral,
+      itemTransporterOnly?: ParsedLiteral,
+      highPriority?: ParsedLiteral,
+      construction?: ParsedLiteral,
+      signal?: ParsedLiteral,
+      visual?: ParsedLiteral,
+      store?: ParsedLiteral,
+      goto?: ParsedLiteral,
+      internal?: ParsedLiteral,
+      small?: ParsedLiteral,
+      medium?: ParsedLiteral,
+      large?: ParsedLiteral,
+      locks?: ParsedLiteral
+    } = this.parseBlueprint(blueprintArg) as any;
+    if (parsedBlueprint == null || typeof parsedBlueprint !== 'object') {
+      this.#error(`Unsupported blueprint argument 1: ${parsedBlueprint}`, blueprintArg);
+    }
+
+    if (typeof parsedBlueprint.name?.value === 'string') {
+      this.#rawEmit(".name", new StringLiteral(parsedBlueprint.name.value));
+    }
+
+    if (!(parsedBlueprint.power?.value ?? true)) {
+      this.#rawEmit(".powered_down");
+    }
+
+    if (!(parsedBlueprint?.connected?.value ?? !frame.start_disconnected)) {
+      this.#rawEmit(".disconnected");
+    }
+
+    if (parsedBlueprint?.channels?.value != null) {
+      if (!Array.isArray(parsedBlueprint.channels.value)) {
+        this.#error("Blueprint logistics channels must be array", parsedBlueprint.channels.node);
+      }
+
+      const logisticChannels = parsedBlueprint.channels.value.map(v => v.value);
+      for (let i = 1; i <= 4; i++) {
+        this.#rawEmit(".logistics", new StringLiteral(`channel_${i}`), logisticChannels.includes(i) ? TRUE : FALSE);
+      }
+    }
+
+    const processLogisticsBoolean = (key: string, name: string = key) => {
+      if (parsedBlueprint?.[key]?.value != null) {
+        if (typeof parsedBlueprint[key].value !== "boolean") {
+          this.#error(`Blueprint ${key} must be boolean`, parsedBlueprint[key].node);
+        }
+
+        this.#rawEmit(".logistics", new StringLiteral(name), parsedBlueprint[key].value ? TRUE : FALSE);
+      }
+    }
+
+    processLogisticsBoolean("transportRoute", "transport_route");
+    processLogisticsBoolean("requester");
+    processLogisticsBoolean("supplier");
+    processLogisticsBoolean("deliver", "carrier");
+    processLogisticsBoolean("itemTransporterOnly", "crane_only");
+    processLogisticsBoolean("highPriority", "high_priority");
+    processLogisticsBoolean("construction", "can_construction");
+
+    const allSockets = (visual.sockets ?? []).map(socket => {
+      return socket[1] as SocketSize
+    });
+
+    const registerLinks: Array<{ from: number, to: string | number, node: ts.Node }> = [];
+    const registerNames: Map<string, number> = new Map();
+    const duplicateBehaviorControllerParameterNames: Set<string> = new Set();
+    const behaviorControllerParameterNames: Map<string, number> = new Map();
+    const registerValues: Record<number, LiteralValue> = {};
+    const updateLinks = (registerNum: number, item: ParsedLiteral | undefined) => {
+      if (!item) return;
+      const linkAsArray = Array.isArray(item.value) ? item.value : [item];
+
+      for (const link of linkAsArray) {
+        if (link.value == null) continue;
+
+        if (typeof link.value === 'string') {
+          registerValues[registerNum] = new LiteralValue({id: link.value});
+        } else if (typeof link.value === 'number') {
+          registerValues[registerNum] = new LiteralValue({num: link.value});
+        } else if (typeof link.value != "object") {
+          this.#error(`Invalid link type: ${ts.SyntaxKind[link.node.kind]}`, link.node);
+        } else if ('id' in link.value || 'num' in link.value) {
+          registerValues[registerNum] = new LiteralValue(link.value);
+        } else {
+          const name: ParsedLiteral = link.value['name'];
+          if(name != null) {
+            if(typeof name.value !== 'string') {
+              this.#error("name must be string", name.node);
+            }
+
+            if(registerNames.has(name.value)) {
+              this.#error(`Duplicate register name: ${name}`, name.node);
+            }
+
+            registerNames.set(name.value, registerNum);
+          }
+
+          const value = link.value['value'];
+          if(value != null) {
+            if(typeof value.value === 'string') {
+              registerValues[registerNum] = new LiteralValue({id: value.value});
+            } else if (typeof value.value === 'number') {
+              registerValues[registerNum] = new LiteralValue({num: value.value});
+            } else if ('id' in value.value || 'num' in value.value) {
+              registerValues[registerNum] = new LiteralValue(value.value);
+            } else {
+              this.#error("Invalid link value type", value.node);
+            }
+          }
+
+          const to = link.value['to'];
+          if(to != null) {
+            const tos: ParsedLiteral[] = Array.isArray(to.value) ? to.value : [to];
+            for(const to of tos) {
+              if(typeof to.value !== "string" && typeof to.value !== "number") {
+                this.#error("Invalid to link type", to.node);
+              }
+
+              registerLinks.push({
+                from: registerNum,
+                to: to.value,
+                node: to.node,
+              });
+            }
+          }
+        }
+      }
+    }
+
+    updateLinks(Math.abs(regNums.signal), parsedBlueprint.signal)
+    updateLinks(Math.abs(regNums.visual), parsedBlueprint.visual)
+    updateLinks(Math.abs(regNums.store), parsedBlueprint.store)
+    updateLinks(Math.abs(regNums.goto), parsedBlueprint.goto)
+
+    let registerIndex = 5;
+
+    for (let socketIndex = 0; socketIndex < allSockets.length; socketIndex++) {
+      const socketType = allSockets[socketIndex];
+      const socketsOfType = parsedBlueprint[socketType.toLowerCase()];
+      if (socketsOfType?.value == null) {
+        continue;
+      }
+
+      if (!Array.isArray(socketsOfType.value)) {
+        this.#error(`${socketType} must be array`, socketsOfType.node);
+      }
+
+      if (socketsOfType.value.length === 0) {
+        continue;
+      }
+
+      const component = socketsOfType.value.shift();
+
+      if (component?.value == null) {
+        continue;
+      }
+
+      if (typeof component.value !== 'object') {
+        this.#error(`${socketType} socket must be object`, component.node);
+      }
+
+      const id = component.value['id'] as ParsedLiteral;
+      if (id == null || typeof id.value !== 'string') {
+        this.#error(`${socketType} socket id must be string`, id.node);
+      }
+
+      const componentData = gameData.components.get(id.value);
+      if (componentData == null) {
+        this.#error(`Unknown component: ${id.value}`, id.node);
+      }
+
+      const behavior = component.value['behavior'] as ParsedLiteral;
+      let componentRegisters: Array<{}>;
+      const componentRegisterNames: Map<string, number> = new Map();
+      if (behavior != null) {
+        // If the component has a behavior then look up the subroutine to get register (parameter) count
+        if ((typeof behavior.value !== 'string' || !this.subs.has(behavior.value))) {
+          this.#error(`${socketType} socket behavior must be reference to function`, behavior.node);
+        }
+
+        const sub = this.subs.get(behavior.value)!;
+        componentRegisters = sub.parameters.map(p => ({}));
+        for (let parameterIndex = 0; parameterIndex < sub.parameters.length; parameterIndex++) {
+          const parameter = sub.parameters[parameterIndex];
+          if (!ts.isIdentifier(parameter.name)) {
+            this.#error("Parameter name must be identifier", parameter);
+          }
+
+          const parameterName = parameter.name.text;
+          componentRegisterNames.set(parameterName, parameterIndex);
+          if (!duplicateBehaviorControllerParameterNames.has(parameterName)) {
+            if (behaviorControllerParameterNames.has(parameterName)) {
+              behaviorControllerParameterNames.delete(parameterName);
+              duplicateBehaviorControllerParameterNames.add(parameterName);
+            } else {
+              behaviorControllerParameterNames.set(parameterName, registerIndex + parameterIndex);
+            }
+          }
+        }
+      } else {
+        // Otherwise the componentData will tell us how many registers this component has
+        componentRegisters = componentData.registers ?? [];
+      }
+
+      const links = component.value['links'] as ParsedLiteral;
+      if (links != null) {
+        if (Array.isArray(links.value)) {
+          for (let linkIndex = 0; linkIndex < links.value.length; linkIndex++) {
+            const item = links.value[linkIndex];
+            const registerNum = registerIndex + linkIndex;
+            if (linkIndex >= componentRegisters.length) {
+              this.#error(`Component only has ${componentRegisters.length} registers`, item.node)
+            }
+            updateLinks(registerNum, item);
+          }
+        } else if (typeof links.value === 'object') {
+          for (const key in links.value) {
+            const item = links.value[key];
+            const linkIndex = componentRegisterNames.get(key) ?? key;
+            const linkIndexNum = Number(linkIndex);
+            if (isNaN(linkIndexNum) || linkIndexNum < 0) {
+              this.#error(`Socket links object keys must be positive numbers`, links.node);
+            }
+
+            if (linkIndexNum >= componentRegisters.length) {
+              this.#error(`Component only has ${componentRegisters.length} registers`, item.node)
+            }
+
+            const registerNum = registerIndex + Number(linkIndex);
+            updateLinks(registerNum, item);
+          }
+        } else {
+          this.#error(`${socketType} socket links must be array or object`, links.node);
+        }
+      }
+
+      registerIndex += componentRegisters.length;
+
+      if (behavior?.value == null) {
+        this.#rawEmit(".component",
+            new LiteralValue({num: socketIndex + 1}),
+            new LiteralValue({id: id.value})
+        );
+      } else {
+        this.#rawEmit(".component",
+            new LiteralValue({num: socketIndex + 1}),
+            new LiteralValue({id: id.value}),
+            new Label(behavior.value as string)
+        );
+      }
+    }
+
+    if (parsedBlueprint.locks != null) {
+      if (!Array.isArray(parsedBlueprint.locks.value)) {
+        this.#error("Locks must be array", parsedBlueprint.locks.node);
+      }
+
+      for (let i = 0; i < parsedBlueprint.locks.value.length; i++) {
+        const lock = parsedBlueprint.locks.value[i];
+        if (typeof lock.value === 'string') {
+          this.#rawEmit(".lock",
+              new LiteralValue({num: i}),
+              new LiteralValue({id: lock.value})
+          );
+        } else if (typeof lock.value === 'boolean') {
+          this.#rawEmit(".lock",
+              new LiteralValue({num: i}),
+              lock.value ? TRUE : FALSE
+          );
+        } else if (lock.value != null) {
+          this.#error("Locks must be string or boolean", parsedBlueprint.locks.node);
+        }
+      }
+    }
+
+
+    // Emit the literal values for registers
+    for (const key in registerValues) {
+      this.#rawEmit(".reg",
+          new LiteralValue({num: Number(key) - 1}),
+          registerValues[key]
+      );
+    }
+
+    const resolvedLinks = new Set<string>();
+    for (const registerLink of registerLinks) {
+      let to: number;
+      if(typeof registerLink.to === 'number') {
+        to = registerLink.to;
+      } else {
+        const resolvedTo = registerNames.get(registerLink.to) ?? behaviorControllerParameterNames.get(registerLink.to);
+        if (resolvedTo == null) {
+          this.#error(`Unknown register name: ${registerLink.to}`, registerLink.node);
+        }
+
+        to = resolvedTo;
+      }
+
+      const linkId = `${registerLink.from}|${to}`;
+      if (resolvedLinks.has(linkId)) continue;
+      resolvedLinks.add(linkId);
+
+      this.#rawEmit(".link",
+          new LiteralValue({num: to}),
+          new LiteralValue({num: registerLink.from})
+      );
+    }
+  }
+
+  parseBlueprint(n: ts.ObjectLiteralExpression) {
+    return this.#parseLiteral(n, {
+      call: (call, handlers) => {
+        if (ts.isPropertyAccessExpression(call.expression)) {
+          const functionName = call.expression.name.text;
+          const thisArg = call.expression.expression;
+
+          if (!ts.isIdentifier(thisArg)) {
+            this.#error(`Property access must be on identifier: ${ts.SyntaxKind[thisArg.kind]}`, thisArg);
+          }
+
+          switch (thisArg.text) {
+            case "component": {
+              const jsName = functionName;
+
+              const component = gameData.componentsByJsName.get(jsName);
+              if (component == null) {
+                this.#error(`Unknown component: ${jsName}`, call.expression);
+              }
+
+              const hasBehaviorArgument = component.id === "c_behavior";
+
+              if (call.arguments.length > 2) {
+                this.#error("Component function accept 0, 1 or 2 arguments", call);
+              }
+
+              if (!hasBehaviorArgument && call.arguments.length === 2) {
+                // only behaviorControllers accept 3 arguments
+                this.#error("Component function accepts 1 argument", call);
+              }
+
+              let behavior: SpecificLiteral<string> | null = null;
+              let links: ParsedLiteral | null = null;
+              let argIdx = 0;
+
+              if (call.arguments.length > argIdx && hasBehaviorArgument) {
+                const arg = call.arguments[argIdx];
+                const parsed = this.#parseLiteral(arg, {
+                  ...handlers,
+                  identifier: (identifier, handlers) => {
+                    return identifier.text;
+                  }
+                });
+
+                if (parsed.value == null) {
+                  behavior = null;
+                } else if (typeof parsed.value === 'string') {
+                  behavior = parsed as SpecificLiteral<string>;
+                } else {
+                  this.#error(`Behavior reference must be an identifier: ${ts.SyntaxKind[call.arguments[argIdx].kind]}`, call.arguments[argIdx]);
+                }
+
+                argIdx++;
+              }
+
+              if (call.arguments.length > argIdx) {
+                const arg = call.arguments[argIdx];
+                links = this.#parseLiteral(arg, {
+                  ...handlers,
+                  identifier: (identifier, handlers) => {
+                    if(identifier.text in regNums) {
+                      return Math.abs(regNums[identifier.text]);
+                    }
+
+                    return handlers.identifier?.(identifier, handlers)
+                        ?? this.#error(`Unsupported identifier: ${identifier.text}`, identifier);
+                  }
+                });
+
+                argIdx++;
+              }
+
+              return {
+                id: {node: call.expression.name, value: component.id} as SpecificLiteral<string>,
+                behavior,
+                links
+              };
+            }
+          }
+        } else if (ts.isIdentifier(call.expression)) {
+          const functionName = call.expression.text;
+          switch (functionName) {
+            case "from":
+            case "to": {
+              const values: string[] = [];
+              for (const argument of call.arguments) {
+                const parsed = this.#parseLiteral(argument, handlers);
+                if (typeof parsed.value !== "string") {
+                  this.#error(`${functionName} function accept string literal argument`, call);
+                }
+                values.push(parsed.value);
+              }
+
+              return {[functionName]: values};
+            }
+            case "value": {
+              return this.builtins.value(call).value;
+            }
+          }
+        }
+
+        this.#error(`Unsupported call: ${call.expression.getText()} (${ts.SyntaxKind[call.expression.kind]})`, call);
+      }
+    }).value;
   }
 
   countOutputs(f: ts.FunctionDeclaration): number {
@@ -646,7 +1194,7 @@ class Compiler {
       }
       return dest;
     } else if (ts.isStringLiteral(e)) {
-      const value = new LiteralValue({ id: getDataById(e.text)?.id ?? e.text  });
+      const value = new LiteralValue({id: gameData.get(e.text)?.id ?? e.text});
       if (dest) {
         this.#emit(
           methods.setReg,
@@ -898,8 +1446,8 @@ class Compiler {
     this.#error(`Unsupported argument type: ${ts.SyntaxKind[arg.kind]}`, arg);
   };
 
-  builtins: Record<string, (e: ts.CallExpression) => LiteralValue> = {
-    value: (e) => {
+  builtins = {
+    value: (e: ts.CallExpression): LiteralValue => {
       if (e.arguments.length < 1 || e.arguments.length > 2) {
         this.#error(`Unsupported argument length: ${e.arguments.length}`, e);
       }
@@ -912,7 +1460,7 @@ class Compiler {
 
       if (e.arguments.length === 1) {
         return new LiteralValue({
-          id: getDataById(a)?.id ?? a
+          id: gameData.get(a)?.id ?? a
         })
       }
 
@@ -922,11 +1470,11 @@ class Compiler {
       }
 
       return new LiteralValue({
-        id: getDataById(a)?.id ?? a,
+        id: gameData.get(a)?.id ?? a,
         num: b
       });
     },
-    coord: (e) => {
+    coord: (e: ts.CallExpression): LiteralValue => {
       if (e.arguments.length !== 2) {
         this.#error(`Unsupported argument length: ${e.arguments.length}`, e);
       }
@@ -945,6 +1493,79 @@ class Compiler {
         }
       });
     }
+  }
+
+  #parseLiteral(
+      node: ts.Node,
+      handlers: ParseLiteralHandlers
+  ): ParsedLiteral {
+    const handleCall = handlers.call ?? (call => this.#error(`Unsupported call: ${call.expression.getText()}`, call));
+    const handleIdentifier = handlers.identifier ?? (identifier => this.#error(`Unsupported identifier: ${identifier.text}`, identifier));
+
+    if (ts.isStringLiteral(node)) {
+      return {node, value: node.text};
+    } else if (ts.isNumericLiteral(node)) {
+      return {node, value: Number(node.text)};
+    } else if (ts.isPrefixUnaryExpression(node)) {
+      switch (node.operator) {
+        case ts.SyntaxKind.PlusToken:
+          return {node, value: +this.#parseLiteral(node.operand, handlers)!};
+        case ts.SyntaxKind.MinusToken:
+          return {node, value: -this.#parseLiteral(node.operand, handlers)!};
+        case ts.SyntaxKind.TildeToken:
+          return {node, value: ~this.#parseLiteral(node.operand, handlers)!};
+        case ts.SyntaxKind.ExclamationToken:
+          return {node, value: !this.#parseLiteral(node.operand, handlers)!};
+      }
+      this.#error(`Unsupported literal ${ts.SyntaxKind[node.kind]}: ${ts.SyntaxKind[node.operator]}`, node);
+    } else if (ts.isParenthesizedExpression(node)) {
+      return this.#parseLiteral(node.expression, handlers);
+    } else if (ts.isObjectLiteralExpression(node)) {
+      const obj = {};
+
+      for (const property of node.properties) {
+        if (ts.isPropertyAssignment(property)) {
+          const key = this.#parseLiteral(property.name, {
+            ...handlers,
+            identifier: (node) => node.text
+          });
+          if (typeof key.value !== 'string' && typeof key.value !== 'number') {
+            this.#error("Object key must be string or number", key.node);
+          }
+
+          obj[key.value] = this.#parseLiteral(property.initializer, handlers);
+        } else {
+          this.#error(`Unsupported property ${ts.SyntaxKind[property.kind]}`, property);
+        }
+      }
+
+      return {node, value: obj};
+    } else if (tsApiUtils.isTrueLiteral(node)) {
+      return {node, value: true};
+    } else if (tsApiUtils.isFalseLiteral(node)) {
+      return {node, value: false};
+    } else if (ts.isArrayLiteralExpression(node)) {
+      const array: Array<ParsedLiteral> = [];
+
+      for (const element of node.elements) {
+        array.push(this.#parseLiteral(element, handlers));
+      }
+
+      return {node, value: array};
+    } else if (ts.isCallExpression(node)) {
+      return {node, value: handleCall(node, handlers) as ParsedLiteral['value']};
+    } else if (tsApiUtils.isNullLiteral(node)) {
+      return {node, value: null};
+    } else if (ts.isIdentifier(node)) {
+      const identifier = node.text;
+      if (identifier === "undefined") {
+        return {node, value: undefined};
+      }
+
+      return {node, value: handleIdentifier(node, handlers) as ParsedLiteral['value']};
+    }
+
+    this.#error(`Unsupported literal ${ts.SyntaxKind[node.kind]}`, node)
   }
 
   compileCall(
@@ -1007,7 +1628,6 @@ class Compiler {
     outs: (Variable | undefined)[] = []
   ): Variable {
     let dest = outs[0] || (outs[0] = this.#temp());
-    const args: (Arg | Variable)[] = [];
     let info = methods[name];
     if (!info && this.subs.has(name)) {
       let f = this.subs.get(name)!;
@@ -1032,20 +1652,33 @@ class Compiler {
 
     const inst = new Instruction(info.id, []);
 
-    const getTxt = (v: ts.Expression | Variable | undefined) => {
+    const extract = <E, V>(v: ts.Expression | Variable | undefined, exprCb: (expr: ts.Expression) => E, varCb: (variable: Variable) => V) => {
       if (v != null && isVar(v)) {
-        return v.reg?.type === "value" ? v.reg.value.id : undefined;
-      } else if (v != null && ts.isStringLiteral(v)) {
-        return v.text;
+        return varCb(v);
+      } else if (v != null) {
+        return exprCb(v);
       } else {
         return undefined;
       }
     }
 
-    const txtArg = info.special == "txt" && getTxt(rawArgs[0]);
+    const txtArg = info.special == "txt" && extract(rawArgs[0],
+            e => ts.isStringLiteral(e) && e.text,
+            v => v.reg?.type === "value" && v.reg.value.id);
+
     if (txtArg) {
       rawArgs.shift();
     }
+
+    const bpArg = info.bp && extract(rawArgs[0],
+            e => ts.isIdentifier(e) && e.text,
+            v => v.reg?.type === "value" && v.reg.value.id);
+
+    if (bpArg) {
+      rawArgs.shift();
+    }
+
+    const args: (Arg | Variable)[] = [];
 
     info.in
       ?.filter(v => info.thisArg !== v)
@@ -1095,6 +1728,9 @@ class Compiler {
     }
     if (txtArg) {
       inst.text = txtArg;
+    }
+    if (bpArg) {
+      inst.bp = new Label(bpArg);
     }
     if (info.c != null) {
       inst.c = info.c;
@@ -1732,3 +2368,24 @@ function getNumeric(e: ts.Expression): ts.Expression {
   return e;
 }
 
+type ParseLiteralHandlers = {
+  call?: (call: ts.CallExpression, handlers: ParseLiteralHandlers) => unknown,
+  identifier?: (identifier: ts.Identifier, handlers: ParseLiteralHandlers) => unknown
+};
+
+type SpecificLiteral<T> = {
+  node: ts.Node,
+  value: T
+}
+
+type ParsedLiteral = {
+  node: ts.Node,
+  value:
+      | string
+      | number
+      | boolean
+      | null
+      | undefined
+      | { [key: string]: ParsedLiteral }
+      | ParsedLiteral[]
+};

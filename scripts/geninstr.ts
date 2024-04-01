@@ -8,7 +8,7 @@
 // - `npx ts-node scripts/geninstr.ts`
 
 import * as fs from "fs";
-import { gameData, GameData } from "../data";
+import {gameData, GameData} from "../data";
 import overrides from "./overrides.json";
 import {CompilerOptions} from "../compiler_options";
 import * as ts from "typescript";
@@ -91,6 +91,7 @@ interface CompileInfo {
   loop?: boolean;
   special?: "txt" | "bp";
   c?: number;
+  bp?: boolean;
 }
 
 const instructions = gameData.instructions as unknown as {
@@ -229,6 +230,9 @@ function generateCompile(genInfo: GenInfo) {
   } else if (genInfo.outArgs.length > 1) {
     info.out = genInfo.outArgs.map((v) => v[0]);
   }
+  if (genInfo.bp) {
+    info.bp = genInfo.bp;
+  }
   compileInfos[genInfo.js] = info;
 }
 
@@ -236,6 +240,7 @@ interface ParamInfo {
   name: string;
   doc?: string;
   type: string;
+  optional?: boolean;
 }
 
 function generateTypes(genInfo: GenInfo, doc?: string) {
@@ -248,11 +253,12 @@ function generateTypes(genInfo: GenInfo, doc?: string) {
       .map((v, i) => {
         const type = (v[3] && FilterTypes[v[3]]) ?? "Value";
         // TODO: should other arguments be optional?
-        let optional = genInfo.optional! <= i || v[3] == "radar" ? "?" : "";
+        let optional = genInfo.optional! <= i || v[3] == "radar";
         return {
-          name: makeJSVarName(v[1]) + optional,
+          name: makeJSVarName(v[1]),
           doc: v[2] || undefined,
           type,
+          optional,
         };
       })
   );
@@ -260,6 +266,13 @@ function generateTypes(genInfo: GenInfo, doc?: string) {
     params.unshift({
       name: "text",
       type: "string",
+    });
+  }
+  if (genInfo.bp) {
+    params.unshift({
+      name: "blueprint",
+      type: "Blueprint",
+      doc: "The blueprint to use"
     });
   }
   const jsdoc = generateDoc(genInfo, params, doc);
@@ -292,7 +305,7 @@ function generateTypes(genInfo: GenInfo, doc?: string) {
     }
     dtsProps.push(`  ${jsdoc}${genInfo.js}${q}: ${returnType};`);
   } else {
-    const paramStrs = params.map((v) => `${v.name}: ${v.type}`);
+    const paramStrs = params.map((v) => `${v.name}${v.optional ? '?' : ''}: ${v.type}`);
     const decl = `${genInfo.js}(${paramStrs.join(", ")}): ${returnType};`;
     if (genInfo.type == "function") {
       dtsFunctions.push(`${jsdoc}declare function ${decl}`);
@@ -360,13 +373,11 @@ function uniqify(params: ParamInfo[]) {
   params.forEach((v, i) => {
     let name = v.name;
     let n = 1;
-    let optional = name.endsWith("?");
-    let plainName = name.substring(0, name.length - (optional ? 1 : 0));
-    let suffix = optional ? "?" : "";
+    let optional = v.optional;
     for (let j = i + 1; j < params.length; j++) {
       if (params[j].name == name) {
-        v.name = `${plainName}1${suffix}`;
-        params[j].name = `${plainName}${++n}${suffix}`;
+        v.name = `${name}1`;
+        params[j].name = `${name}${++n}`;
       }
     }
   });
@@ -377,15 +388,18 @@ function quote(str: string) {
   return JSON.stringify(str);
 }
 
-function toEnum<T extends GameData>(data: Array<T> | Record<string, T>, fn?: (item: T) => boolean): string {
+function toEnum<T extends GameData>(data: Array<T> | Map<any, T>, fn?: (item: T) => boolean): string {
   const filter = fn ?? (() => true);
-  if(!Array.isArray(data)) {
-    data = Object.values(data);
+  const array = Array.isArray(data) ? data : data.values();
+  const result: string[] = [];
+
+  for (const e of array) {
+    if (filter(e)) {
+      result.push(`  | ${quote(e.jsName)}`)
+    }
   }
 
-  return data.filter(filter).map(e => {
-   return `  | ${quote(e.id)}`
-  }).join("\n");
+  return result.join("\n");
 }
 
 function makeJSVarName(name: string): string {
@@ -408,6 +422,7 @@ fs.writeFileSync(
   special?: 'txt'|'bp';
   c?: number;
   sub?: string;
+  bp?: boolean;
 }
 export const methods: { [key: string]: MethodInfo } = ${JSON.stringify(
     compileInfos,
@@ -424,6 +439,95 @@ for (const op of Object.values(methods)) {
 `
 );
 
+function naturalSort(a: string, b: string) {
+  return a.localeCompare(b, undefined, {numeric: true, sensitivity: 'base'});
+}
+
+const bpComponents = Array.from(gameData.componentsByJsName.keys()).sort(naturalSort).map(componentJsName => {
+  const component = gameData.componentsByJsName.get(componentJsName)!;
+  if (component.attachment_size == null || !(component.attachment_size in gameData.socketSizes)) {
+    return;
+  }
+
+  // Handled separately in template
+  if (component.id === "c_behavior") return;
+
+  const jsName = component.componentJsName;
+  const linkArgsArray = "[" + (component.registers ?? []).map(register => {
+    return register.read_only ? "ReadOnlyLinkArg?" : "LinkArg?";
+  }).join(", ") + "]";
+  const linkArgsObject = "{" + (component.registers ?? []).map((register, index) => {
+    return index + "?: " + (register.read_only ? "ReadOnlyLinkArg" : "LinkArg");
+  }).join(", ") + "}";
+  let componentType = `${component.attachment_size}Component`
+
+  return `
+/**
+ * ${component.name} (${component.id})
+ */
+function ${jsName}(links?: ${linkArgsArray} | ${linkArgsObject}): ${componentType};
+  `.trim().replace(/^/gm, "    ");
+}).filter(c => c != null);
+
+const dtsBlueprintFns = Array.from(gameData.framesByJsName.keys()).sort(naturalSort).map(frameJsName => {
+  const frame = gameData.framesByJsName.get(frameJsName)!;
+  if (!frame.visual) return;
+  const visual = gameData.visuals.get(frame.visual)!;
+  const sockets = visual.sockets ?? [];
+  const slots = frame.slots ?? {};
+
+  const socketCounts = sockets.reduce((prev, socket) => {
+    const key = socket[1];
+    prev[key] = (prev[key] ?? 0) + 1;
+    return prev;
+  }, {
+    Large: 0,
+    Medium: 0,
+    Small: 0,
+    Internal: 0,
+  });
+
+  const socketDoc = Object.entries(socketCounts).map(([socketName, socketValue]) => {
+    if (socketValue > 0) {
+      return `${socketValue} ${socketName.toLowerCase()}`
+    }
+  }).filter(e => e != null).join(", ");
+
+  const slotDoc = Object.entries(slots).map(([slotName, slotValue]) => {
+    if (slotValue > 0) {
+      return `${slotValue} ${slotName.toLowerCase()}`
+    }
+  }).filter(e => e != null).join(", ");
+
+  const docLines = [
+    `${frame.name} (${frame.id})`,
+    "",
+    frame.desc ? frame.desc : null,
+    frame.desc ? "" : null,
+    socketDoc ? `Sockets: ${socketDoc}` : null,
+    slotDoc ? `Slots: ${slotDoc}` : null
+  ].filter(l => l != null).map(l => `   * ${l}`).join("\n");
+
+  const makeComponentTypeTuple = (key: keyof typeof socketCounts) => {
+    const count = socketCounts[key];
+    const parts: string[] = [];
+
+    for(let i = 0; i < count; i++) {
+      parts.push(`${key}ComponentArg?`);
+    }
+
+    return `[${parts.join(', ')}]`;
+  };
+
+  const jsName = frame.frameJsName;
+
+  return `
+  /**
+${docLines}
+   */
+  function ${jsName}(blueprint: BlueprintArgs<${makeComponentTypeTuple('Internal')}, ${makeComponentTypeTuple('Small')}, ${makeComponentTypeTuple('Medium')}, ${makeComponentTypeTuple('Large')}>): Blueprint;`;
+}).filter(f => f != null);
+
 const dtsContents = `
 type Value = number & BaseValue;
 interface Number extends BaseValue {}
@@ -437,11 +541,14 @@ ${dtsMethods.join("\n")}
 ${dtsFunctions.join("\n")}
 
 declare const self: Value;
-declare var goto: Value;
-declare var store: Value;
-declare var visual: Value;
-declare var signal: Value;
 
+type BuiltinRegisterValue<N extends number = number> = Value & { regNum: N };
+declare var goto: BuiltinRegisterValue<1>;
+declare var store: BuiltinRegisterValue<2>;
+declare var visual: BuiltinRegisterValue<3>;
+declare var signal: BuiltinRegisterValue<4>;
+
+type AnyId = Item | Frame | RadarFilter | Color | Extra;
 type AnyValue = Coord | ItemNum | FrameNum | RadarFilter | ColorNum | ExtraNum;
 type Coord = [number, number];
 type CoordNum = Coord | number;
@@ -488,6 +595,71 @@ declare function value(id: Resource, num?: number): Value;
 declare function value(id: Frame, num?: number): Value;
 declare function value(id: Color, num?: number): Value;
 declare function value(id: Extra, num?: number): Value;
+
+type LinkArgValue = Value | AnyId | number;
+type LinkArgToValue = string | BuiltinRegisterValue;
+type ReadOnlyLinkArg = { to?: (LinkArgToValue | LinkArgToValue[]) };
+type LinkArg = (ReadOnlyLinkArg & { name?: string, value?: LinkArgValue }) | LinkArgValue;
+
+declare class Blueprint {
+    type: 'blueprint';
+}
+declare class Component {
+    type: 'component';
+    size: string;
+}
+declare class InternalComponent extends Component {
+    size: 'Internal';
+}
+declare class SmallComponent extends Component {
+    size: 'Small';
+}
+declare class MediumComponent extends Component {
+    size: 'Medium';
+}
+declare class LargeComponent extends Component {
+    size: 'Large';
+}
+
+type InternalComponentArg = InternalComponent;
+type SmallComponentArg = SmallComponent | InternalComponent;
+type MediumComponentArg = MediumComponent | SmallComponent | InternalComponent;
+type LargeComponentArg = LargeComponent | MediumComponent | SmallComponent | InternalComponent;
+
+type BlueprintArgs<I, S, M, L> = {
+    name?: string,
+    power?: boolean,
+    connected?: boolean,
+    channels?: Array<number>
+    transportRoute?: boolean,
+    requester?: boolean,
+    supplier?: boolean,
+    deliver?: boolean,
+    itemTransporterOnly?: boolean,
+    highPriority?: boolean,
+    construction?: boolean,
+    signal?: LinkArg,
+    visual?: LinkArg,
+    store?: LinkArg,
+    goto?: LinkArg,
+    internal?: I,
+    small?: S,
+    medium?: M,
+    large?: L,
+    locks?: Array<AnyId | boolean | null | undefined>,
+};
+
+declare namespace component {
+    /**
+    * Behavior Controller
+    */
+    function behaviorController<T extends (...arg: Value[]) => void>(behavior?: T, links?: Record<string | number, LinkArg> | Array<LinkArg>): InternalComponent;
+${bpComponents.join("\n")}
+}
+
+declare namespace blueprint {
+${dtsBlueprintFns.join("\n")}
+}
 `;
 
 fs.writeFileSync("behavior.d.ts", dtsContents);

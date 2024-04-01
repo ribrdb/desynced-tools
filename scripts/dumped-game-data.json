@@ -471,6 +471,7 @@
   "frames": {
     "f_alien_console": {
       "name": "Console",
+      "desc": "WIP",
       "visual": "v_explorable_blightanomaly_03",
       "slots": {
         "storage": 4
@@ -478,12 +479,14 @@
     },
     "f_alien_explorable": {
       "name": "Alien Explorable",
+      "desc": "WIP",
       "slots": {
         "storage": 6
       }
     },
     "f_alien_heart_shard": {
       "name": "Heart Shard",
+      "desc": "WIP",
       "visual": "v_explorable_blightanomaly_01",
       "slots": {
         "storage": 4
@@ -491,6 +494,7 @@
     },
     "f_alien_monolith": {
       "name": "Monolith",
+      "desc": "WIP",
       "visual": "v_explorable_monolith_01",
       "slots": {
         "storage": 4
@@ -498,6 +502,7 @@
     },
     "f_alien_observer": {
       "name": "Alien Observer",
+      "desc": "WIP",
       "visual": "v_explorable_blightanomaly_02",
       "slots": {
         "storage": 4
@@ -510,10 +515,12 @@
       "visual": "v_alien_soldier",
       "slots": {
         "storage": 2
-      }
+      },
+      "start_disconnected": true
     },
     "f_alien_time_egg": {
       "name": "Time Egg",
+      "desc": "WIP",
       "visual": "v_explorable_timeegg_01",
       "slots": {
         "storage": 4
@@ -526,10 +533,12 @@
       "visual": "v_empty_alien",
       "slots": {
         "storage": 4
-      }
+      },
+      "start_disconnected": true
     },
     "f_amac": {
       "name": "AMAC",
+      "desc": "This structure allows for the construction and launching of satellite units capable of operating in space.",
       "size": "Special",
       "visual": "v_amac_01_xl",
       "slots": {
@@ -566,82 +575,100 @@
     },
     "f_bot_1l_a": {
       "name": "Rock",
+      "desc": "Slow moving but mounts a large component and has exceptional inventory space",
       "flags": "AnimateRoot|ClearFoliage",
       "size": "Unit",
       "visual": "v_bot_1l_a",
       "slots": {
         "storage": 8
-      }
+      },
+      "start_disconnected": true
     },
     "f_bot_1m_a": {
       "name": "Cub",
+      "desc": "This bot is the first to mount a medium component",
       "flags": "AnimateRoot",
       "size": "Unit",
       "visual": "v_bot_1m_a",
       "slots": {
         "storage": 2
-      }
+      },
+      "start_disconnected": true
     },
     "f_bot_1m_b": {
       "name": "Hauler",
+      "desc": "A bot with a medium socket, excellent speed and expanded storage",
       "size": "Unit",
       "visual": "v_bot_1m_b",
       "slots": {
         "storage": 4
-      }
+      },
+      "start_disconnected": true
     },
     "f_bot_1m_c": {
       "name": "Mark V",
+      "desc": "An advanced bot with a medium socket and exceptional speed and capacity",
       "size": "Unit",
       "visual": "v_bot_1m_c",
       "slots": {
         "storage": 4
-      }
+      },
+      "start_disconnected": true
     },
     "f_bot_1m1s": {
       "name": "Hound",
+      "desc": "An upgraded version of the Cub, adding a small socket in the back",
       "flags": "AnimateRoot",
       "size": "Unit",
       "visual": "v_bot_1m1s_a",
       "slots": {
         "storage": 4
-      }
+      },
+      "start_disconnected": true
     },
     "f_bot_1s_a": {
       "name": "Worker",
+      "desc": "Initial low-tech bots.  Mount a single small component and have a single inventory",
       "flags": "AnimateRoot",
       "size": "Unit",
       "visual": "v_bot_1s_a",
       "slots": {
         "storage": 1
-      }
+      },
+      "start_disconnected": true
     },
     "f_bot_1s_adw": {
       "name": "Engineer",
+      "desc": "Engineer Unit with excellent production speed and extensive upgradeability.",
       "flags": "AnimateRoot",
       "size": "Unit",
       "visual": "v_bot_1s_adw",
       "slots": {
         "storage": 2
-      }
+      },
+      "start_disconnected": true
     },
     "f_bot_1s_as": {
       "name": "Scout",
+      "desc": "Advanced high-speed starter bot with a single small socket",
       "flags": "AnimateRoot",
       "size": "Unit",
       "visual": "v_bot_1s_as",
       "slots": {
         "storage": 4
-      }
+      },
+      "start_disconnected": true
     },
     "f_bot_1s_b": {
       "name": "Dashbot",
+      "desc": "A faster upgrade to the worker bot with additional inventory",
       "flags": "AnimateRoot",
       "size": "Unit",
       "visual": "v_bot_1s_b",
       "slots": {
         "storage": 2
-      }
+      },
+      "start_disconnected": true
     },
     "f_bot_2m_as": {
       "name": "Command Center",
@@ -650,16 +677,19 @@
       "visual": "v_bot_2m_as",
       "slots": {
         "storage": 8
-      }
+      },
+      "start_disconnected": true
     },
     "f_bot_2s": {
       "name": "Twinbot",
+      "desc": "A bot with two small components to allow complimentary functionality",
       "flags": "AnimateRoot",
       "size": "Unit",
       "visual": "v_bot_2s_a",
       "slots": {
         "storage": 4
-      }
+      },
+      "start_disconnected": true
     },
     "f_bug_hive": {
       "name": "Bug Hive",
@@ -706,6 +736,7 @@
     },
     "f_building_sim": {
       "name": "Re-simulator",
+      "desc": "Reconstructs objects on a simulation level, charged via datacubes.",
       "size": "Special",
       "visual": "v_building_sim",
       "slots": {
@@ -714,6 +745,7 @@
     },
     "f_building_simulator": {
       "name": "Simulator",
+      "desc": "OPERATION UNKNOWN",
       "size": "Special",
       "visual": "v_building_simulator",
       "slots": {
@@ -722,6 +754,7 @@
     },
     "f_building1x1a": {
       "name": "Building 1x1 (1M)",
+      "desc": "Sacrifices Inventory Space to be able to support a Medium Component",
       "size": "Medium",
       "visual": "v_base1x1a",
       "slots": {
@@ -730,6 +763,7 @@
     },
     "f_building1x1b": {
       "name": "Building 1x1 (L)",
+      "desc": "Can support a Large Component but lacks an inventory space",
       "size": "Large",
       "visual": "v_base1x1b",
       "slots": {
@@ -738,6 +772,7 @@
     },
     "f_building1x1c": {
       "name": "Building 1x1 (2S)",
+      "desc": "Provides an second Small Component Slot at the expense of Inventory Space",
       "size": "Small",
       "visual": "v_base1x1c",
       "slots": {
@@ -746,6 +781,7 @@
     },
     "f_building1x1d": {
       "name": "Building 1x1 (1S)",
+      "desc": "Basic 1x1 Building with Good Inventory space, but supports only one Small Component",
       "size": "Small",
       "visual": "v_base1x1d",
       "slots": {
@@ -762,6 +798,7 @@
     },
     "f_building1x1f": {
       "name": "Storage Block (8)",
+      "desc": "A simple storage unit. Automatically transfer items here through the logistics network by setting the STORE parameter of other units to this building.",
       "size": "Small",
       "visual": "v_base1x1f",
       "slots": {
@@ -770,6 +807,7 @@
     },
     "f_building1x1g": {
       "name": "Storage Block (16)",
+      "desc": "A larger storage unit which allows double stacking.",
       "size": "Small",
       "visual": "v_base1x1g",
       "slots": {
@@ -898,12 +936,14 @@
     },
     "f_carrier_bot": {
       "name": "Runner",
+      "desc": "A small cargo bot for moving items.",
       "flags": "AnimateRoot",
       "size": "Unit",
       "visual": "v_carrier_bot",
       "slots": {
         "storage": 1
-      }
+      },
+      "start_disconnected": false
     },
     "f_charcharosaurus1": {
       "name": "Gigakaiju",
@@ -1011,12 +1051,14 @@
     },
     "f_flyer_bot": {
       "name": "Flyer Bot",
+      "desc": "A bot that flies",
       "flags": "AnimateRoot",
       "size": "Unit",
       "visual": "v_flyer_bot",
       "slots": {
         "storage": 1
-      }
+      },
+      "start_disconnected": true
     },
     "f_flyer_m": {
       "name": "Shuttle Bot",
@@ -1030,6 +1072,7 @@
     "f_forestleaves": {},
     "f_foundation": {
       "name": "Foundation",
+      "desc": "The ground foundation that gives a 20% speed boost",
       "type": "Foundation",
       "size": "Other",
       "visual": "v_foundation"
@@ -1082,7 +1125,8 @@
       "visual": "v_human_buggy",
       "slots": {
         "anomaly": 1
-      }
+      },
+      "start_disconnected": true
     },
     "f_human_explorer_broken": {
       "name": "Human Explorer (Broken)",
@@ -1099,7 +1143,8 @@
       "slots": {
         "anomaly": 1,
         "storage": 2
-      }
+      },
+      "start_disconnected": true
     },
     "f_human_flyer": {
       "name": "Human Flyer",
@@ -1108,7 +1153,8 @@
       "visual": "v_human_flyer",
       "slots": {
         "storage": 2
-      }
+      },
+      "start_disconnected": true
     },
     "f_human_foundation": {
       "name": "Human Foundation",
@@ -1128,7 +1174,8 @@
       "visual": "v_human_miner",
       "slots": {
         "storage": 1
-      }
+      },
+      "start_disconnected": true
     },
     "f_human_tank": {
       "name": "Human Tank",
@@ -1137,7 +1184,8 @@
       "visual": "v_human_tank",
       "slots": {
         "storage": 0
-      }
+      },
+      "start_disconnected": true
     },
     "f_landingpod": {
       "name": "Command Center",
@@ -1216,6 +1264,7 @@
     },
     "f_roamingbot": {
       "name": "Curious Bot",
+      "desc": "---",
       "flags": "AnimateRoot",
       "visual": "v_robot_s",
       "slots": {
@@ -1247,12 +1296,14 @@
     },
     "f_transport_bot": {
       "name": "Transport Bot",
+      "desc": "A cargo bot that gives up components in favor of inventory space",
       "flags": "AnimateRoot",
       "size": "Unit",
       "visual": "v_transport_bot",
       "slots": {
         "storage": 12
-      }
+      },
+      "start_disconnected": true
     },
     "f_trilobyte1": {
       "name": "Trilobyte",
@@ -1260,7 +1311,8 @@
       "visual": "v_trilobite1",
       "slots": {
         "storage": 1
-      }
+      },
+      "start_disconnected": true
     },
     "f_wall": {
       "name": "Wall",
@@ -1284,950 +1336,1549 @@
   },
   "components": {
     "c_adv_miner": {
+      "base_id": "c_miner",
       "name": "Laser Mining Tool",
       "attachment_size": "Small",
-      "visual": "v_miner_adv_s"
+      "visual": "v_miner_adv_s",
+      "registers": [
+        {
+          "type": "miner",
+          "tip": "Resource to mine and amount"
+        }
+      ]
     },
     "c_adv_portable_turret": {
+      "base_id": "c_turret",
       "name": "Small Advanced Turret",
       "attachment_size": "Small",
       "visual": "v_starterturret_adv_s"
     },
     "c_ai_bot_behavior": {
+      "base_id": "c_ai_bot_behavior",
       "name": "AI Bot"
     },
     "c_aibase_trigger": {
+      "base_id": "c_aibase_trigger",
       "name": "c_aibase_trigger",
       "attachment_size": "Hidden"
     },
     "c_alien_ac": {
+      "base_id": "c_alien_ac",
       "name": "Alien Simulation Core",
       "attachment_size": "Internal",
       "visual": "v_generic_i"
     },
     "c_alien_attack": {
+      "base_id": "c_turret",
       "name": "Alien Attack",
       "attachment_size": "Internal"
     },
     "c_alien_container_i": {
+      "base_id": "c_alien_container_i",
       "name": "Internal Alien Container",
       "attachment_size": "Internal",
-      "visual": "v_generic_i"
+      "visual": "v_generic_i",
+      "slots": {
+        "alien": 1
+      }
     },
     "c_alien_core": {
+      "base_id": "c_alien_core",
       "name": "Alien_Core",
       "attachment_size": "Internal"
     },
     "c_alien_extractor": {
+      "base_id": "c_alien_extractor",
       "name": "Alien Extractor",
       "attachment_size": "Internal"
     },
     "c_alien_factory": {
+      "base_id": "c_fabricator",
       "name": "Alien Factory",
       "attachment_size": "Internal"
     },
     "c_alien_feeder": {
+      "base_id": "c_blight_extractor",
       "name": "Alien Feeder",
-      "attachment_size": "Internal"
+      "attachment_size": "Internal",
+      "slots": {
+        "storage": 1
+      }
     },
     "c_alien_key": {
+      "base_id": "c_alien_key",
       "name": "Alien Decryption Key",
       "attachment_size": "Internal",
-      "visual": "v_generic_i"
+      "visual": "v_generic_i",
+      "registers": [
+        {
+          "tip": "Key",
+          "read_only": true,
+          "filter": "alienkey"
+        }
+      ]
     },
     "c_alien_liquid_fx": {
+      "base_id": "c_alien_liquid_fx",
       "name": "Alien Liquid",
       "attachment_size": "Internal"
     },
     "c_alien_lock": {
-      "name": "Alien Lock"
+      "base_id": "c_alien_lock",
+      "name": "Alien Lock",
+      "registers": [
+        {
+          "read_only": true
+        }
+      ]
     },
     "c_alien_miner": {
+      "base_id": "c_miner",
       "name": "Alien Miner",
       "attachment_size": "Internal"
     },
     "c_alien_research": {
+      "base_id": "c_uplink",
       "name": "Alien Research",
       "attachment_size": "Internal"
     },
     "c_alien_stealth": {
+      "base_id": "c_stealth",
       "name": "Alien Stealth Module",
       "attachment_size": "Internal",
       "visual": "v_generic_i"
     },
     "c_alien_translator": {
+      "base_id": "c_alien_translator",
       "name": "Alien Translator",
       "attachment_size": "Internal",
-      "visual": "v_generic_i"
+      "visual": "v_generic_i",
+      "registers": [
+        {
+          "tip": "Glyph"
+        },
+        {
+          "tip": "Translation",
+          "read_only": true
+        }
+      ]
     },
     "c_alien_unit": {
+      "base_id": "c_alien_unit",
       "name": "Alien Unit"
     },
     "c_anomaly_container_i": {
+      "base_id": "c_anomaly_container_i",
       "name": "Internal Anomaly Containment",
       "attachment_size": "Internal",
-      "visual": "v_generic_i"
+      "visual": "v_generic_i",
+      "slots": {
+        "anomaly": 3
+      }
     },
     "c_anomaly_event": {
+      "base_id": "c_anomaly_event",
       "name": "Anomaly",
       "attachment_size": "Internal"
     },
     "c_anomaly_go_home": {
+      "base_id": "c_anomaly_go_home",
       "name": "c_anomaly_go_home"
     },
     "c_anomaly_resimulator_trigger": {
+      "base_id": "c_anomaly_resimulator_trigger",
       "name": "c_anomaly_resimulator_trigger",
       "attachment_size": "Hidden"
     },
     "c_antlers1s": {
+      "base_id": "c_antlers1s",
       "name": "Antlers",
       "attachment_size": "Small",
       "visual": "v_Antlers_01_S"
     },
     "c_antlersnose1s": {
+      "base_id": "c_antlersnose1s",
       "name": "Antlers Nose",
       "attachment_size": "Small",
       "visual": "v_AntlersNose_01_S"
     },
     "c_assembler": {
+      "base_id": "c_fabricator",
       "name": "Assembler",
       "attachment_size": "Medium",
       "visual": "v_assembler_01_m"
     },
     "c_autobase": {
+      "base_id": "c_behavior",
       "name": "AI Behavior Controller",
       "attachment_size": "Internal"
     },
     "c_battery": {
+      "base_id": "c_battery",
       "name": "Medium Battery",
       "attachment_size": "Medium",
       "visual": "v_battery_01_m"
     },
     "c_behavior": {
+      "base_id": "c_behavior",
       "name": "Behavior Controller",
       "attachment_size": "Internal",
       "visual": "v_generic_i"
     },
     "c_big_daikon_trigger": {
+      "base_id": "c_big_daikon_trigger",
       "name": "c_big_daikon_trigger",
       "attachment_size": "Hidden"
     },
     "c_blight_a_trigger": {
+      "base_id": "c_blight_a_trigger",
       "name": "c_blight_a_trigger",
       "attachment_size": "Hidden"
     },
     "c_blight_ac": {
+      "base_id": "c_blight_ac",
       "name": "Blight Simulation Core",
       "attachment_size": "Internal",
       "visual": "v_generic_i"
     },
     "c_blight_antenna": {
+      "base_id": "c_turret",
       "name": "Blight Stabilizer",
       "attachment_size": "Medium",
       "visual": "v_blight_stabilizer"
     },
     "c_blight_container_i": {
+      "base_id": "c_blight_container_i",
       "name": "Internal Blight Container",
       "attachment_size": "Internal",
-      "visual": "v_generic_i"
+      "visual": "v_generic_i",
+      "slots": {
+        "gas": 1
+      }
     },
     "c_blight_container_m": {
+      "base_id": "c_blight_container_m",
       "name": "Blight Container Medium",
       "attachment_size": "Medium",
-      "visual": "v_blightcontainer_m"
+      "visual": "v_blightcontainer_m",
+      "slots": {
+        "gas": 6
+      }
     },
     "c_blight_container_s": {
+      "base_id": "c_blight_container_s",
       "name": "Blight Container Small",
       "attachment_size": "Small",
-      "visual": "v_blightcontainer_s"
+      "visual": "v_blightcontainer_s",
+      "slots": {
+        "gas": 3
+      }
     },
     "c_blight_control": {
+      "base_id": "c_turret",
       "name": "Blight Control Tower",
       "attachment_size": "Medium",
       "visual": "v_blight_control"
     },
     "c_blight_converter": {
+      "base_id": "c_blight_converter",
       "name": "Resource Converter",
       "attachment_size": "Medium",
       "visual": "v_blight_converter"
     },
     "c_blight_extractor": {
+      "base_id": "c_blight_extractor",
       "name": "Blight Extractor",
       "attachment_size": "Small",
-      "visual": "v_blightextractor_s"
+      "visual": "v_blightextractor_s",
+      "slots": {
+        "gas": 1
+      }
     },
     "c_blight_magnifier": {
+      "base_id": "c_blight_magnifier",
       "name": "Blight Magnifier",
       "attachment_size": "Medium",
       "visual": "v_blight_magnifier"
     },
     "c_blight_power": {
+      "base_id": "c_blight_power",
       "name": "Blight Power Generator",
       "attachment_size": "Medium",
       "visual": "v_blightpowergenerator_01_m"
     },
     "c_blight_shield": {
+      "base_id": "c_blight_shield",
       "name": "Blight Charger",
       "attachment_size": "Internal",
       "visual": "v_generic_i"
     },
     "c_blight_terraformer": {
+      "base_id": "c_terraformer",
       "name": "Alien Terraformer",
       "attachment_size": "Internal",
       "visual": "v_generic_i"
     },
     "c_bug_a_repair": {
+      "base_id": "c_mothership_repair",
       "name": "Mining base repairs"
     },
     "c_bug_capture_trigger": {
+      "base_id": "c_bug_capture_trigger",
       "name": "c_bug_capture_trigger",
       "attachment_size": "Hidden"
     },
     "c_bug_homeless": {
+      "base_id": "c_bug_homeless",
       "name": "Homeless Bug"
     },
     "c_bug_mission_trigger": {
+      "base_id": "c_bug_mission_trigger",
       "name": "c_bug_mission_trigger",
       "attachment_size": "Hidden"
     },
     "c_bug_spawn": {
+      "base_id": "c_bug_spawn",
       "name": "Bug Hive Spawner"
     },
     "c_bug_spawner_large": {
+      "base_id": "c_bug_spawn",
       "name": "c_bug_spawner_large"
     },
     "c_capacitor": {
+      "base_id": "c_capacitor",
       "name": "Capacitor",
       "attachment_size": "Internal",
       "visual": "v_generic_i"
     },
     "c_carrier_factory": {
+      "base_id": "c_fabricator",
       "name": "Robot Factory"
     },
     "c_construction": {
+      "base_id": "c_construction",
       "name": "Constructor"
     },
     "c_crane": {
+      "base_id": "c_crane",
       "name": "Item Transporter",
       "attachment_size": "Medium",
       "visual": "v_transporter_01_m"
     },
     "c_crystal_power": {
+      "base_id": "c_crystal_power",
       "name": "Crystal Power",
       "attachment_size": "Small",
       "visual": "v_crystalpower_01_s"
     },
     "c_damage_plant": {
+      "base_id": "c_damage_plant",
       "name": "Damage Plant"
     },
     "c_damage_plant_internal": {
+      "base_id": "c_damage_plant_internal",
       "name": "Damage Planet Internal"
     },
     "c_damageself": {
+      "base_id": "c_damageself",
       "name": "Damage on Trigger"
     },
     "c_data_analyzer": {
+      "base_id": "c_fabricator",
       "name": "Data Analyzer",
       "attachment_size": "Large",
       "visual": "v_dataanalyzer_L"
     },
     "c_deconstructor": {
+      "base_id": "c_deconstructor",
       "name": "Deconstructor",
       "attachment_size": "Small",
-      "visual": "v_deconstructor_01_s"
+      "visual": "v_deconstructor_01_s",
+      "registers": [
+        {
+          "type": "entity",
+          "tip": "Preferred Target"
+        }
+      ]
     },
     "c_deploy_construction": {
+      "base_id": "c_deploy_construction",
       "name": "Deployment Constructor"
     },
     "c_deployer": {
+      "base_id": "c_deployer",
       "name": "Deployer",
       "attachment_size": "Internal",
-      "visual": "v_generic_i"
+      "visual": "v_generic_i",
+      "registers": [
+        {
+          "tip": "Target Unit"
+        },
+        {
+          "tip": "Acquired Unit",
+          "read_only": true
+        }
+      ]
     },
     "c_deployment": {
+      "base_id": "c_deployment",
       "name": "Deployment",
-      "visual": "v_generic_i"
+      "visual": "v_generic_i",
+      "registers": [
+        {
+          "tip": "Deploy Base"
+        }
+      ]
     },
     "c_destroyself": {
+      "base_id": "c_destroyself",
       "name": "Destroy on Trigger"
     },
     "c_disappear_empty": {
+      "base_id": "c_disappear_empty",
       "name": "Glitch Building"
     },
     "c_drone_comp": {
+      "base_id": "c_drone_comp",
       "name": "Drone Component",
       "attachment_size": "Internal",
-      "visual": "v_generic_i"
+      "visual": "v_generic_i",
+      "slots": {
+        "drone": 1
+      },
+      "registers": [
+        {}
+      ]
     },
     "c_drone_launcher": {
+      "base_id": "c_drone_launcher",
       "name": "Drone Launcher",
       "attachment_size": "Medium",
-      "visual": "v_dronehub_01_m"
+      "visual": "v_dronehub_01_m",
+      "slots": {
+        "drone": 6
+      },
+      "registers": [
+        {}
+      ]
     },
     "c_drone_port": {
+      "base_id": "c_drone_port",
       "name": "Drone Port",
       "attachment_size": "Small",
-      "visual": "v_dronehub_01_s"
+      "visual": "v_dronehub_01_s",
+      "slots": {
+        "drone": 2
+      },
+      "registers": [
+        {}
+      ]
     },
     "c_explorable_admin_fix": {
+      "base_id": "c_explorable_fix",
       "name": "Admin Console"
     },
     "c_explorable_autosolve": {
-      "name": "c_explorable_autosolve"
+      "base_id": "c_explorable_autosolve",
+      "name": "c_explorable_autosolve",
+      "registers": [
+        {}
+      ]
     },
     "c_explorable_balance": {
+      "base_id": "c_explorable_balance",
       "name": "Balance Minigame"
     },
     "c_explorable_fix": {
+      "base_id": "c_explorable_fix",
       "name": "Repair Required"
     },
     "c_explorable_fix_lvl2": {
+      "base_id": "c_explorable_fix",
       "name": "Datakey Socket"
     },
     "c_explorable_netwalk": {
+      "base_id": "c_explorable_netwalk",
       "name": "Netwalk Minigame"
     },
     "c_explorable_nineclicks": {
+      "base_id": "c_explorable_nineclicks",
       "name": "Nine Clicks Minigame"
     },
     "c_explorable_scannable": {
+      "base_id": "c_explorable_scannable",
       "name": "Intel Scanner"
     },
     "c_explorable_slide": {
+      "base_id": "c_explorable_slide",
       "name": "Slide Minigame"
     },
     "c_extractor": {
+      "base_id": "c_miner",
       "name": "Laser Extractor",
       "attachment_size": "Medium",
       "visual": "v_laserextractor_01_m"
     },
     "c_fabricator": {
+      "base_id": "c_fabricator",
       "name": "Fabricator",
       "attachment_size": "Small",
-      "visual": "v_fabricator_01_s"
+      "visual": "v_fabricator_01_s",
+      "registers": [
+        {
+          "type": "production",
+          "tip": "Click to change production"
+        },
+        {
+          "tip": "Missing ingredient",
+          "read_only": true
+        }
+      ]
     },
     "c_fusion_generator": {
+      "base_id": "c_power_cell",
       "name": "Fusion Generator"
     },
     "c_glitch": {
+      "base_id": "c_glitch",
       "name": "Glitch",
       "attachment_size": "Internal"
     },
     "c_hacking_tool": {
+      "base_id": "c_hacking_tool",
       "name": "Hacking Tool",
       "attachment_size": "Small",
-      "visual": "v_hacking_tool_s"
+      "visual": "v_hacking_tool_s",
+      "registers": [
+        {
+          "type": "entity"
+        }
+      ]
     },
     "c_higgs_inserter": {
+      "base_id": "c_higgs_inserter",
       "name": "AI CORE Access",
       "attachment_size": "Internal"
     },
     "c_higrade_capacitor": {
+      "base_id": "c_higrade_capacitor",
       "name": "Hi-grade Capacitor",
       "attachment_size": "Internal",
       "visual": "v_generic_i"
     },
     "c_human_ac": {
+      "base_id": "c_human_ac",
       "name": "Human Simulation Core",
       "attachment_size": "Internal",
       "visual": "v_generic_i"
     },
     "c_human_barracks": {
+      "base_id": "c_fabricator",
       "name": "Human Barracks",
       "attachment_size": "Internal"
     },
     "c_human_commandcenter": {
+      "base_id": "c_fabricator",
       "name": "Human Command Center",
       "attachment_size": "Internal"
     },
     "c_human_factory": {
+      "base_id": "c_fabricator",
       "name": "Human Factory",
       "attachment_size": "Internal"
     },
     "c_human_factory_robots": {
+      "base_id": "c_fabricator",
       "name": "Human Factory",
       "attachment_size": "Large",
       "visual": "v_amalgamator_01_l"
     },
     "c_human_refinery": {
+      "base_id": "c_fabricator",
       "name": "Human Refinery",
       "attachment_size": "Internal"
     },
     "c_human_science": {
+      "base_id": "c_uplink",
       "name": "Human Science",
       "attachment_size": "Internal"
     },
     "c_human_science_analyzer_robots": {
+      "base_id": "c_fabricator",
       "name": "Human Science Analyzer",
       "attachment_size": "Large",
       "visual": "v_scienceanalyzer_l"
     },
     "c_human_spaceport": {
+      "base_id": "c_fabricator",
       "name": "Human Spaceport",
       "attachment_size": "Internal"
     },
     "c_human_tank_turret": {
+      "base_id": "c_turret",
       "name": "Tank Turret",
       "attachment_size": "Medium",
       "visual": "v_human_tank_turret"
     },
     "c_integrated_capacitor": {
+      "base_id": "c_capacitor",
       "name": "Integrated Capacitor"
     },
     "c_intel_extractor": {
+      "base_id": "c_intel_extractor",
       "name": "Intel Extractor",
       "attachment_size": "Internal"
     },
     "c_internal_crane1": {
+      "base_id": "c_crane",
       "name": "Item Transporter",
       "attachment_size": "Internal",
       "visual": "v_generic_i"
     },
     "c_internal_crane2": {
+      "base_id": "c_crane",
       "name": "Item Transporter",
       "attachment_size": "Internal",
       "visual": "v_generic_i"
     },
     "c_internal_storage": {
+      "base_id": "c_internal_storage",
       "name": "Internal Storage",
       "attachment_size": "Internal",
-      "visual": "v_generic_i"
+      "visual": "v_generic_i",
+      "slots": {
+        "storage": 1
+      }
     },
     "c_landing_pad": {
+      "base_id": "c_landing_pad",
       "name": "Landing Pad",
       "attachment_size": "Large",
-      "visual": "v_landingpad_01_l"
+      "visual": "v_landingpad_01_l",
+      "slots": {
+        "flyer": 3
+      }
     },
     "c_large_battery": {
+      "base_id": "c_large_battery",
       "name": "Large Battery",
       "attachment_size": "Large",
       "visual": "v_battery_01_l"
     },
     "c_large_power_relay": {
+      "base_id": "c_power_relay",
       "name": "Large Power Field",
       "attachment_size": "Large",
       "visual": "v_power_relay_01_l"
     },
     "c_large_power_transmitter": {
+      "base_id": "c_power_transmitter",
       "name": "Large Power Transmitter",
       "attachment_size": "Large",
       "visual": "v_power_transmitter_l"
     },
     "c_large_storage": {
+      "base_id": "c_large_storage",
       "name": "Large Storage",
       "attachment_size": "Large",
-      "visual": "v_storage_l"
+      "visual": "v_storage_l",
+      "slots": {
+        "storage": 20
+      }
     },
     "c_laser_turret": {
+      "base_id": "c_turret",
       "name": "Laser Turret",
       "attachment_size": "Medium",
       "visual": "v_laser_turret_m"
     },
     "c_launch_pad": {
+      "base_id": "c_launch_pad",
       "name": "Launch Pad",
-      "attachment_size": "Internal"
+      "attachment_size": "Internal",
+      "slots": {
+        "satellite": 1
+      },
+      "registers": [
+        {
+          "filter": "color"
+        }
+      ]
     },
     "c_light": {
+      "base_id": "c_light",
       "name": "Light",
       "attachment_size": "Small",
-      "visual": "v_light_01_s"
+      "visual": "v_light_01_s",
+      "registers": [
+        {
+          "filter": "color"
+        }
+      ]
     },
     "c_light_rgb": {
+      "base_id": "c_light_rgb",
       "name": "Light RGB",
       "attachment_size": "Small",
-      "visual": "v_light_01_s"
+      "visual": "v_light_01_s",
+      "registers": [
+        {
+          "tip": "Red (0-31)"
+        },
+        {
+          "tip": "Green (0-31)"
+        },
+        {
+          "tip": "Blue  (0-31)"
+        },
+        {
+          "tip": "Intensity"
+        }
+      ]
     },
     "c_medium_capacitor": {
+      "base_id": "c_medium_capacitor",
       "name": "Medium Capacitor",
       "attachment_size": "Medium",
       "visual": "v_crystalbattery_01_m"
     },
     "c_medium_storage": {
+      "base_id": "c_medium_storage",
       "name": "Medium Storage",
       "attachment_size": "Medium",
-      "visual": "v_storage_01_m"
+      "visual": "v_storage_01_m",
+      "slots": {
+        "storage": 9
+      }
     },
     "c_miner": {
+      "base_id": "c_miner",
       "name": "Miner",
       "attachment_size": "Small",
-      "visual": "v_miner_s"
+      "visual": "v_miner_s",
+      "registers": [
+        {
+          "type": "miner",
+          "tip": "Resource to mine and amount"
+        }
+      ]
     },
     "c_missile_turret": {
+      "base_id": "c_turret",
       "name": "Missile Launcher",
       "attachment_size": "Large",
       "visual": "v_missile_launcher_m"
     },
     "c_mission_human_a_repair": {
+      "base_id": "c_mothership_repair",
       "name": "Repairs"
     },
     "c_mission_human_a_trigger": {
+      "base_id": "c_mission_human_a_trigger",
       "name": "c_mission_human_a_trigger",
       "attachment_size": "Hidden"
     },
     "c_mission_human_aicenter": {
+      "base_id": "c_fabricator",
       "name": "AI Research Center",
       "attachment_size": "Internal"
     },
     "c_mission_human_b_trigger": {
+      "base_id": "c_mission_human_b_trigger",
       "name": "c_mission_human_b_trigger",
       "attachment_size": "Hidden"
     },
     "c_mission_human_b_upgraded_trigger": {
+      "base_id": "c_mission_human_b_upgraded_trigger",
       "name": "c_mission_human_b_upgraded_trigger",
       "attachment_size": "Hidden"
     },
     "c_mission_human_docker": {
+      "base_id": "c_mission_human_docker",
       "name": "Explorer"
     },
     "c_moduleefficiency": {
+      "base_id": "c_moduleefficiency",
       "name": "Internal Efficiency Module",
       "attachment_size": "Internal",
       "visual": "v_generic_i"
     },
     "c_moduleefficiency_l": {
+      "base_id": "c_moduleefficiency",
       "name": "Large Efficiency Module",
       "attachment_size": "Large",
       "visual": "v_modulebase_l"
     },
     "c_moduleefficiency_m": {
+      "base_id": "c_moduleefficiency",
       "name": "Medium Efficiency Module",
       "attachment_size": "Medium",
       "visual": "v_modulebase_m"
     },
     "c_moduleefficiency_s": {
+      "base_id": "c_moduleefficiency",
       "name": "Small Efficiency Module",
       "attachment_size": "Small",
       "visual": "v_modulebase_s"
     },
     "c_modulehealth": {
+      "base_id": "c_modulehealth",
       "name": "Internal Health Module",
       "attachment_size": "Internal",
       "visual": "v_generic_i"
     },
     "c_modulehealth_l": {
+      "base_id": "c_modulehealth",
       "name": "Large Health Module",
       "attachment_size": "Large",
       "visual": "v_modulebase_l"
     },
     "c_modulehealth_m": {
+      "base_id": "c_modulehealth",
       "name": "Medium Health Module",
       "attachment_size": "Medium",
       "visual": "v_modulebase_m"
     },
     "c_modulehealth_s": {
+      "base_id": "c_modulehealth",
       "name": "Small Health Module",
       "attachment_size": "Small",
       "visual": "v_modulebase_s"
     },
     "c_modulespeed": {
+      "base_id": "c_modulespeed",
       "name": "Internal Speed Module",
       "attachment_size": "Internal",
       "visual": "v_generic_i"
     },
     "c_modulespeed_l": {
+      "base_id": "c_modulespeed",
       "name": "Large Speed Module",
       "attachment_size": "Large",
       "visual": "v_modulebase_l"
     },
     "c_modulespeed_m": {
+      "base_id": "c_modulespeed",
       "name": "Medium Speed Module",
       "attachment_size": "Medium",
       "visual": "v_modulebase_m"
     },
     "c_modulespeed_s": {
+      "base_id": "c_modulespeed",
       "name": "Small Speed Module",
       "attachment_size": "Small",
       "visual": "v_modulebase_s"
     },
     "c_modulevisibility": {
+      "base_id": "c_modulevisibility",
       "name": "Internal Visibility Module",
       "attachment_size": "Internal",
       "visual": "v_generic_i"
     },
     "c_modulevisibility_l": {
+      "base_id": "c_modulevisibility",
       "name": "Large Visibility Module",
       "attachment_size": "Large",
       "visual": "v_modulebase_l"
     },
     "c_modulevisibility_m": {
+      "base_id": "c_modulevisibility",
       "name": "Medium Visibility Module",
       "attachment_size": "Medium",
       "visual": "v_modulebase_m"
     },
     "c_modulevisibility_s": {
+      "base_id": "c_modulevisibility",
       "name": "Small Visibility Module",
       "attachment_size": "Small",
       "visual": "v_modulebase_s"
     },
     "c_mothership_eject": {
+      "base_id": "c_mothership_eject",
       "name": "Mothership Eject",
       "attachment_size": "Hidden"
     },
     "c_mothership_repair": {
+      "base_id": "c_mothership_repair",
       "name": "Mothership Repairs",
-      "attachment_size": "Internal"
+      "attachment_size": "Internal",
+      "registers": [
+        {
+          "tip": "Need",
+          "read_only": true
+        }
+      ]
     },
     "c_particle_birds": {
+      "base_id": "c_particle_birds",
       "name": "c_particle_birds",
       "attachment_size": "Internal"
     },
     "c_particle_leaves": {
+      "base_id": "c_particle_birds",
       "name": "c_particle_leaves"
     },
     "c_phase_plant": {
+      "base_id": "c_phase_plant",
       "name": "Phase Plant"
     },
     "c_photon_cannon": {
+      "base_id": "c_turret",
       "name": "Photon Cannon",
       "attachment_size": "Medium",
       "visual": "v_photon_canon_m"
     },
     "c_plasma_cannon": {
+      "base_id": "c_turret",
       "name": "Plasma Cannon",
       "attachment_size": "Medium",
       "visual": "v_plasma_canon_m"
     },
     "c_plasma_turret": {
+      "base_id": "c_turret",
       "name": "Plasma Turret",
       "attachment_size": "Small",
       "visual": "v_blight_plasmaturret_s"
     },
     "c_portable_radar": {
+      "base_id": "c_portable_radar",
       "name": "Portable Radar",
       "attachment_size": "Internal",
-      "visual": "v_generic_i"
+      "visual": "v_generic_i",
+      "registers": [
+        {
+          "tip": "<header>Search Filter [1]</>\n\n<bl>Search Filter [1] is Required to return a Radar Result</>\n\n\nClick to choose from <hl>Inventory Items</> or <hl>Information</> icons",
+          "filter": "radar"
+        },
+        {
+          "tip": "<header>Search Filter [2]</>\n\n<bl>Search Filter [2] Refines the Radar Result</>\n\n\nClick to choose from <hl>Inventory Items</> or <hl>Information</> icons",
+          "filter": "radar"
+        },
+        {
+          "tip": "<header>Search Filter [3]</>\n\n<bl>Search Filter [3] Refines the Radar Result</>\n\n\nClick to choose from <hl>Inventory Items</> or <hl>Information</> icons",
+          "filter": "radar"
+        },
+        {
+          "tip": "<header>RADAR RESULT</>\n\n<bl>SINGLE Result returned from combination (additive) of 1 - 3 filters</>\n\n\n<hl>Mouse Over</> To highlight 'Result' in the world\n\n<Key action=\"ExecuteAction\" style=\"hl\"/> to move camera to 'Result' in the world",
+          "read_only": true
+        }
+      ]
     },
     "c_portable_relay": {
+      "base_id": "c_power_relay",
       "name": "Portable Power Field",
       "attachment_size": "Internal",
       "visual": "v_generic_i"
     },
     "c_portable_teleporter": {
+      "base_id": "c_portable_teleporter",
       "name": "Alien Portable Teleporter",
       "attachment_size": "Internal",
-      "visual": "v_generic_i"
+      "visual": "v_generic_i",
+      "registers": [
+        {
+          "tip": "Teleport Jump"
+        }
+      ]
     },
     "c_portable_turret": {
+      "base_id": "c_turret",
       "name": "Small Turret",
       "attachment_size": "Small",
       "visual": "v_starterturret_s"
     },
     "c_portable_turret_green": {
+      "base_id": "c_turret",
       "name": "Viral Turret",
       "attachment_size": "Small",
       "visual": "v_starterturret_green_s"
     },
     "c_portable_turret_red": {
+      "base_id": "c_turret",
       "name": "Blight Turret",
       "attachment_size": "Small",
       "visual": "v_starterturret_red_s"
     },
     "c_portablecrane": {
+      "base_id": "c_crane",
       "name": "Portable Transporter",
       "attachment_size": "Internal",
       "visual": "v_generic_i"
     },
     "c_power_cell": {
+      "base_id": "c_power_cell",
       "name": "Power Cell",
       "attachment_size": "Internal",
       "visual": "v_generic_i"
     },
     "c_power_core": {
+      "base_id": "c_power_cell",
       "name": "Power Core",
       "attachment_size": "Large",
       "visual": "v_power_core_01_l"
     },
     "c_power_relay": {
+      "base_id": "c_power_relay",
       "name": "Power Field",
       "attachment_size": "Medium",
       "visual": "v_power_relay_01_m"
     },
     "c_power_transmitter": {
+      "base_id": "c_power_transmitter",
       "name": "Power Transmitter",
       "attachment_size": "Medium",
-      "visual": "v_power_transmitter_m"
+      "visual": "v_power_transmitter_m",
+      "registers": [
+        {
+          "type": "entity",
+          "tip": "Target Unit"
+        }
+      ]
     },
     "c_power_unit": {
+      "base_id": "c_power_cell",
       "name": "Power Unit",
       "attachment_size": "Small",
       "visual": "v_power_cell_01_s"
     },
     "c_present1s": {
+      "base_id": "c_present1s",
       "name": "Present",
       "attachment_size": "Small",
       "visual": "v_Present_01_S"
     },
     "c_radar": {
+      "base_id": "c_portable_radar",
       "name": "Long-range Radar",
       "attachment_size": "Medium",
-      "visual": "v_radar_m"
+      "visual": "v_radar_m",
+      "registers": [
+        {
+          "tip": "<header>Search Filter [1]</>\n\n<bl>Search Filter [1] is Required to return a Radar Result</>\n\n\nClick to choose from <hl>Inventory Items</> or <hl>Information</> icons",
+          "filter": "radar"
+        },
+        {
+          "tip": "<header>Search Filter [2]</>\n\n<bl>Search Filter [2] Refines the Radar Result</>\n\n\nClick to choose from <hl>Inventory Items</> or <hl>Information</> icons",
+          "filter": "radar"
+        },
+        {
+          "tip": "<header>Search Filter [3]</>\n\n<bl>Search Filter [3] Refines the Radar Result</>\n\n\nClick to choose from <hl>Inventory Items</> or <hl>Information</> icons",
+          "filter": "radar"
+        },
+        {
+          "tip": "<header>RADAR RESULT</>\n\n<bl>SINGLE Result returned from combination (additive) of 1 - 3 filters</>\n\n\n<hl>Mouse Over</> To highlight 'Result' in the world\n\n<Key action=\"ExecuteAction\" style=\"hl\"/> to move camera to 'Result' in the world",
+          "read_only": true
+        }
+      ]
     },
     "c_radio_receiver": {
+      "base_id": "c_radio_receiver",
       "name": "Radio Receiver",
       "attachment_size": "Internal",
-      "visual": "v_generic_i"
+      "visual": "v_generic_i",
+      "registers": [
+        {
+          "tip": "Band"
+        },
+        {
+          "tip": "Received Signal",
+          "read_only": true
+        }
+      ]
     },
     "c_radio_storage": {
+      "base_id": "c_radio_storage",
       "name": "c_radio_storage"
     },
     "c_radio_transmitter": {
+      "base_id": "c_radio_transmitter",
       "name": "Radio Transmitter",
       "attachment_size": "Internal",
-      "visual": "v_generic_i"
+      "visual": "v_generic_i",
+      "registers": [
+        {
+          "tip": "Band"
+        },
+        {
+          "tip": "Value"
+        }
+      ]
     },
     "c_refinery": {
+      "base_id": "c_fabricator",
       "name": "Refinery",
       "attachment_size": "Medium",
       "visual": "v_refinery_01_m"
     },
     "c_repairer": {
+      "base_id": "c_repairer",
       "name": "Repair Component",
       "attachment_size": "Medium",
-      "visual": "v_repairer_01_m"
+      "visual": "v_repairer_01_m",
+      "registers": [
+        {
+          "type": "entity",
+          "tip": "Preferred Repair Target"
+        },
+        {
+          "tip": "Current Repair Target",
+          "read_only": true
+        }
+      ]
     },
     "c_repairer_aoe": {
+      "base_id": "c_repairer",
       "name": "AOE Repair Component",
       "attachment_size": "Medium",
-      "visual": "v_repairer_AoE_01_m"
+      "visual": "v_repairer_AoE_01_m",
+      "registers": []
     },
     "c_repairkit": {
+      "base_id": "c_repairkit",
       "name": "Repair Kit",
       "attachment_size": "Internal",
-      "visual": "v_generic_i"
+      "visual": "v_generic_i",
+      "registers": []
     },
     "c_repairport": {
+      "base_id": "c_repairport",
       "name": "Repair Garage",
       "attachment_size": "Medium",
-      "visual": "v_repairport_01_m"
+      "visual": "v_repairport_01_m",
+      "slots": {
+        "garage": 1
+      },
+      "registers": [
+        {
+          "type": "entity",
+          "tip": "Repair target"
+        },
+        {
+          "tip": "Missing repair resource",
+          "read_only": true
+        }
+      ]
     },
     "c_resimulator": {
-      "name": "Re-simulator Core"
+      "base_id": "c_resimulator",
+      "name": "Re-simulator Core",
+      "slots": {
+        "garage": 2
+      },
+      "registers": [
+        {
+          "tip": "Robot",
+          "read_only": true
+        },
+        {
+          "tip": "Human",
+          "read_only": true
+        },
+        {
+          "tip": "Anomaly",
+          "read_only": true
+        }
+      ]
     },
     "c_robot_ac": {
+      "base_id": "c_robot_ac",
       "name": "Robot Simulation Core",
       "attachment_size": "Internal",
       "visual": "v_generic_i"
     },
     "c_robotics_factory": {
+      "base_id": "c_fabricator",
       "name": "Robotics Assembler",
       "attachment_size": "Medium",
-      "visual": "v_roboticsfactory_01_m"
+      "visual": "v_roboticsfactory_01_m",
+      "registers": [
+        {
+          "type": "production",
+          "tip": "Click to change production"
+        },
+        {
+          "tip": "Missing ingredient",
+          "read_only": true
+        },
+        {
+          "type": "entity",
+          "tip": "Rally point\n\nDrag to location or unit to set"
+        }
+      ]
     },
     "c_santahat": {
+      "base_id": "c_santahat",
       "name": "Santa Hat",
       "attachment_size": "Medium",
       "visual": "v_SantaHat_01_M"
     },
     "c_satellite": {
+      "base_id": "c_satellite",
       "name": "Satellite Unit",
       "visual": "v_empty_inventory"
     },
     "c_satellite_deletor": {
+      "base_id": "c_satellite_deletor",
       "name": "Satellite Deletor"
     },
     "c_satellite_launcher": {
+      "base_id": "c_satellite_launcher",
       "name": "Satellite Launcher",
       "attachment_size": "Large",
-      "visual": "v_empty_inventory"
+      "visual": "v_empty_inventory",
+      "slots": {
+        "satellite": 1
+      }
     },
     "c_scout_radar": {
-      "name": "Scout Radar"
+      "base_id": "c_portable_radar",
+      "name": "Scout Radar",
+      "registers": [
+        {
+          "tip": "<header>Search Filter</>\n\n<bl>Search Filter is Required to return a Radar Result</>\n\n\nClick to choose from <hl>Inventory Items</> or <hl>Information</> icons",
+          "filter": "radar"
+        },
+        {
+          "tip": "<header>RADAR RESULT</>\n\n<bl>Result returned from filter</>\n\n\n<hl>Mouse Over</> To highlight 'Result' in the world\n\n<Key action=\"ExecuteAction\" style=\"hl\"/> to move camera to 'Result' in the world",
+          "read_only": true
+        }
+      ]
     },
     "c_selfdisassemble": {
-      "name": "Packager"
+      "base_id": "c_selfdisassemble",
+      "name": "Packager",
+      "registers": [
+        {
+          "tip": "Package",
+          "read_only": true
+        }
+      ]
     },
     "c_shared_storage": {
+      "base_id": "c_shared_storage",
       "name": "Shared Storage",
       "attachment_size": "Internal",
       "visual": "v_generic_i"
     },
     "c_shield_generator": {
+      "base_id": "c_shield_generator",
       "name": "Portable Shield Generator",
       "attachment_size": "Internal",
       "visual": "v_generic_i"
     },
     "c_shield_generator2": {
+      "base_id": "c_shield_generator",
       "name": "Shield Generator",
       "visual": "v_generic_i"
     },
     "c_shield_generator3": {
+      "base_id": "c_shield_generator",
       "name": "Hyper Shield Generator",
       "visual": "v_generic_i"
     },
     "c_signal_reader": {
+      "base_id": "c_signal_reader",
       "name": "Signal Reader",
       "attachment_size": "Internal",
-      "visual": "v_generic_i"
+      "visual": "v_generic_i",
+      "registers": [
+        {
+          "type": "entity",
+          "tip": "<header>TARGET ENTITY</>\n\n <bl>Use to Select Entity to 'Read Signal' from</>\n\nDrag to Entity to set"
+        },
+        {
+          "tip": "<header>RECEIVED SIGNAL</>\n\n<bl>The Result returned from the Target's</> <hl>Signal Parameter</>",
+          "read_only": true
+        }
+      ]
     },
     "c_signpost": {
+      "base_id": "c_signpost",
       "name": "Sign Post",
       "attachment_size": "Internal",
       "visual": "v_generic_i"
     },
     "c_simulation_interface": {
+      "base_id": "c_simulation_interface",
       "name": "Simulation Interface",
       "attachment_size": "Internal",
-      "visual": "v_smartstorage_m"
+      "visual": "v_smartstorage_m",
+      "slots": {
+        "storage": 1
+      },
+      "registers": [
+        {
+          "tip": "Send"
+        }
+      ]
     },
     "c_small_battery": {
+      "base_id": "c_small_battery",
       "name": "Small Battery",
       "attachment_size": "Small",
       "visual": "v_capacitor_01_s"
     },
     "c_small_radar": {
+      "base_id": "c_portable_radar",
       "name": "Small Radar",
       "attachment_size": "Small",
-      "visual": "v_radar_s"
+      "visual": "v_radar_s",
+      "registers": [
+        {
+          "tip": "<header>Search Filter [1]</>\n\n<bl>Search Filter [1] is Required to return a Radar Result</>\n\n\nClick to choose from <hl>Inventory Items</> or <hl>Information</> icons",
+          "filter": "radar"
+        },
+        {
+          "tip": "<header>Search Filter [2]</>\n\n<bl>Search Filter [2] Refines the Radar Result</>\n\n\nClick to choose from <hl>Inventory Items</> or <hl>Information</> icons",
+          "filter": "radar"
+        },
+        {
+          "tip": "<header>Search Filter [3]</>\n\n<bl>Search Filter [3] Refines the Radar Result</>\n\n\nClick to choose from <hl>Inventory Items</> or <hl>Information</> icons",
+          "filter": "radar"
+        },
+        {
+          "tip": "<header>RADAR RESULT</>\n\n<bl>SINGLE Result returned from combination (additive) of 1 - 3 filters</>\n\n\n<hl>Mouse Over</> To highlight 'Result' in the world\n\n<Key action=\"ExecuteAction\" style=\"hl\"/> to move camera to 'Result' in the world",
+          "read_only": true
+        }
+      ]
     },
     "c_small_relay": {
+      "base_id": "c_power_relay",
       "name": "Small Power Field",
       "attachment_size": "Small",
       "visual": "v_power_relay_01_s"
     },
     "c_small_scanner": {
+      "base_id": "c_small_scanner",
       "name": "Small Intel Scanner",
       "attachment_size": "Small",
-      "visual": "v_scanner_s"
+      "visual": "v_scanner_s",
+      "registers": [
+        {
+          "type": "entity",
+          "tip": "Item to scan"
+        },
+        {
+          "tip": "Scan Result",
+          "read_only": true
+        }
+      ]
     },
     "c_small_storage": {
+      "base_id": "c_small_storage",
       "name": "Small Storage",
       "attachment_size": "Small",
-      "visual": "v_storage_01_s"
+      "visual": "v_storage_01_s",
+      "slots": {
+        "storage": 4
+      }
     },
     "c_solar_cell": {
+      "base_id": "c_solar_cell",
       "name": "Solar Cell",
       "attachment_size": "Small",
       "visual": "v_solarpanel_01_s"
     },
     "c_solar_panel": {
+      "base_id": "c_solar_cell",
       "name": "Solar Panel",
       "attachment_size": "Medium",
       "visual": "v_solarpanel_01_m"
     },
     "c_space_elevator_factory": {
+      "base_id": "c_fabricator",
       "name": "Space Elevator",
       "attachment_size": "Internal"
     },
     "c_stealth": {
+      "base_id": "c_stealth",
       "name": "c_stealth"
     },
     "c_terraformer": {
+      "base_id": "c_terraformer",
       "name": "Purifying Terraformer",
       "attachment_size": "Internal",
       "visual": "v_generic_i"
     },
     "c_trilobyte_attack": {
+      "base_id": "c_turret",
       "name": "Trilobyte Attack",
       "attachment_size": "Hidden"
     },
     "c_trilobyte_attack1": {
+      "base_id": "c_turret",
       "name": "c_trilobyte_attack1"
     },
     "c_trilobyte_attack2": {
+      "base_id": "c_turret",
       "name": "c_trilobyte_attack2"
     },
     "c_trilobyte_attack3": {
+      "base_id": "c_turret",
       "name": "c_trilobyte_attack3"
     },
     "c_trilobyte_attack4": {
+      "base_id": "c_turret",
       "name": "c_trilobyte_attack4"
     },
     "c_trilobyte_consume": {
+      "base_id": "c_trilobyte_consume",
       "name": "Trilobyte Consume",
       "attachment_size": "Internal"
     },
     "c_turret": {
+      "base_id": "c_turret",
       "name": "Turret",
       "attachment_size": "Medium",
-      "visual": "v_turret_m"
+      "visual": "v_turret_m",
+      "registers": [
+        {
+          "type": "entity",
+          "tip": "Preferred Target"
+        },
+        {
+          "tip": "Current Target",
+          "read_only": true
+        }
+      ]
     },
     "c_turret_powerflower": {
+      "base_id": "c_turret",
       "name": "Drain Turret",
       "attachment_size": "Small",
       "visual": "v_starterturret_drain_s"
     },
     "c_turret_powerflower_effect": {
+      "base_id": "c_turret_powerflower_effect",
       "name": "Drain Turret Internal"
     },
     "c_unit_teleport": {
+      "base_id": "c_unit_teleport",
       "name": "Unit Teleporter",
       "attachment_size": "Large",
-      "visual": "v_teleporter_01_l"
+      "visual": "v_teleporter_01_l",
+      "slots": {
+        "garage": 1
+      },
+      "registers": [
+        {
+          "type": "entity",
+          "tip": "Target location"
+        }
+      ]
     },
     "c_uplink": {
+      "base_id": "c_uplink",
       "name": "Uplink",
       "attachment_size": "Medium",
-      "visual": "v_uplink_m"
+      "visual": "v_uplink_m",
+      "registers": [
+        {
+          "tip": "Current researching technology",
+          "read_only": true
+        },
+        {
+          "tip": "Missing ingredient",
+          "read_only": true
+        }
+      ]
     },
     "c_virus": {
+      "base_id": "c_virus",
       "name": "Virus",
       "attachment_size": "Internal"
     },
     "c_virus_ac": {
+      "base_id": "c_virus_ac",
       "name": "Virus Simulation Core",
       "attachment_size": "Internal",
-      "visual": "v_generic_i"
+      "visual": "v_generic_i",
+      "slots": {
+        "virus": 1
+      }
     },
     "c_virus_bitlock": {
+      "base_id": "c_turret",
       "name": "Crypto BitLock",
       "attachment_size": "Medium",
       "visual": "v_virus_robot_antenna_03"
     },
     "c_virus_bitlock_effect": {
+      "base_id": "c_virus_bitlock_effect",
       "name": "BitLock Effect",
       "attachment_size": "Internal"
     },
     "c_virus_container_i": {
+      "base_id": "c_virus_container_i",
       "name": "Internal Virus Containment",
       "attachment_size": "Internal",
-      "visual": "v_generic_i"
+      "visual": "v_generic_i",
+      "slots": {
+        "virus": 3
+      }
     },
     "c_virus_cure": {
+      "base_id": "c_virus_cure",
       "name": "Virus Cure",
       "attachment_size": "Internal",
       "visual": "v_generic_i"
     },
     "c_virus_decomposer": {
+      "base_id": "c_fabricator",
       "name": "Robot Hive",
       "attachment_size": "Large",
       "visual": "v_virus_decomposer_l"
     },
     "c_virus_jamming": {
+      "base_id": "c_turret",
       "name": "Virus Ray",
       "attachment_size": "Medium",
       "visual": "v_virus_robot_jammer"
     },
     "c_virus_possess": {
+      "base_id": "c_turret",
       "name": "Blight Destabilizer",
       "attachment_size": "Medium",
       "visual": "v_virus_robot_possess"
     },
     "c_virus_possessor": {
+      "base_id": "c_turret",
       "name": "Virus Possessor",
       "attachment_size": "Medium",
       "visual": "v_virus_robot_generator"
     },
     "c_virus_protection": {
+      "base_id": "c_virus_protection",
       "name": "Virus Protection",
       "attachment_size": "Internal",
       "visual": "v_generic_i"
     },
     "c_virus_recycler": {
+      "base_id": "c_virus_recycler",
       "name": "Component Recycler",
       "attachment_size": "Medium",
-      "visual": "v_virus_robot_jammer"
+      "visual": "v_virus_robot_jammer",
+      "registers": [
+        {
+          "tip": "Current component being recycled",
+          "read_only": true
+        }
+      ]
     },
     "c_virus_turret": {
+      "base_id": "c_turret",
       "name": "Virus Bug Turret",
       "attachment_size": "Medium",
       "visual": "v_virus_robot_turret_01"
     },
     "c_wind_turbine": {
+      "base_id": "c_wind_turbine",
       "name": "Wind Turbine",
       "attachment_size": "Medium",
       "visual": "v_wind_turbine_m"
     },
     "c_wind_turbine_l": {
+      "base_id": "c_wind_turbine",
       "name": "Large Wind Turbine",
       "attachment_size": "Large",
       "visual": "v_wind_turbine_l"

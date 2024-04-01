@@ -1,5 +1,209 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`blueprint_in_behavior.asm 1`] = `
+{
+  "0": {
+    "bp": {
+      "disconnected": true,
+      "frame": "f_bot_1m_a",
+      "name": "Example Bot 1",
+      "regs": {
+        "2": {
+          "id": "c_power_transmitter",
+        },
+      },
+    },
+    "next": false,
+    "op": "produce",
+  },
+  "name": "foo",
+  "parameters": [],
+}
+`;
+
+exports[`blueprint_with_behavior.asm 1`] = `
+{
+  "components": [
+    [
+      "c_robotics_factory",
+      1,
+    ],
+    [
+      "c_robotics_factory",
+      2,
+    ],
+    [
+      "c_internal_storage",
+      3,
+    ],
+    [
+      "c_internal_storage",
+      4,
+    ],
+    [
+      "c_internal_storage",
+      5,
+    ],
+    [
+      "c_behavior",
+      6,
+      {
+        "0": {
+          "bp": {
+            "components": [
+              [
+                "c_power_transmitter",
+                1,
+              ],
+              [
+                "c_behavior",
+                3,
+                {
+                  "0": {
+                    "next": false,
+                    "op": "notify",
+                    "txt": "Hello World",
+                  },
+                  "name": "fnBot1",
+                  "parameters": [],
+                },
+              ],
+            ],
+            "disconnected": false,
+            "frame": "f_bot_1m_a",
+            "logistics": {
+              "channel_1": false,
+              "channel_2": true,
+              "channel_3": false,
+              "channel_4": true,
+            },
+            "name": "Example Bot 1",
+            "regs": {
+              "2": {
+                "id": "c_power_transmitter",
+              },
+            },
+          },
+          "op": "produce",
+        },
+        "1": {
+          "0": 2,
+          "1": 3,
+          "op": "compare_item",
+        },
+        "2": {
+          "bp": {
+            "components": [
+              [
+                "c_medium_storage",
+                1,
+              ],
+              [
+                "c_modulespeed",
+                2,
+              ],
+              [
+                "c_behavior",
+                3,
+              ],
+            ],
+            "disconnected": true,
+            "frame": "f_bot_1m_c",
+            "locks": [
+              "metalore",
+              "metalbar",
+              true,
+              false,
+              false,
+              true,
+              "metalore",
+            ],
+            "logistics": {
+              "can_construction": false,
+              "carrier": false,
+              "transport_route": true,
+            },
+            "name": "Example Bot 2",
+          },
+          "op": "produce",
+        },
+        "3": {
+          "0": 4,
+          "1": 3,
+          "op": "compare_item",
+        },
+        "4": {
+          "0": {
+            "id": "f_bot_1m_a",
+            "num": 1,
+          },
+          "1": 4,
+          "op": "set_reg",
+        },
+        "5": {
+          "0": 6,
+          "1": 5,
+          "next": false,
+          "op": "compare_item",
+        },
+        "name": "fnBotFactory",
+        "parameters": [
+          false,
+          false,
+          false,
+          true,
+          false,
+        ],
+        "pnames": [
+          "targetLocation",
+          "craft1",
+          "active1",
+          "craft2",
+          "active2",
+        ],
+      },
+    ],
+  ],
+  "disconnected": false,
+  "frame": "f_building2x1a",
+  "links": [
+    [
+      13,
+      5,
+    ],
+    [
+      5,
+      12,
+    ],
+    [
+      3,
+      6,
+    ],
+    [
+      7,
+      11,
+    ],
+    [
+      15,
+      8,
+    ],
+    [
+      8,
+      14,
+    ],
+    [
+      3,
+      9,
+    ],
+    [
+      10,
+      11,
+    ],
+  ],
+  "name": "Bot Factory",
+}
+`;
+
 exports[`dead_code_deletion.asm 1`] = `
 {
   "0": {
