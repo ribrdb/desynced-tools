@@ -443,15 +443,21 @@ class Compiler {
       vars = [this.variable(init)];
     } else if (ts.isArrayBindingPattern(init)) {
       vars = init.elements.map((el) =>
-        ts.isOmittedExpression(el)
-          ? undefined
-          : this.variable(el.name as ts.Identifier)
+          ts.isOmittedExpression(el)
+              ? undefined
+              : this.variable(el.name as ts.Identifier)
+      );
+    } else if (ts.isArrayLiteralExpression(init)) {
+      vars = init.elements.map((el) =>
+          ts.isOmittedExpression(el)
+              ? undefined
+              : this.variable(el as ts.Identifier)
       );
     } else {
-      this.#error("expected variable", init);
+      this.#error(`expected variable: ${ts.SyntaxKind[init.kind]}`, init);
     }
     if (vars.length > 1) {
-      if (!Array.isArray(info.out) || vars.length >= info.out.length) {
+      if (!Array.isArray(info.out) || vars.length > info.out.length) {
         this.#error("too many variables", init);
       }
     }
@@ -1472,40 +1478,41 @@ class Compiler {
     s.declarations.forEach((decl: ts.VariableDeclaration) => {
       const isConst = (ts.getCombinedNodeFlags(decl) & ts.NodeFlags.BlockScoped) === ts.NodeFlags.Const;
 
-      if (decl.initializer) {
-        if (ts.isIdentifier(decl.name)) {
-          if (isConst) {
-            const value = this.compileExpr(decl.initializer);
-            this.currentScope.scope.name(decl.name.text, this.ref(value, VariableOperations.Write));
-          } else {
-            this.compileExpr(decl.initializer, this.newVariable(decl.name));
-          }
-        } else if (ts.isArrayBindingPattern(decl.name)) {
-          if (ts.isCallExpression(decl.initializer)) {
-            const outs = decl.name.elements.map((el) => {
-              if (ts.isOmittedExpression(el)) {
-                return undefined;
-              } else if (ts.isIdentifier(el.name)) {
-                return this.newVariable(el.name);
-              } else {
-                this.#error(
-                  `unsupported array element ${el.kind} ${
-                    ts.SyntaxKind[el.kind]
-                  }`,
-                  decl
-                );
-              }
-            });
-            return this.compileCall(decl.initializer, outs);
+      if (ts.isIdentifier(decl.name)) {
+        if (!decl.initializer) {
+          this.newVariable(decl.name);
+        } else if (isConst) {
+          const value = this.compileExpr(decl.initializer);
+          this.currentScope.scope.name(decl.name.text, this.ref(value, VariableOperations.Write));
+        } else {
+          this.compileExpr(decl.initializer, this.newVariable(decl.name));
+        }
+      } else if (ts.isArrayBindingPattern(decl.name)) {
+        const outs = decl.name.elements.map((el) => {
+          if (ts.isOmittedExpression(el)) {
+            return undefined;
+          } else if (ts.isIdentifier(el.name)) {
+            return this.newVariable(el.name);
           } else {
             this.#error(
-              "only call expression are valid for array initializer",
-              decl
+                `unsupported array element ${el.kind} ${
+                    ts.SyntaxKind[el.kind]
+                }`,
+                decl
             );
           }
+        });
+
+        if (decl.initializer && ts.isCallExpression(decl.initializer)) {
+          return this.compileCall(decl.initializer, outs);
         } else {
-          this.#error("Unable to bind object", decl);
+          this.#error(
+            "only call expression are valid for array initializer",
+            decl
+          );
         }
+      } else {
+        this.#error("Unable to bind object", decl);
       }
     });
   }

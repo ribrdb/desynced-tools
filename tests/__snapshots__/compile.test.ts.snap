@@ -103,6 +103,29 @@ label5:
   .ret	"
 `;
 
+exports[`loops.ts 1`] = `
+"loops:
+  .name	"loops"
+  for_signal_match	metalore, C, D, :l1
+  jump	:l0
+l0:
+  notify	C
+  notify	D
+  .ret	
+l1:
+  for_signal_match	metalore, A, B, :l3
+  jump	:l2
+l2:
+  set_reg	1, C
+  notify	C
+  last	
+  .ret	
+l3:
+  notify	A
+  notify	B
+  .ret	"
+`;
+
 exports[`nested_sub.ts 1`] = `
 "foo:
   .name	"foo"
