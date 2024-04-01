@@ -6,13 +6,12 @@
 //   - Paste clipboard contents in Data String, press Convert to JSON
 //   - Paste resulting JSON in dumped-game-data.json
 // - `npx ts-node scripts/geninstr.ts`
-
-import * as fs from "fs";
-import {gameData, GameData} from "../data";
+import { CompilerOptions } from "../compiler_options";
+import { gameData, GameData } from "../data";
 import overrides from "./overrides.json";
-import {CompilerOptions} from "../compiler_options";
-import * as ts from "typescript";
+import * as fs from "fs";
 import path from "path";
+import * as ts from "typescript";
 
 const dtsProps: string[] = [];
 const dtsMethods: string[] = [];
@@ -95,7 +94,7 @@ interface CompileInfo {
 }
 
 const instructions = gameData.instructions as unknown as {
-  [key: string]: InstrInfo
+  [key: string]: InstrInfo;
 };
 
 for (const op in instructions) {
@@ -260,7 +259,7 @@ function generateTypes(genInfo: GenInfo, doc?: string) {
           type,
           optional,
         };
-      })
+      }),
   );
   if (genInfo.txt) {
     params.unshift({
@@ -272,7 +271,7 @@ function generateTypes(genInfo: GenInfo, doc?: string) {
     params.unshift({
       name: "blueprint",
       type: "Blueprint",
-      doc: "The blueprint to use"
+      doc: "The blueprint to use",
     });
   }
   const jsdoc = generateDoc(genInfo, params, doc);
@@ -282,8 +281,8 @@ function generateTypes(genInfo: GenInfo, doc?: string) {
     outTypes.length == 0
       ? "void"
       : outTypes.length == 1
-      ? outTypes[0]
-      : `[${outTypes.join(", ")}]`;
+        ? outTypes[0]
+        : `[${outTypes.join(", ")}]`;
   const inTypes = genInfo.inArgs
     .filter((v) => v[0] != genInfo.thisArg)
     .map((v) => (v[3] ? FilterTypes[v[3]] : "Value"));
@@ -300,12 +299,14 @@ function generateTypes(genInfo: GenInfo, doc?: string) {
     if (q) {
       returnType = returnType.slice(
         0,
-        returnType.length - " | undefined".length
+        returnType.length - " | undefined".length,
       );
     }
     dtsProps.push(`  ${jsdoc}${genInfo.js}${q}: ${returnType};`);
   } else {
-    const paramStrs = params.map((v) => `${v.name}${v.optional ? '?' : ''}: ${v.type}`);
+    const paramStrs = params.map(
+      (v) => `${v.name}${v.optional ? "?" : ""}: ${v.type}`,
+    );
     const decl = `${genInfo.js}(${paramStrs.join(", ")}): ${returnType};`;
     if (genInfo.type == "function") {
       dtsFunctions.push(`${jsdoc}declare function ${decl}`);
@@ -318,7 +319,7 @@ function generateTypes(genInfo: GenInfo, doc?: string) {
 function generateDoc(
   genInfo: GenInfo,
   params: ParamInfo[],
-  methodDoc?: string
+  methodDoc?: string,
 ): string | undefined {
   let indent = genInfo.type == "function" ? "" : "  ";
   let allDocs: string[] = [];
@@ -327,13 +328,13 @@ function generateDoc(
     methodDoc ||= genInfo.outArgs[0]?.[2] || undefined;
   } else {
     allDocs.push(
-      ...params.filter((v) => v.doc).map((v) => `@param ${v.name} ${v.doc}`)
+      ...params.filter((v) => v.doc).map((v) => `@param ${v.name} ${v.doc}`),
     );
     if (genInfo.outArgs.length == 1 && genInfo.outArgs[0][2]) {
       allDocs.push(`@returns ${genInfo.outArgs[0][2]}`);
     } else if (genInfo.outArgs.length > 1) {
       allDocs.push(
-        `@returns [${genInfo.outArgs.map((v) => v[2] || v[1]).join(", ")}]`
+        `@returns [${genInfo.outArgs.map((v) => v[2] || v[1]).join(", ")}]`,
       );
     }
   }
@@ -388,14 +389,17 @@ function quote(str: string) {
   return JSON.stringify(str);
 }
 
-function toEnum<T extends GameData>(data: Array<T> | Map<any, T>, fn?: (item: T) => boolean): string {
+function toEnum<T extends GameData>(
+  data: Array<T> | Map<any, T>,
+  fn?: (item: T) => boolean,
+): string {
   const filter = fn ?? (() => true);
   const array = Array.isArray(data) ? data : data.values();
   const result: string[] = [];
 
   for (const e of array) {
     if (filter(e)) {
-      result.push(`  | ${quote(e.jsName)}`)
+      result.push(`  | ${quote(e.jsName)}`);
     }
   }
 
@@ -427,7 +431,7 @@ fs.writeFileSync(
 export const methods: { [key: string]: MethodInfo } = ${JSON.stringify(
     compileInfos,
     undefined,
-    2
+    2,
   )};
 
 export const ops: {
@@ -436,97 +440,132 @@ export const ops: {
 for (const op of Object.values(methods)) {
   ops[op.id] = op;
 }
-`
+`,
 );
 
 function naturalSort(a: string, b: string) {
-  return a.localeCompare(b, undefined, {numeric: true, sensitivity: 'base'});
+  return a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" });
 }
 
-const bpComponents = Array.from(gameData.componentsByJsName.keys()).sort(naturalSort).map(componentJsName => {
-  const component = gameData.componentsByJsName.get(componentJsName)!;
-  if (component.attachment_size == null || !(component.attachment_size in gameData.socketSizes)) {
-    return;
-  }
+const bpComponents = Array.from(gameData.componentsByJsName.keys())
+  .sort(naturalSort)
+  .map((componentJsName) => {
+    const component = gameData.componentsByJsName.get(componentJsName)!;
+    if (
+      component.attachment_size == null ||
+      !(component.attachment_size in gameData.socketSizes)
+    ) {
+      return;
+    }
 
-  // Handled separately in template
-  if (component.id === "c_behavior") return;
+    // Handled separately in template
+    if (component.id === "c_behavior") return;
 
-  const jsName = component.componentJsName;
-  const linkArgsArray = "[" + (component.registers ?? []).map(register => {
-    return register.read_only ? "ReadOnlyLinkArg?" : "LinkArg?";
-  }).join(", ") + "]";
-  const linkArgsObject = "{" + (component.registers ?? []).map((register, index) => {
-    return index + "?: " + (register.read_only ? "ReadOnlyLinkArg" : "LinkArg");
-  }).join(", ") + "}";
-  let componentType = `${component.attachment_size}Component`
+    const jsName = component.componentJsName;
+    const linkArgsArray =
+      "[" +
+      (component.registers ?? [])
+        .map((register) => {
+          return register.read_only ? "ReadOnlyLinkArg?" : "LinkArg?";
+        })
+        .join(", ") +
+      "]";
+    const linkArgsObject =
+      "{" +
+      (component.registers ?? [])
+        .map((register, index) => {
+          return (
+            index + "?: " + (register.read_only ? "ReadOnlyLinkArg" : "LinkArg")
+          );
+        })
+        .join(", ") +
+      "}";
+    let componentType = `${component.attachment_size}Component`;
 
-  return `
+    return `
 /**
  * ${component.name} (${component.id})
  */
 function ${jsName}(links?: ${linkArgsArray} | ${linkArgsObject}): ${componentType};
-  `.trim().replace(/^/gm, "    ");
-}).filter(c => c != null);
+  `
+      .trim()
+      .replace(/^/gm, "    ");
+  })
+  .filter((c) => c != null);
 
-const dtsBlueprintFns = Array.from(gameData.framesByJsName.keys()).sort(naturalSort).map(frameJsName => {
-  const frame = gameData.framesByJsName.get(frameJsName)!;
-  if (!frame.visual) return;
-  const visual = gameData.visuals.get(frame.visual)!;
-  const sockets = visual.sockets ?? [];
-  const slots = frame.slots ?? {};
+const dtsBlueprintFns = Array.from(gameData.framesByJsName.keys())
+  .sort(naturalSort)
+  .map((frameJsName) => {
+    const frame = gameData.framesByJsName.get(frameJsName)!;
+    if (!frame.visual) return;
+    const visual = gameData.visuals.get(frame.visual)!;
+    const sockets = visual.sockets ?? [];
+    const slots = frame.slots ?? {};
 
-  const socketCounts = sockets.reduce((prev, socket) => {
-    const key = socket[1];
-    prev[key] = (prev[key] ?? 0) + 1;
-    return prev;
-  }, {
-    Large: 0,
-    Medium: 0,
-    Small: 0,
-    Internal: 0,
-  });
+    const socketCounts = sockets.reduce(
+      (prev, socket) => {
+        const key = socket[1];
+        prev[key] = (prev[key] ?? 0) + 1;
+        return prev;
+      },
+      {
+        Large: 0,
+        Medium: 0,
+        Small: 0,
+        Internal: 0,
+      },
+    );
 
-  const socketDoc = Object.entries(socketCounts).map(([socketName, socketValue]) => {
-    if (socketValue > 0) {
-      return `${socketValue} ${socketName.toLowerCase()}`
-    }
-  }).filter(e => e != null).join(", ");
+    const socketDoc = Object.entries(socketCounts)
+      .map(([socketName, socketValue]) => {
+        if (socketValue > 0) {
+          return `${socketValue} ${socketName.toLowerCase()}`;
+        }
+      })
+      .filter((e) => e != null)
+      .join(", ");
 
-  const slotDoc = Object.entries(slots).map(([slotName, slotValue]) => {
-    if (slotValue > 0) {
-      return `${slotValue} ${slotName.toLowerCase()}`
-    }
-  }).filter(e => e != null).join(", ");
+    const slotDoc = Object.entries(slots)
+      .map(([slotName, slotValue]) => {
+        if (slotValue > 0) {
+          return `${slotValue} ${slotName.toLowerCase()}`;
+        }
+      })
+      .filter((e) => e != null)
+      .join(", ");
 
-  const docLines = [
-    `${frame.name} (${frame.id})`,
-    "",
-    frame.desc ? frame.desc : null,
-    frame.desc ? "" : null,
-    socketDoc ? `Sockets: ${socketDoc}` : null,
-    slotDoc ? `Slots: ${slotDoc}` : null
-  ].filter(l => l != null).map(l => `   * ${l}`).join("\n");
+    const docLines = [
+      `${frame.name} (${frame.id})`,
+      "",
+      frame.desc ? frame.desc : null,
+      frame.desc ? "" : null,
+      socketDoc ? `Sockets: ${socketDoc}` : null,
+      slotDoc ? `Slots: ${slotDoc}` : null,
+    ]
+      .filter((l) => l != null)
+      .map((l) => `   * ${l}`)
+      .join("\n");
 
-  const makeComponentTypeTuple = (key: keyof typeof socketCounts) => {
-    const count = socketCounts[key];
-    const parts: string[] = [];
+    const makeComponentTypeTuple = (key: keyof typeof socketCounts) => {
+      const count = socketCounts[key];
+      const parts: string[] = [];
 
-    for(let i = 0; i < count; i++) {
-      parts.push(`${key}ComponentArg?`);
-    }
+      for (let i = 0; i < count; i++) {
+        parts.push(`${key}ComponentArg?`);
+      }
 
-    return `[${parts.join(', ')}]`;
-  };
+      return `[${parts.join(", ")}]`;
+    };
 
-  const jsName = frame.frameJsName;
+    const jsName = frame.frameJsName;
 
-  return `
+    return `
   /**
 ${docLines}
    */
-  function ${jsName}(blueprint: BlueprintArgs<${makeComponentTypeTuple('Internal')}, ${makeComponentTypeTuple('Small')}, ${makeComponentTypeTuple('Medium')}, ${makeComponentTypeTuple('Large')}>): Blueprint;`;
-}).filter(f => f != null);
+  function ${jsName}(blueprint: BlueprintArgs<${makeComponentTypeTuple("Internal")}, ${makeComponentTypeTuple("Small")}, ${makeComponentTypeTuple("Medium")}, ${makeComponentTypeTuple("Large")}>): Blueprint;`;
+  })
+  .filter((f) => f != null);
 
 const dtsContents = `
 type Value = number & BaseValue;
@@ -559,21 +598,21 @@ type NumOrPair<T> = T | number | {
 };
 
 type Color =
-${toEnum(gameData.values, e => e.tag === "color")};
+${toEnum(gameData.values, (e) => e.tag === "color")};
 type ColorNum = NumOrPair<Color>;
 
 type Extra =
-${toEnum(gameData.values, e => e.tag === "value")};
+${toEnum(gameData.values, (e) => e.tag === "value")};
 type ExtraNum = NumOrPair<Extra>;
 
 type RadarFilter =
   | Resource
-${toEnum(gameData.values, e => e.tag === "entityfilter")};
+${toEnum(gameData.values, (e) => e.tag === "entityfilter")};
 
 type Item =
   | Comp
   | Resource
-${toEnum(gameData.items, item => item.tag !== "resource")};
+${toEnum(gameData.items, (item) => item.tag !== "resource")};
 type ItemNum = NumOrPair<Item>;
 
 type Comp =
@@ -581,7 +620,7 @@ ${toEnum(gameData.components)};
 type CompNum = NumOrPair<Comp>;
 
 type Resource =
-${toEnum(gameData.items, item => item.tag === "resource")};
+${toEnum(gameData.items, (item) => item.tag === "resource")};
 type ResourceNum = NumOrPair<Resource>;
 
 type Frame =
@@ -663,17 +702,23 @@ ${dtsBlueprintFns.join("\n")}
 `;
 
 fs.writeFileSync("behavior.d.ts", dtsContents);
-fs.writeFileSync("behavior_dts.ts", `export const behavior_dts = ${JSON.stringify(dtsContents)}`);
+fs.writeFileSync(
+  "behavior_dts.ts",
+  `export const behavior_dts = ${JSON.stringify(dtsContents)}`,
+);
 
 const tsLibFiles = (() => {
   const program = ts.createProgram(CompilerOptions.lib!, CompilerOptions);
   const result = {};
   for (const sourceFile of program.getSourceFiles()) {
-    result['/' + path.basename(sourceFile.fileName)] = sourceFile.text;
+    result["/" + path.basename(sourceFile.fileName)] = sourceFile.text;
   }
   return result;
 })();
-fs.writeFileSync("lib_dts.ts", `export const lib_dts = ${JSON.stringify(tsLibFiles, null, 2)}`);
+fs.writeFileSync(
+  "lib_dts.ts",
+  `export const lib_dts = ${JSON.stringify(tsLibFiles, null, 2)}`,
+);
 
 fs.writeFileSync(
   "decompile/dsinstr.ts",
@@ -698,7 +743,7 @@ interface InstrInfo {
 export const instructions:{[key:string]:InstrInfo} = ${JSON.stringify(
     decompileInfos,
     undefined,
-    2
+    2,
   )};
-`
+`,
 );

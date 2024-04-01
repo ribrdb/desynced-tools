@@ -1,6 +1,5 @@
 import { RawInstruction } from "./RawInstruction";
 
-
 export interface RawBehavior {
   [key: number]: RawInstruction;
   parameters?: boolean[];

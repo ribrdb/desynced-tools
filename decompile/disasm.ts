@@ -1,9 +1,6 @@
-import {RawBehavior} from "./RawBehavior";
-import {RawBlueprint} from "./RawBlueprint";
-import {RawInstruction} from "./RawInstruction";
-import {instructions} from "./dsinstr";
-import {DesyncedStringToObject} from "../dsconvert";
-import {Code, Pass} from "../ir/code";
+import { gameData } from "../data";
+import { DesyncedStringToObject } from "../dsconvert";
+import { Code, Pass } from "../ir/code";
 import {
   Arg,
   FALSE,
@@ -17,7 +14,10 @@ import {
   StringLiteral,
   TRUE,
 } from "../ir/instruction";
-import {gameData} from "../data";
+import { RawBehavior } from "./RawBehavior";
+import { RawBlueprint } from "./RawBlueprint";
+import { RawInstruction } from "./RawInstruction";
+import { instructions } from "./dsinstr";
 
 interface RawValue {
   id?: string;
@@ -35,7 +35,7 @@ export class Disassembler {
 
   pendingLabels: string[] = [];
 
-  constructor(obj: RawBlueprint|RawBehavior) {
+  constructor(obj: RawBlueprint | RawBehavior) {
     this.#label("main");
     if ("frame" in obj) {
       this.blueprint(obj);
@@ -75,7 +75,7 @@ export class Disassembler {
         this.#emit(
           `.reg`,
           new LiteralValue({ num: Number(k) }),
-          new LiteralValue(v)
+          new LiteralValue(v),
         );
       }
     }
@@ -85,15 +85,15 @@ export class Disassembler {
         this.#emit(
           `.lock`,
           new LiteralValue({ num: i }),
-          new LiteralValue({ id: v })
-        )
+          new LiteralValue({ id: v }),
+        ),
     );
     if (obj.links) {
       for (const [k, v] of obj.links) {
         this.#emit(
           `.link`,
           new LiteralValue({ num: k }),
-          new LiteralValue({ num: v })
+          new LiteralValue({ num: v }),
         );
       }
     }
@@ -105,13 +105,13 @@ export class Disassembler {
             `.component`,
             new LiteralValue({ num: k }),
             new LiteralValue({ id: v }),
-            new Label(`behavior${this.extraBehaviors.length}`)
+            new Label(`behavior${this.extraBehaviors.length}`),
           );
         } else {
           this.#emit(
             `.component`,
             new LiteralValue({ num: k }),
-            new LiteralValue({ id: v })
+            new LiteralValue({ id: v }),
           );
         }
       }
@@ -143,7 +143,7 @@ export class Disassembler {
     raw: RawInstruction,
     nodeOffset: number,
     subOffset: number,
-    main: string
+    main: string,
   ) {
     const args: Arg[] = [];
     const def = instructions[raw.op];
@@ -221,7 +221,11 @@ export class Disassembler {
     let blueprintIndex = 0;
 
     do {
-      for(; extraBehaviorIndex < this.extraBehaviors.length; extraBehaviorIndex++) {
+      for (
+        ;
+        extraBehaviorIndex < this.extraBehaviors.length;
+        extraBehaviorIndex++
+      ) {
         const behavior = this.extraBehaviors[extraBehaviorIndex];
         if (!behavior) continue;
 
@@ -240,7 +244,7 @@ export class Disassembler {
         subOffset += behavior.subs?.length || 0;
       }
 
-      for(; blueprintIndex < this.bps.length; blueprintIndex++) {
+      for (; blueprintIndex < this.bps.length; blueprintIndex++) {
         const bp = this.bps[blueprintIndex];
         this.#label(`bp${blueprintIndex + 1}`);
         this.blueprint(bp);

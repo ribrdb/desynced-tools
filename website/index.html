@@ -1,6 +1,12 @@
-<!DOCTYPE html>
+<!doctype html>
 <title>Desynced Behavior Editor</title>
-<script id="Cookiebot" src="https://consent.cookiebot.com/uc.js" data-cbid="ed6d8cdf-847f-493b-ad0b-2b5235460b43" data-blockingmode="auto" type="text/javascript"></script>
+<script
+  id="Cookiebot"
+  src="https://consent.cookiebot.com/uc.js"
+  data-cbid="ed6d8cdf-847f-493b-ad0b-2b5235460b43"
+  data-blockingmode="auto"
+  type="text/javascript"
+></script>
 <style>
   .col {
     display: flex;
@@ -14,23 +20,24 @@
     height: 100%;
   }
   #export {
-    margin-left:40px;
+    margin-left: 40px;
   }
 </style>
 <div class="col">
   <div id="header">
-   <select id="file">
-    <option value="tsSample1">TypeScript Sample</option>
-    <option value="asmSample1">Assembly Language Sample</option>
-    <option value="paste">Import Assembly from Clipboard</option>
-   </select>
+    <select id="file">
+      <option value="tsSample1">TypeScript Sample</option>
+      <option value="asmSample1">Assembly Language Sample</option>
+      <option value="paste">Import Assembly from Clipboard</option>
+    </select>
     <button id="export">Export</button>
   </div>
   <div id="editor" style="flex: 1 1 0%"></div>
 </div>
 <script src="monaco-editor-0.45.0/min/vs/loader.js"></script>
 <script type="module">
-  import {behavior_dts, asmSyntax} from "./bundle.out.js";
+  import { behavior_dts, asmSyntax } from "./bundle.out.js";
+
   const compilerPromise = import("./compiler.js");
   /** @type {HTMLSelectElement} */
   const fileSelect = document.getElementById("file");
@@ -43,19 +50,19 @@
       target: monaco.languages.typescript.ScriptTarget.ESNext,
       lib: ["lib.es2023.d.ts"],
       moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
-      module: monaco.languages.typescript.ModuleKind.ESNext
+      module: monaco.languages.typescript.ModuleKind.ESNext,
     });
     const behaviorFilename = "ts:behavior.d.ts";
     monaco.languages.typescript.typescriptDefaults.addExtraLib(
       behavior_dts,
-      behaviorFilename
+      behaviorFilename,
     );
     // When resolving definitions and references, the editor will try to use created models.
     // Creating a model for the library allows "peek definition/references" commands to work with the library.
     monaco.editor.createModel(
       behavior_dts,
       "typescript",
-      monaco.Uri.parse(behaviorFilename)
+      monaco.Uri.parse(behaviorFilename),
     );
     const tsSample = monaco.editor.createModel(
       `
@@ -91,7 +98,7 @@ export function foo(v:Value) {
     }
 }`,
       "typescript",
-      monaco.Uri.parse("ts:sample.ts")
+      monaco.Uri.parse("ts:sample.ts"),
     );
     const asmSample = monaco.editor.createModel(
       `
@@ -124,21 +131,20 @@ label6:
   get_distance	B, nil, A
   .ret	`,
       "dsbehavior",
-      monaco.Uri.parse("ts:sample.asm")
+      monaco.Uri.parse("ts:sample.asm"),
     );
 
     const txtModel = monaco.editor.createModel(
       "",
       "plaintext",
-      monaco.Uri.parse("ts:sample.txt")
+      monaco.Uri.parse("ts:sample.txt"),
     );
 
-
-  const models = {
-    "tsSample1": tsSample,
-    "asmSample1": asmSample,
-  }
-  let pasteCount = 0;
+    const models = {
+      tsSample1: tsSample,
+      asmSample1: asmSample,
+    };
+    let pasteCount = 0;
 
     const editor = monaco.editor.create(document.getElementById("editor"), {
       model: tsSample,
@@ -154,26 +160,28 @@ label6:
           break;
         case "paste":
           try {
-          const [text, compiler] = await Promise.all([
+            const [text, compiler] = await Promise.all([
               navigator.clipboard.readText(),
-              compilerPromise
-          ]);
-          const obj = compiler.DesyncedStringToObject(text);
-          const asm = new compiler.Disassembler(obj).code();
-          const model = monaco.editor.createModel(
-            asm, "dsbehavior", `ts:paste${++pasteCount}.asm`
-          )
-          models [`paste${pasteCount}`] = model;
-          editor.setModel(model);
-          const option = document.createElement("option");
-          option.innerText = `Paste ${pasteCount}`;
-          option.value = `paste${pasteCount}`;
-          fileSelect.appendChild(option);
-          fileSelect.value = `paste${pasteCount}`;
-          return;
+              compilerPromise,
+            ]);
+            const obj = compiler.DesyncedStringToObject(text);
+            const asm = new compiler.Disassembler(obj).code();
+            const model = monaco.editor.createModel(
+              asm,
+              "dsbehavior",
+              `ts:paste${++pasteCount}.asm`,
+            );
+            models[`paste${pasteCount}`] = model;
+            editor.setModel(model);
+            const option = document.createElement("option");
+            option.innerText = `Paste ${pasteCount}`;
+            option.value = `paste${pasteCount}`;
+            fileSelect.appendChild(option);
+            fileSelect.value = `paste${pasteCount}`;
+            return;
           } catch (ex) {
             fileSelect.value = undefined;
-            alert("Paste failed: "+ex.message);
+            alert("Paste failed: " + ex.message);
           }
         default:
           return;
