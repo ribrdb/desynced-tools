@@ -57,6 +57,11 @@
           "B": false
         },
         "outArgs": []
+      },
+      {
+        "js": "selectNearest",
+        "type": "function",
+        "firstArgControlFlow": true
       }
     ],
     "type": "operator"
